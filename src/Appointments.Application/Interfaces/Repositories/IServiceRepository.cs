@@ -8,5 +8,5 @@ public interface IServiceRepository
     Task<Service?> GetByIdAsync(Guid id);
     Task AddAsync(Service service);
     Task UpdateAsync(Service service);
-    Task DeleteAsync(Guid id);
+    Task DeleteAsync(Service service);
 }

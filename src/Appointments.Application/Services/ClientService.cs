@@ -65,7 +65,7 @@ public class ClientService(IClientRepository repository) : IClientService
         if (client is null)
             return null;
 
-        await _repository.DeleteAsync(id);
+        await _repository.DeleteAsync(client);
         return client.ToClientResponse();
     }
 }

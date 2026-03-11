@@ -55,7 +55,7 @@ public class ServiceService(IServiceRepository repository) : IServiceService
         if (service is null)
             return null;
 
-        await _repository.DeleteAsync(id);
+        await _repository.DeleteAsync(service);
 
         return service.ToServiceResponse();
     }

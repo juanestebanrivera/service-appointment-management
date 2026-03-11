@@ -5,5 +5,5 @@ public record ClientResponse(
     string Name,
     string Email,
     string PhoneNumber,
-    DateTime DateOfBirth
+    DateOnly DateOfBirth
 );

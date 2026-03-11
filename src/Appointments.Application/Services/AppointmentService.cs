@@ -39,7 +39,7 @@ public class AppointmentService(IAppointmentRepository repository) : IAppointmen
         if (appointment is null)
             return null;
 
-        await _repository.DeleteAsync(id);
+        await _repository.DeleteAsync(appointment);
 
         return appointment.ToAppointmentResponse();
     }

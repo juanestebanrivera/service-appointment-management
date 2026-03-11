@@ -7,7 +7,9 @@ namespace Appointments.Domain.Entities;
 public class Appointment : BaseEntity
 {
     public Guid ClientId { get; private set; }
+    public Client? Client { get; private set; }
     public Guid ServiceId { get; private set; }
+    public Service? Service { get; private set; }
     public DateTimeOffset ScheduledTime { get; private set; }
     public TimeSpan Duration { get; private set; }
     public AppointmentStatus Status { get; private set; } = AppointmentStatus.Pending;
