@@ -10,5 +10,4 @@ public interface IAppointmentService
     Task<AppointmentResponse?> DeleteAsync(Guid id);
     Task<AppointmentResponse?> Reschedule(Guid id, RescheduleAppointmentRequest request);
     Task<AppointmentResponse?> UpdateStatusAsync(Guid id, UpdateStatusAppointmentRequest request);
-    Task<AppointmentResponse?> CancelAsync(Guid id);
 }

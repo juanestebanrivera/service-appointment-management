@@ -9,5 +9,4 @@ public interface IServiceService
     Task<ServiceResponse> CreateAsync(CreateServiceRequest request);
     Task<ServiceResponse?> UpdateAsync(Guid id, UpdateServiceRequest request);
     Task<ServiceResponse?> DeleteAsync(Guid id);
-    Task<ServiceResponse?> ToggleAvailability(Guid id, bool isActive);
 }

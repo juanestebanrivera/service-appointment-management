@@ -5,10 +5,10 @@ namespace Appointments.Domain.Entities;
 
 public class Service : BaseEntity
 {
-    public string Name { get; private set; }
-    public decimal Price { get; private set; }
-    public TimeSpan EstimatedDuration { get; private set; }
-    public bool IsActive { get; private set; }
+    public string Name { get; set; }
+    public decimal Price { get; set; }
+    public TimeSpan EstimatedDuration { get; set; }
+    public bool IsActive { get; set; }
 
     public Service(string name, decimal price, TimeSpan estimatedDuration)
     {
@@ -25,10 +25,5 @@ public class Service : BaseEntity
         Price = price;
         EstimatedDuration = estimatedDuration;
         IsActive = true;
-    }
-
-    public void SetActive(bool isActive)
-    {
-        IsActive = isActive;
     }
 }
