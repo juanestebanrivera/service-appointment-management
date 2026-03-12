@@ -12,7 +12,7 @@ public static class ServiceEndpoints
         group.MapGet("/", GetAll);
         group.MapGet("/{id:guid}", GetById).WithName("GetService");
         group.MapPost("/", Create);
-        group.MapPatch("/{id:guid}", Update);
+        group.MapPut("/{id:guid}", Update);
         group.MapDelete("/{id:guid}", Delete);
     }
 
