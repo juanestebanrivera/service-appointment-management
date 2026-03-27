@@ -1,14 +1,10 @@
-using Appointments.Domain.Entities;
+using Appointments.Application.Common.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Appointments.Infrastructure.Persistence;
 
-public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options)
+internal class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : DbContext(options), IUnitOfWork
 {
-    public DbSet<Client> Clients => Set<Client>();
-    public DbSet<Service> Services => Set<Service>();
-    public DbSet<Appointment> Appointments => Set<Appointment>();
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

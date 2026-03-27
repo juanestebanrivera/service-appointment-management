@@ -6,7 +6,8 @@ public interface IAppointmentRepository : IRepository<Appointment>
 {
     Task<IEnumerable<Appointment>> GetAllAsync(CancellationToken cancellationToken = default);
     Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
-    Task AddAsync(Appointment entity, CancellationToken cancellationToken = default);
-    Task UpdateAsync(Appointment entity, CancellationToken cancellationToken = default);
-    Task DeleteAsync(Appointment entity, CancellationToken cancellationToken = default);
+    
+    void Add(Appointment entity);
+    void Update(Appointment entity);
+    void Delete(Appointment entity);
 }

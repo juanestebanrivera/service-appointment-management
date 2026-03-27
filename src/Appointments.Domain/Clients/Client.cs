@@ -6,29 +6,29 @@ public sealed class Client : Entity, IAggregateRoot
 {
     public string FirstName { get; private set; } = null!;
     public string LastName { get; private set; } = null!;
-    public PhoneNumber PhoneNumber { get; private set; } = null!;
+    public PhoneNumber Phone { get; private set; } = null!;
     public Email? Email { get; private set; }
     public bool IsActive { get; private set; }
 
     private Client() {}
 
-    private Client(Guid id, string firstName, string lastName, PhoneNumber phoneNumber, Email? email, bool isActive) : base(id)
+    private Client(Guid id, string firstName, string lastName, PhoneNumber phone, Email? email, bool isActive) : base(id)
     {
         FirstName = firstName;
         LastName = lastName;
-        PhoneNumber = phoneNumber;
+        Phone = phone;
         Email = email;
         IsActive = isActive;
     }
 
-    public static Result<Client> Register(string firstName, string lastName, PhoneNumber phoneNumber, Email? email = null, bool? isActive = null)
+    public static Result<Client> Register(string firstName, string lastName, PhoneNumber phone, Email? email = null, bool? isActive = null)
     {
         var validationNamesResult = ValidateNames(firstName, lastName);
 
         if (validationNamesResult.IsFailure)
             return Result<Client>.Failure(validationNamesResult.Error);
 
-        return Result<Client>.Success(new (Guid.NewGuid(), firstName, lastName, phoneNumber, email, isActive ?? true));
+        return Result<Client>.Success(new (Guid.NewGuid(), firstName, lastName, phone, email, isActive ?? true));
     }
 
     public Result ChangeName(string newFirstName, string newLastName)
@@ -46,7 +46,7 @@ public sealed class Client : Entity, IAggregateRoot
 
     public void ChangeEmail(Email? newEmail) => Email = newEmail;
 
-    public void ChangePhoneNumber(PhoneNumber newPhoneNumber) => PhoneNumber = newPhoneNumber;
+    public void ChangePhoneNumber(PhoneNumber newPhone) => Phone = newPhone;
 
     public void Activate() => IsActive = true;
 
