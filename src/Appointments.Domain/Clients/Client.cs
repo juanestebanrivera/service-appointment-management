@@ -21,14 +21,14 @@ public sealed class Client : Entity, IAggregateRoot
         IsActive = isActive;
     }
 
-    public static Result<Client> Register(string firstName, string lastName, PhoneNumber phone, Email? email = null, bool? isActive = null)
+    public static Result<Client> Register(string firstName, string lastName, PhoneNumber phone, Email? email = null)
     {
         var validationNamesResult = ValidateNames(firstName, lastName);
 
         if (validationNamesResult.IsFailure)
             return Result<Client>.Failure(validationNamesResult.Error);
 
-        return Result<Client>.Success(new (Guid.NewGuid(), firstName, lastName, phone, email, isActive ?? true));
+        return Result<Client>.Success(new (Guid.NewGuid(), firstName, lastName, phone, email, true));
     }
 
     public Result ChangeName(string newFirstName, string newLastName)
