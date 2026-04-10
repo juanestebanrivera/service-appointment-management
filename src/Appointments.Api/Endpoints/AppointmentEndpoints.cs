@@ -1,5 +1,12 @@
-using Appointments.Application.Dtos.Appointments;
-using Appointments.Application.Interfaces.Services;
+using Appointments.Application.Features.Appointments.Commands.BookAppointment;
+using Appointments.Application.Features.Appointments.Commands.CancelAppointment;
+using Appointments.Application.Features.Appointments.Commands.CompleteAppointment;
+using Appointments.Application.Features.Appointments.Commands.ConfirmAppointment;
+using Appointments.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
+using Appointments.Application.Features.Appointments.Commands.RescheduleAppointment;
+using Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
+using Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Appointments.Api.Endpoints;
 
@@ -11,61 +18,110 @@ public static class AppointmentEndpoints
 
         group.MapGet("/", GetAll);
         group.MapGet("/{id:guid}", GetById).WithName("GetAppointment");
-        group.MapPost("/", Create);
-        group.MapPatch("/{id:guid}/reschedule", Reschedule);
-        group.MapPatch("/{id:guid}/status", UpdateStatus);
-        group.MapDelete("/{id:guid}", Delete);
+        group.MapPost("/", Book);
+        group.MapPatch("/cancel", Cancel);
+        group.MapPatch("/complete", Complete);
+        group.MapPatch("/confirm", Confirm);
+        group.MapPatch("/mark-as-no-show", MarkAsNoShow);
+        group.MapPatch("/reschedule", Reschedule);
     }
 
-    private static async Task<IResult> GetAll(IAppointmentService service)
+    private static async Task<IResult> GetAll(
+        IGetAllAppointmentsQueryHandler handler,
+        CancellationToken cancellationToken)
     {
-        var appointmentsResponse = await service.GetAllAsync();
+        var appointments = await handler.HandleAsync(cancellationToken);
         
-        return Results.Ok(appointmentsResponse);
+        return Results.Ok(appointments);
     }
 
-    private static async Task<IResult> GetById(Guid id, IAppointmentService service)
+    private static async Task<IResult> GetById(
+        Guid id,
+        IGetAppointmentByIdQueryHandler handler,
+        CancellationToken cancellationToken)
     {
-        var appointmentResponse = await service.GetByIdAsync(id);
+        var result = await handler.HandleAsync(id, cancellationToken);
 
-        if (appointmentResponse is null)
-            return Results.NotFound();
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
 
-        return Results.Ok(appointmentResponse);
+        return Results.Ok(result.Value);
     }
 
-    private static async Task<IResult> Create(CreateAppointmentRequest request, IAppointmentService service)
+    private static async Task<IResult> Book(
+        [FromBody] BookAppointmentCommand command,
+        [FromServices] IBookAppointmentCommandHandler handler,
+        CancellationToken cancellationToken)
     {
-        var appointmentResponse = await service.CreateAsync(request);
-        return Results.CreatedAtRoute("GetAppointment", new { id = appointmentResponse.Id }, appointmentResponse);
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
+
+        return Results.CreatedAtRoute("GetAppointment", new { id = result.Value });
     }
 
-    private static async Task<IResult> Reschedule(Guid id, RescheduleAppointmentRequest request, IAppointmentService service)
+    private static async Task<IResult> Cancel(
+        [AsParameters] CancelAppointmentCommand command,
+        [FromServices] ICancelAppointmentCommandHandler handler,
+        CancellationToken cancellationToken)
     {
-        var appointmentResponse = await service.Reschedule(id, request);
+        var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (appointmentResponse is null)
-            return Results.NotFound();
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
 
         return Results.NoContent();
     }
 
-    private static async Task<IResult> UpdateStatus(Guid id, UpdateStatusAppointmentRequest request, IAppointmentService service)
+    private static async Task<IResult> Complete(
+        [AsParameters] CompleteAppointmentCommand command,
+        [FromServices] ICompleteAppointmentCommandHandler handler,
+        CancellationToken cancellationToken)
     {
-        var appointmentResponse = await service.UpdateStatusAsync(id, request);
+        var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (appointmentResponse is null)
-            return Results.NotFound();
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
 
         return Results.NoContent();
     }
 
-    private static async Task<IResult> Delete(Guid id, IAppointmentService service)
+    private static async Task<IResult> Confirm(
+        [AsParameters] ConfirmAppointmentCommand command,
+        [FromServices] IConfirmAppointmentCommandHandler handler,
+        CancellationToken cancellationToken)
     {
-        var appointmentResponse = await service.DeleteAsync(id);
+        var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (appointmentResponse is null)
-            return Results.NotFound();
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
+
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> MarkAsNoShow(
+        [AsParameters] MarkAppointmentAsNoShowCommand command,
+        [FromServices] IMarkAppointmentAsNoShowCommandHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
+
+        return Results.NoContent();
+    }
+
+    private static async Task<IResult> Reschedule(
+        [FromBody] RescheduleAppointmentCommand command,
+        [FromServices] IRescheduleAppointmentCommandHandler handler,
+        CancellationToken cancellationToken)
+    {
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
 
         return Results.NoContent();
     }

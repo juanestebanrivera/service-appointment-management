@@ -22,7 +22,7 @@ internal sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
             .HasMaxLength(100)
             .IsRequired();
 
-        builder.ComplexProperty(c => c.Phone, phoneBuilder =>
+        builder.OwnsOne(c => c.Phone, phoneBuilder =>
         {
            phoneBuilder.Property(p => p.Prefix)
                .HasColumnName("PhonePrefix")
@@ -33,24 +33,24 @@ internal sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
                 .HasColumnName("PhoneNumber")
                 .HasMaxLength(20)
                 .IsRequired();
+
+            phoneBuilder.HasIndex(p => new { p.Prefix, p.Number })
+                .IsUnique()
+                .HasDatabaseName("IX_Phone_Unique");
         });
 
-        builder.HasIndex(c => new { c.Phone.Prefix, c.Phone.Number })
-            .IsUnique()
-            .HasDatabaseName("IX_Clients_Phone_Unique");
-
-        builder.ComplexProperty(c => c.Email, emailBuilder =>
+        builder.OwnsOne(c => c.Email, emailBuilder =>
         {
             emailBuilder.Property(e => e.Value)
                 .HasColumnName("Email")
                 .HasMaxLength(255)
-                .IsRequired(false);
-        });
+                .IsRequired();
 
-        builder.HasIndex(c => c.Email!.Value)
-            .IsUnique()
-            .HasFilter("[Email] IS NOT NULL")
-            .HasDatabaseName("IX_Clients_Email_Unique");
+            emailBuilder.HasIndex(e => e.Value)
+                .IsUnique()
+                .HasFilter("[Email] IS NOT NULL")
+                .HasDatabaseName("IX_Email_Unique");
+        });
 
         builder.Property(c => c.IsActive)
             .HasDefaultValue(true)

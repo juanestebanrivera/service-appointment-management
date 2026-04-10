@@ -37,14 +37,22 @@ public class UpdateClientCommandHandler(
             client.ChangeEmail(emailResult.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(command.PhoneNumberPrefix) && !string.IsNullOrWhiteSpace(command.PhoneNumber))
+        if (!string.IsNullOrWhiteSpace(command.PhonePrefix) && !string.IsNullOrWhiteSpace(command.PhoneNumber))
         {
-            var phoneResult = PhoneNumber.Create(command.PhoneNumberPrefix, command.PhoneNumber);
+            var phoneResult = PhoneNumber.Create(command.PhonePrefix, command.PhoneNumber);
 
             if (phoneResult.IsFailure)
                 return Result.Failure(phoneResult.Error);
 
             client.ChangePhoneNumber(phoneResult.Value);
+        }
+
+        if (command.IsActive.HasValue)
+        {
+            if (command.IsActive.Value)
+                client.Activate();
+            else
+                client.Deactivate();   
         }
 
         _clientRepository.Update(client);

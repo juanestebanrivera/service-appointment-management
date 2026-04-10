@@ -2,7 +2,6 @@ using Appointments.Application.Features.Appointments.Commands.BookAppointment;
 using Appointments.Application.Features.Appointments.Commands.CancelAppointment;
 using Appointments.Application.Features.Appointments.Commands.CompleteAppointment;
 using Appointments.Application.Features.Appointments.Commands.ConfirmAppointment;
-using Appointments.Application.Features.Appointments.Commands.DeleteAppointment;
 using Appointments.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
 using Appointments.Application.Features.Appointments.Commands.RescheduleAppointment;
 using Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
@@ -46,7 +45,6 @@ public static class DependencyInjection
         services.AddScoped<ICancelAppointmentCommandHandler, CancelAppointmentCommandHandler>();
         services.AddScoped<ICompleteAppointmentCommandHandler, CompleteAppointmentCommandHandler>();
         services.AddScoped<IMarkAppointmentAsNoShowCommandHandler, MarkAppointmentAsNoShowCommandHandler>();
-        services.AddScoped<IDeleteAppointmentCommandHandler, DeleteAppointmentCommandHandler>();
         services.AddScoped<IGetAllAppointmentsQueryHandler, GetAllAppointmentsQueryHandler>();
         services.AddScoped<IGetAppointmentByIdQueryHandler, GetAppointmentByIdQueryHandler>();
 

@@ -14,7 +14,7 @@ public class CreateClientCommandHandler(
 
     public async Task<Result<Guid>> HandleAsync(CreateClientCommand command, CancellationToken cancellationToken = default)
     {
-        var phoneResult = PhoneNumber.Create(command.PhoneNumberPrefix, command.PhoneNumber);
+        var phoneResult = PhoneNumber.Create(command.PhonePrefix, command.PhoneNumber);
 
         if (phoneResult.IsFailure)
             return Result<Guid>.Failure(phoneResult.Error);

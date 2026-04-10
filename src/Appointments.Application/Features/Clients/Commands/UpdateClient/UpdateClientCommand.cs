@@ -1,10 +1,13 @@
 namespace Appointments.Application.Features.Clients.Commands.UpdateClient;
 
 public record UpdateClientCommand(
-    Guid ClientId,
     string? FirstName,
     string? LastName,
     string? Email,
-    string? PhoneNumberPrefix,
-    string? PhoneNumber
-);
+    string? PhonePrefix,
+    string? PhoneNumber,
+    bool? IsActive
+)
+{
+    public Guid ClientId { get; set; }
+};

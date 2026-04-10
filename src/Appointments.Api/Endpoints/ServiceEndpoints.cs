@@ -1,5 +1,9 @@
-using Appointments.Application.Dtos.Services;
-using Appointments.Application.Interfaces.Services;
+using Appointments.Application.Features.Services.Commands.CreateService;
+using Appointments.Application.Features.Services.Commands.DeleteService;
+using Appointments.Application.Features.Services.Commands.UpdateService;
+using Appointments.Application.Features.Services.Queries.GetAllServices;
+using Appointments.Application.Features.Services.Queries.GetServiceById;
+using Microsoft.AspNetCore.Mvc;
 
 namespace Appointments.Api.Endpoints;
 
@@ -16,45 +20,65 @@ public static class ServiceEndpoints
         group.MapDelete("/{id:guid}", Delete);
     }
 
-    private static async Task<IResult> GetAll(IServiceService service)
+    private static async Task<IResult> GetAll(
+        IGetAllServicesQueryHandler handler,
+        CancellationToken cancellationToken)
     {
-        var servicesResponse = await service.GetAllAsync();
+        var services = await handler.HandleAsync(cancellationToken);
         
-        return Results.Ok(servicesResponse);
+        return Results.Ok(services);
     }
 
-    private static async Task<IResult> GetById(Guid id, IServiceService service)
+    private static async Task<IResult> GetById(
+        Guid id,
+        IGetServiceByIdQueryHandler handler,
+        CancellationToken cancellationToken)
     {
-        var serviceResponse = await service.GetByIdAsync(id);
+        var result = await handler.HandleAsync(id, cancellationToken);
 
-        if (serviceResponse is null)
-            return Results.NotFound();
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
 
-        return Results.Ok(serviceResponse);
+        return Results.Ok(result.Value);
     }
 
-    private static async Task<IResult> Create(CreateServiceRequest request, IServiceService service)
+    private static async Task<IResult> Create(
+        CreateServiceCommand command,
+        [FromServices] ICreateServiceCommandHandler handler, 
+        CancellationToken cancellationToken)
     {
-        var serviceResponse = await service.CreateAsync(request);
-        return Results.CreatedAtRoute("GetService", new { id = serviceResponse.Id }, serviceResponse);
+        var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
+
+        return Results.CreatedAtRoute("GetService", new { id = result.Value });
     }
 
-    private static async Task<IResult> Update(Guid id, UpdateServiceRequest request, IServiceService service)
+    private static async Task<IResult> Update(
+        Guid id,
+        [FromBody] UpdateServiceCommand command,
+        [FromServices] IUpdateServiceCommandHandler handler,
+        CancellationToken cancellationToken)
     {
-        var serviceResponse = await service.UpdateAsync(id, request);
+        command.ServiceId = id;
+        var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (serviceResponse is null)
-            return Results.NotFound();
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
 
         return Results.NoContent();
     }
 
-    private static async Task<IResult> Delete(Guid id, IServiceService service)
+    private static async Task<IResult> Delete(
+        Guid id,
+        [FromServices] IDeleteServiceCommandHandler handler,
+        CancellationToken cancellationToken)
     {
-        var serviceResponse = await service.DeleteAsync(id);
+        var result = await handler.HandleAsync(new DeleteServiceCommand(id), cancellationToken);
 
-        if (serviceResponse is null)
-            return Results.NotFound();
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
 
         return Results.NoContent();
     }
