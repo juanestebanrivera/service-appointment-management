@@ -2,11 +2,11 @@ using Appointments.Domain.Appointments;
 
 namespace Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
 
-public class GetAllAppointmentsQueryHandler(IAppointmentRepository appointmentRepository) : IGetAllAppointmentsQueryHandler
+public sealed class GetAllAppointmentsQueryHandler(IAppointmentRepository appointmentRepository) : IGetAllAppointmentsQueryHandler
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
 
-    public async Task<IEnumerable<AppointmentResponse>> HandleAsync(CancellationToken cancellationToken = default)
+    public async Task<IEnumerable<AppointmentResponse>> HandleAsync(GetAllAppointmentsQuery query, CancellationToken cancellationToken = default)
     {
         var appointments = await _appointmentRepository.GetAllAsync(cancellationToken);
 

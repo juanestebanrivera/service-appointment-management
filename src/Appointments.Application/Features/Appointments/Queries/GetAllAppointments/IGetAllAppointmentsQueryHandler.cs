@@ -2,5 +2,5 @@ namespace Appointments.Application.Features.Appointments.Queries.GetAllAppointme
 
 public interface IGetAllAppointmentsQueryHandler
 {
-    Task<IEnumerable<AppointmentResponse>> HandleAsync(CancellationToken cancellationToken = default);
+    Task<IEnumerable<AppointmentResponse>> HandleAsync(GetAllAppointmentsQuery query, CancellationToken cancellationToken = default);
 }

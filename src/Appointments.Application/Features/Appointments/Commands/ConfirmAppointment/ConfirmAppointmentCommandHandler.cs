@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Commands.ConfirmAppointment;
 
-public class ConfirmAppointmentCommandHandler(
+public sealed class ConfirmAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
 ) : IConfirmAppointmentCommandHandler

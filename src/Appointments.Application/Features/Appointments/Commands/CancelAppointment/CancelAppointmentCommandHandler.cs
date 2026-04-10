@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Commands.CancelAppointment;
 
-public class CancelAppointmentCommandHandler(
+public sealed class CancelAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
 ) : ICancelAppointmentCommandHandler

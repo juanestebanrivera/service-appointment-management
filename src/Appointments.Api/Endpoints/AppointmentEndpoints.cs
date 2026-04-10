@@ -31,7 +31,7 @@ public class AppointmentEndpoints : IEndpoint
         IGetAllAppointmentsQueryHandler handler,
         CancellationToken cancellationToken)
     {
-        var appointments = await handler.HandleAsync(cancellationToken);
+        var appointments = await handler.HandleAsync(new GetAllAppointmentsQuery(), cancellationToken);
         
         return Results.Ok(appointments);
     }
@@ -41,7 +41,7 @@ public class AppointmentEndpoints : IEndpoint
         IGetAppointmentByIdQueryHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(id, cancellationToken);
+        var result = await handler.HandleAsync(new GetAppointmentByIdQuery(id), cancellationToken);
 
         if (result.IsFailure)
             return Results.BadRequest(result.Error);

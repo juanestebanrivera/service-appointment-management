@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Clients.Commands.CreateClient;
 
-public class CreateClientCommandHandler(
+public sealed class CreateClientCommandHandler(
     IClientRepository clientRepository,
     IUnitOfWork unitOfWork
 ) : ICreateClientCommandHandler

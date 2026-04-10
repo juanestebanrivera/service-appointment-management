@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Commands.RescheduleAppointment;
 
-public class RescheduleAppointmentCommandHandler(
+public sealed class RescheduleAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
 ) : IRescheduleAppointmentCommandHandler

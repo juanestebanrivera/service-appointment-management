@@ -6,7 +6,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Commands.BookAppointment;
 
-public class BookAppointmentCommandHandler(
+public sealed class BookAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IClientRepository clientRepository,
     IServiceRepository serviceRepository,

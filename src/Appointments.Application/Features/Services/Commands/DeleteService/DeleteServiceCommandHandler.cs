@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Services.Commands.DeleteService;
 
-public class DeleteServiceCommandHandler(
+public sealed class DeleteServiceCommandHandler(
     IServiceRepository serviceRepository,
     IUnitOfWork unitOfWork
 ) : IDeleteServiceCommandHandler

@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Services.Commands.CreateService;
 
-public class CreateServiceCommandHandler(
+public sealed class CreateServiceCommandHandler(
     IServiceRepository serviceRepository,
     IUnitOfWork unitOfWork
 ) : ICreateServiceCommandHandler

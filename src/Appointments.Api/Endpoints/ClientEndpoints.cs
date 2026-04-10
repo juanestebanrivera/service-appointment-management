@@ -25,7 +25,7 @@ public class ClientEndpoints : IEndpoint
         IGetAllClientsQueryHandler handler,
         CancellationToken cancellationToken)
     {
-        var clients = await handler.HandleAsync(cancellationToken);
+        var clients = await handler.HandleAsync(new GetAllClientsQuery(), cancellationToken);
         
         return Results.Ok(clients);
     }
@@ -35,7 +35,7 @@ public class ClientEndpoints : IEndpoint
         IGetClientByIdQueryHandler handler,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(id, cancellationToken);
+        var result = await handler.HandleAsync(new GetClientByIdQuery(id), cancellationToken);
 
         if (result.IsFailure)
             return Results.BadRequest(result.Error);

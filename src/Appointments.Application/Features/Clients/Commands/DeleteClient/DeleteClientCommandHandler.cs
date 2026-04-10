@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Clients.Commands.DeleteClient;
 
-public class DeleteClientCommandHandler(
+public sealed class DeleteClientCommandHandler(
     IClientRepository clientRepository,
     IUnitOfWork unitOfWork
 ) : IDeleteClientCommandHandler

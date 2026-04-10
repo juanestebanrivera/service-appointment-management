@@ -4,5 +4,5 @@ namespace Appointments.Application.Features.Appointments.Queries.GetAppointmentB
 
 public interface IGetAppointmentByIdQueryHandler
 {
-    Task<Result<AppointmentResponse>> HandleAsync(Guid id, CancellationToken cancellationToken = default);
+    Task<Result<AppointmentResponse>> HandleAsync(GetAppointmentByIdQuery query, CancellationToken cancellationToken = default);
 }

@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
 
-public class MarkAppointmentAsNoShowCommandHandler(
+public sealed class MarkAppointmentAsNoShowCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
 ) : IMarkAppointmentAsNoShowCommandHandler

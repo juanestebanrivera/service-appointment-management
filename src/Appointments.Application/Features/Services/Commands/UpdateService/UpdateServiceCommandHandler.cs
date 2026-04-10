@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Services.Commands.UpdateService;
 
-public class UpdateServiceCommandHandler(
+public sealed class UpdateServiceCommandHandler(
     IServiceRepository serviceRepository,
     IUnitOfWork unitOfWork
 ) : IUpdateServiceCommandHandler

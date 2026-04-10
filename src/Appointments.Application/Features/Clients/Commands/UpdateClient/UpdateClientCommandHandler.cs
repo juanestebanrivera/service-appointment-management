@@ -4,7 +4,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Clients.Commands.UpdateClient;
 
-public class UpdateClientCommandHandler(
+public sealed class UpdateClientCommandHandler(
     IClientRepository clientRepository,
     IUnitOfWork unitOfWork
 ) : IUpdateClientCommandHandler
