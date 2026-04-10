@@ -1,3 +1,4 @@
+using Appointments.Api.Abstractions;
 using Appointments.Application.Features.Clients.Commands.CreateClient;
 using Appointments.Application.Features.Clients.Commands.DeleteClient;
 using Appointments.Application.Features.Clients.Commands.UpdateClient;
@@ -7,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Appointments.Api.Endpoints;
 
-public static class ClientEndpoints
+public class ClientEndpoints : IEndpoint
 {
-    public static void MapClientEndpoints(this IEndpointRouteBuilder app)
+    public void MapEndpoints(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/clients");
 

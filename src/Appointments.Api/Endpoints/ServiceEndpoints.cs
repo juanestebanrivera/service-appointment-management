@@ -1,3 +1,4 @@
+using Appointments.Api.Abstractions;
 using Appointments.Application.Features.Services.Commands.CreateService;
 using Appointments.Application.Features.Services.Commands.DeleteService;
 using Appointments.Application.Features.Services.Commands.UpdateService;
@@ -7,9 +8,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Appointments.Api.Endpoints;
 
-public static class ServiceEndpoints
+public class ServiceEndpoints : IEndpoint
 {
-    public static void MapServiceEndpoints(this IEndpointRouteBuilder app)
+    public void MapEndpoints(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/services");
 

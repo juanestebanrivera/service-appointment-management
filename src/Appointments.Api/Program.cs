@@ -1,16 +1,14 @@
-using Appointments.Api.Endpoints;
+using Appointments.Api.Extensions;
 using Appointments.Application;
 using Appointments.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddApplication();
-
 string connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
+builder.Services.AddApplication();
 builder.Services.AddInfrastructure(connectionString);
-
 builder.Services.AddOpenApi();
+builder.Services.AddEndpoints();
 
 var app = builder.Build();
 
@@ -26,9 +24,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
-app.MapClientEndpoints();
-app.MapServiceEndpoints();
-app.MapAppointmentEndpoints();
+app.RegisterEndpoints();
 
 app.Run();

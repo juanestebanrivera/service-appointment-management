@@ -1,3 +1,4 @@
+using Appointments.Api.Abstractions;
 using Appointments.Application.Features.Appointments.Commands.BookAppointment;
 using Appointments.Application.Features.Appointments.Commands.CancelAppointment;
 using Appointments.Application.Features.Appointments.Commands.CompleteAppointment;
@@ -10,9 +11,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Appointments.Api.Endpoints;
 
-public static class AppointmentEndpoints
+public class AppointmentEndpoints : IEndpoint
 {
-    public static void MapAppointmentEndpoints(this IEndpointRouteBuilder app)
+    public void MapEndpoints(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("api/appointments");
 
