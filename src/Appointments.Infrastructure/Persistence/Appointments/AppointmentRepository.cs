@@ -5,7 +5,7 @@ namespace Appointments.Infrastructure.Persistence.Appointments;
 
 internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IAppointmentRepository
 {
-    private readonly DbSet<Appointment> _appointments = dbContext?.Set<Appointment>() ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly DbSet<Appointment> _appointments = dbContext.Set<Appointment>();
 
     public async Task<IEnumerable<Appointment>> GetAllAsync(CancellationToken cancellationToken = default)
     {

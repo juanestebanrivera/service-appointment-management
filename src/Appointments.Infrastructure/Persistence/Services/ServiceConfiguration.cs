@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Appointments.Infrastructure.Persistence.Services;
 
-internal sealed class ServerConfiguration : IEntityTypeConfiguration<Service>
+internal sealed class ServiceConfiguration : IEntityTypeConfiguration<Service>
 {
     public void Configure(EntityTypeBuilder<Service> builder)
     {

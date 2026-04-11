@@ -10,11 +10,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Appointments.Api.Features.Clients;
 
-public class ClientEndpoints : IEndpoint
+internal class ClientEndpoints : IEndpoint
 {
     public void MapEndpoints(IEndpointRouteBuilder app)
     {
-        var group = app.MapGroup("api/clients");
+        var group = app.MapGroup("/api/clients");
 
         group.MapGet("/", GetAll);
         group.MapGet("/{id:guid}", GetById).WithName("GetClient");

@@ -13,12 +13,10 @@ internal sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.Property(c => c.Id).ValueGeneratedNever();
 
         builder.Property(c => c.FirstName)
-            .IsRequired()
             .HasMaxLength(100)
             .IsRequired();
 
         builder.Property(c => c.LastName)
-            .IsRequired()
             .HasMaxLength(100)
             .IsRequired();
 
@@ -48,7 +46,7 @@ internal sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
 
             emailBuilder.HasIndex(e => e.Value)
                 .IsUnique()
-                .HasFilter("[Email] IS NOT NULL")
+                .HasFilter("\"Email\" IS NOT NULL")
                 .HasDatabaseName("IX_Email_Unique");
         });
 

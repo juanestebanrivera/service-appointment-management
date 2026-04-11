@@ -5,7 +5,7 @@ namespace Appointments.Infrastructure.Persistence.Services;
 
 internal sealed class ServiceRepository(ApplicationDbContext dbContext) : IServiceRepository
 {
-    private readonly DbSet<Service> _services = dbContext?.Set<Service>() ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly DbSet<Service> _services = dbContext.Set<Service>();
 
     public async Task<IEnumerable<Service>> GetAllAsync(CancellationToken cancellationToken = default)
     {

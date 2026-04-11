@@ -5,7 +5,7 @@ namespace Appointments.Infrastructure.Persistence.Clients;
 
 internal sealed class ClientRepository(ApplicationDbContext dbContext) : IClientRepository
 {
-    private readonly DbSet<Client> _clients = dbContext?.Set<Client>() ?? throw new ArgumentNullException(nameof(dbContext));
+    private readonly DbSet<Client> _clients = dbContext.Set<Client>();
 
     public async Task<IEnumerable<Client>> GetAllAsync(CancellationToken cancellationToken = default)
     {
