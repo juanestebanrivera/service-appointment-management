@@ -24,7 +24,7 @@ public record PhoneNumber
         if (string.IsNullOrWhiteSpace(number))
             return Result<PhoneNumber>.Failure(PhoneNumberErrors.PhoneNumberRequired);
 
-        if (number.Any(char.IsLetter) || number.Length < 7)
+        if (!number.Any(char.IsDigit) || number.Length < 7)
             return Result<PhoneNumber>.Failure(PhoneNumberErrors.InvalidPhoneNumberFormat);
 
         return Result<PhoneNumber>.Success(new PhoneNumber(prefix, number));

@@ -43,7 +43,7 @@ public sealed class Appointment : Entity, IAggregateRoot
 
     public Result Reschedule(DateTimeOffset newStartTime, DateTimeOffset currentTime)
     {
-        if (Status == AppointmentStatus.Cancelled || Status == AppointmentStatus.Completed || Status == AppointmentStatus.NoShow)
+        if (Status is not (AppointmentStatus.Pending or AppointmentStatus.Confirmed))
             return Result.Failure(AppointmentErrors.InvalidStatusTransition);
 
         var newEndTime = newStartTime.Add(EndTime - StartTime);
@@ -70,7 +70,7 @@ public sealed class Appointment : Entity, IAggregateRoot
 
     public Result Cancel()
     {
-        if (Status == AppointmentStatus.Cancelled || Status == AppointmentStatus.Completed || Status == AppointmentStatus.NoShow)
+        if (Status is not (AppointmentStatus.Pending or AppointmentStatus.Confirmed))
             return Result.Failure(AppointmentErrors.InvalidStatusTransition);
 
         Status = AppointmentStatus.Cancelled;

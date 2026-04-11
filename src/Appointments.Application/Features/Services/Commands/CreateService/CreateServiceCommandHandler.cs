@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Services.Commands.CreateService;
 public sealed class CreateServiceCommandHandler(
     IServiceRepository serviceRepository,
     IUnitOfWork unitOfWork
-) : ICreateServiceCommandHandler
+) : ICommandHandler<CreateServiceCommand, Guid>
 {
     private readonly IServiceRepository _serviceRepository = serviceRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

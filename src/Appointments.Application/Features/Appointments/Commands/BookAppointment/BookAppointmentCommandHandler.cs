@@ -12,7 +12,7 @@ public sealed class BookAppointmentCommandHandler(
     IServiceRepository serviceRepository,
     IUnitOfWork unitOfWork,
     TimeProvider timeProvider
-) : IBookAppointmentCommandHandler
+) : ICommandHandler<BookAppointmentCommand, Guid>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
     private readonly IClientRepository _clientRepository = clientRepository;
@@ -27,13 +27,19 @@ public sealed class BookAppointmentCommandHandler(
         if (client is null)
             return Result<Guid>.Failure(AppointmentApplicationErrors.ClientNotFound);
 
+        if (!client.IsActive)
+            return Result<Guid>.Failure(ClientErrors.ClientIsInactive);
+
         var service = await _serviceRepository.GetByIdAsync(command.ServiceId, cancellationToken);
 
         if (service is null)
             return Result<Guid>.Failure(AppointmentApplicationErrors.ServiceNotFound);
 
+        if (!service.IsActive)
+            return Result<Guid>.Failure(ServiceErrors.ServiceIsInactive);
+
         var endTime = command.StartTime.Add(service.Duration);
-        var currentTime = _timeProvider.GetUtcNow().UtcDateTime;
+        var currentTime = _timeProvider.GetUtcNow();
 
         var appointmentResult = Appointment.Book(
             command.ClientId,

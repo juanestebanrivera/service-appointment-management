@@ -1,9 +1,11 @@
+using Appointments.Application.Common.Interfaces;
 using Appointments.Domain.Appointments;
 using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
 
-public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appointmentRepository) : IGetAppointmentByIdQueryHandler
+public sealed class GetAppointmentByIdQueryHandler(IAppointmentRepository appointmentRepository)
+    : IQueryHandler<GetAppointmentByIdQuery, AppointmentResponse>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
 

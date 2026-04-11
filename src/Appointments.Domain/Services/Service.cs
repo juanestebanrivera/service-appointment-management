@@ -21,7 +21,7 @@ public sealed class Service : Entity, IAggregateRoot
         IsActive = isActive;
     }
 
-    public static Result<Service> Create(string name, decimal price, TimeSpan duration, string? description = null, bool? isActive = null)
+    public static Result<Service> Create(string name, decimal price, TimeSpan duration, string? description = null, bool isActive = true)
     {
         if (string.IsNullOrWhiteSpace(name))
             return Result<Service>.Failure(ServiceErrors.NameIsRequired);
@@ -35,7 +35,7 @@ public sealed class Service : Entity, IAggregateRoot
         if (duration > TimeSpan.FromDays(1))
             return Result<Service>.Failure(ServiceErrors.DurationMustBeLessThanOneDay);
 
-        return Result<Service>.Success(new (Guid.NewGuid(), name, price, duration, description, isActive ?? true));
+        return Result<Service>.Success(new (Guid.NewGuid(), name, price, duration, description, isActive));
     }
 
     public Result UpdateInformation(string newName, string? newDescription)

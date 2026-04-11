@@ -1,4 +1,6 @@
 using Appointments.Api.Abstractions;
+using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Appointments.Commands.BookAppointment;
 using Appointments.Application.Features.Appointments.Commands.CancelAppointment;
 using Appointments.Application.Features.Appointments.Commands.CompleteAppointment;
@@ -9,7 +11,7 @@ using Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
 using Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Appointments.Api.Endpoints;
+namespace Appointments.Api.Features.Appointments;
 
 public class AppointmentEndpoints : IEndpoint
 {
@@ -28,17 +30,20 @@ public class AppointmentEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        IGetAllAppointmentsQueryHandler handler,
+        [FromServices] IQueryHandler<GetAllAppointmentsQuery, IEnumerable<AppointmentResponse>> handler,
         CancellationToken cancellationToken)
     {
-        var appointments = await handler.HandleAsync(new GetAllAppointmentsQuery(), cancellationToken);
+        var result = await handler.HandleAsync(new GetAllAppointmentsQuery(), cancellationToken);
         
-        return Results.Ok(appointments);
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
+
+        return Results.Ok(result.Value);
     }
 
     private static async Task<IResult> GetById(
         Guid id,
-        IGetAppointmentByIdQueryHandler handler,
+        [FromServices] IQueryHandler<GetAppointmentByIdQuery, AppointmentResponse> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetAppointmentByIdQuery(id), cancellationToken);
@@ -51,7 +56,7 @@ public class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> Book(
         [FromBody] BookAppointmentCommand command,
-        [FromServices] IBookAppointmentCommandHandler handler,
+        [FromServices] ICommandHandler<BookAppointmentCommand, Guid> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(command, cancellationToken);
@@ -64,7 +69,7 @@ public class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> Cancel(
         [AsParameters] CancelAppointmentCommand command,
-        [FromServices] ICancelAppointmentCommandHandler handler,
+        [FromServices] ICommandHandler<CancelAppointmentCommand> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(command, cancellationToken);
@@ -77,7 +82,7 @@ public class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> Complete(
         [AsParameters] CompleteAppointmentCommand command,
-        [FromServices] ICompleteAppointmentCommandHandler handler,
+        [FromServices] ICommandHandler<CompleteAppointmentCommand> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(command, cancellationToken);
@@ -90,7 +95,7 @@ public class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> Confirm(
         [AsParameters] ConfirmAppointmentCommand command,
-        [FromServices] IConfirmAppointmentCommandHandler handler,
+        [FromServices] ICommandHandler<ConfirmAppointmentCommand> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(command, cancellationToken);
@@ -103,7 +108,7 @@ public class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> MarkAsNoShow(
         [AsParameters] MarkAppointmentAsNoShowCommand command,
-        [FromServices] IMarkAppointmentAsNoShowCommandHandler handler,
+        [FromServices] ICommandHandler<MarkAppointmentAsNoShowCommand> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(command, cancellationToken);
@@ -116,7 +121,7 @@ public class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> Reschedule(
         [FromBody] RescheduleAppointmentCommand command,
-        [FromServices] IRescheduleAppointmentCommandHandler handler,
+        [FromServices] ICommandHandler<RescheduleAppointmentCommand> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(command, cancellationToken);

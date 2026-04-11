@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Clients.Commands.DeleteClient;
 public sealed class DeleteClientCommandHandler(
     IClientRepository clientRepository,
     IUnitOfWork unitOfWork
-) : IDeleteClientCommandHandler
+) : ICommandHandler<DeleteClientCommand>
 {
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

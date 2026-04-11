@@ -1,9 +1,11 @@
+using Appointments.Application.Common.Interfaces;
 using Appointments.Domain.Services;
 using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Services.Queries.GetServiceById;
 
-public sealed class GetServiceByIdQueryHandler(IServiceRepository serviceRepository) : IGetServiceByIdQueryHandler
+public sealed class GetServiceByIdQueryHandler(IServiceRepository serviceRepository)
+    : IQueryHandler<GetServiceByIdQuery, ServiceResponse>
 {
     private readonly IServiceRepository _serviceRepository = serviceRepository;
 

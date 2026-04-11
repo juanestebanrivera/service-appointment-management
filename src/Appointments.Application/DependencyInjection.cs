@@ -1,3 +1,5 @@
+using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Appointments.Commands.BookAppointment;
 using Appointments.Application.Features.Appointments.Commands.CancelAppointment;
 using Appointments.Application.Features.Appointments.Commands.CompleteAppointment;
@@ -6,11 +8,13 @@ using Appointments.Application.Features.Appointments.Commands.MarkAppointmentAsN
 using Appointments.Application.Features.Appointments.Commands.RescheduleAppointment;
 using Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
 using Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
+using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.CreateClient;
 using Appointments.Application.Features.Clients.Commands.DeleteClient;
 using Appointments.Application.Features.Clients.Commands.UpdateClient;
 using Appointments.Application.Features.Clients.Queries.GetAllClients;
 using Appointments.Application.Features.Clients.Queries.GetClientById;
+using Appointments.Application.Features.Services;
 using Appointments.Application.Features.Services.Commands.CreateService;
 using Appointments.Application.Features.Services.Commands.DeleteService;
 using Appointments.Application.Features.Services.Commands.UpdateService;
@@ -27,28 +31,28 @@ public static class DependencyInjection
         services.AddSingleton(TimeProvider.System);
 
         // Clients
-        services.AddScoped<ICreateClientCommandHandler, CreateClientCommandHandler>();
-        services.AddScoped<IUpdateClientCommandHandler, UpdateClientCommandHandler>();
-        services.AddScoped<IDeleteClientCommandHandler, DeleteClientCommandHandler>();
-        services.AddScoped<IGetAllClientsQueryHandler, GetAllClientsQueryHandler>();
-        services.AddScoped<IGetClientByIdQueryHandler, GetClientByIdQueryHandler>();
-
+        services.AddScoped<ICommandHandler<CreateClientCommand, Guid>, CreateClientCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateClientCommand>, UpdateClientCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteClientCommand>, DeleteClientCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResponse>>, GetAllClientsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetClientByIdQuery, ClientResponse>, GetClientByIdQueryHandler>();
+        
         // Services
-        services.AddScoped<ICreateServiceCommandHandler, CreateServiceCommandHandler>();
-        services.AddScoped<IUpdateServiceCommandHandler, UpdateServiceCommandHandler>();
-        services.AddScoped<IDeleteServiceCommandHandler, DeleteServiceCommandHandler>();
-        services.AddScoped<IGetAllServicesQueryHandler, GetAllServicesQueryHandler>();
-        services.AddScoped<IGetServiceByIdQueryHandler, GetServiceByIdQueryHandler>();
+        services.AddScoped<ICommandHandler<CreateServiceCommand, Guid>, CreateServiceCommandHandler>();
+        services.AddScoped<ICommandHandler<UpdateServiceCommand>, UpdateServiceCommandHandler>();
+        services.AddScoped<ICommandHandler<DeleteServiceCommand>, DeleteServiceCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllServicesQuery, IEnumerable<ServiceResponse>>, GetAllServicesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetServiceByIdQuery, ServiceResponse>, GetServiceByIdQueryHandler>();
 
         // Appointments
-        services.AddScoped<IBookAppointmentCommandHandler, BookAppointmentCommandHandler>();
-        services.AddScoped<IRescheduleAppointmentCommandHandler, RescheduleAppointmentCommandHandler>();
-        services.AddScoped<IConfirmAppointmentCommandHandler, ConfirmAppointmentCommandHandler>();
-        services.AddScoped<ICancelAppointmentCommandHandler, CancelAppointmentCommandHandler>();
-        services.AddScoped<ICompleteAppointmentCommandHandler, CompleteAppointmentCommandHandler>();
-        services.AddScoped<IMarkAppointmentAsNoShowCommandHandler, MarkAppointmentAsNoShowCommandHandler>();
-        services.AddScoped<IGetAllAppointmentsQueryHandler, GetAllAppointmentsQueryHandler>();
-        services.AddScoped<IGetAppointmentByIdQueryHandler, GetAppointmentByIdQueryHandler>();
+        services.AddScoped<ICommandHandler<BookAppointmentCommand, Guid>, BookAppointmentCommandHandler>();
+        services.AddScoped<ICommandHandler<RescheduleAppointmentCommand>, RescheduleAppointmentCommandHandler>();
+        services.AddScoped<ICommandHandler<ConfirmAppointmentCommand>, ConfirmAppointmentCommandHandler>();
+        services.AddScoped<ICommandHandler<CancelAppointmentCommand>, CancelAppointmentCommandHandler>();
+        services.AddScoped<ICommandHandler<CompleteAppointmentCommand>, CompleteAppointmentCommandHandler>();
+        services.AddScoped<ICommandHandler<MarkAppointmentAsNoShowCommand>, MarkAppointmentAsNoShowCommandHandler>();
+        services.AddScoped<IQueryHandler<GetAllAppointmentsQuery, IEnumerable<AppointmentResponse>>, GetAllAppointmentsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAppointmentByIdQuery, AppointmentResponse>, GetAppointmentByIdQueryHandler>();
 
         return services;
     }

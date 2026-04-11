@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Clients.Commands.CreateClient;
 public sealed class CreateClientCommandHandler(
     IClientRepository clientRepository,
     IUnitOfWork unitOfWork
-) : ICreateClientCommandHandler
+) : ICommandHandler<CreateClientCommand, Guid>
 {
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

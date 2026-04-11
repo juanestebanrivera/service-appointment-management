@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Appointments.Commands.ConfirmAppoint
 public sealed class ConfirmAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
-) : IConfirmAppointmentCommandHandler
+) : ICommandHandler<ConfirmAppointmentCommand>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

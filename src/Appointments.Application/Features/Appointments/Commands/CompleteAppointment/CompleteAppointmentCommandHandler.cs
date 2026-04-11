@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Appointments.Commands.CompleteAppoin
 public sealed class CompleteAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
-) : ICompleteAppointmentCommandHandler
+) : ICommandHandler<CompleteAppointmentCommand>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

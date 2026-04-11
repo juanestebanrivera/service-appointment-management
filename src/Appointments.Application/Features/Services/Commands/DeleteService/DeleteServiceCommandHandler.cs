@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Services.Commands.DeleteService;
 public sealed class DeleteServiceCommandHandler(
     IServiceRepository serviceRepository,
     IUnitOfWork unitOfWork
-) : IDeleteServiceCommandHandler
+) : ICommandHandler<DeleteServiceCommand>
 {
     private readonly IServiceRepository _serviceRepository = serviceRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

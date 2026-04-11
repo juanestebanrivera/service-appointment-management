@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Services.Commands.UpdateService;
 public sealed class UpdateServiceCommandHandler(
     IServiceRepository serviceRepository,
     IUnitOfWork unitOfWork
-) : IUpdateServiceCommandHandler
+) : ICommandHandler<UpdateServiceCommand>
 {
     private readonly IServiceRepository _serviceRepository = serviceRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

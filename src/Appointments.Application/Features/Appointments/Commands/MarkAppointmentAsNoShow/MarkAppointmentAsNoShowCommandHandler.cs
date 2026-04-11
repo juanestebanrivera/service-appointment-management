@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Appointments.Commands.MarkAppointmen
 public sealed class MarkAppointmentAsNoShowCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
-) : IMarkAppointmentAsNoShowCommandHandler
+) : ICommandHandler<MarkAppointmentAsNoShowCommand>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

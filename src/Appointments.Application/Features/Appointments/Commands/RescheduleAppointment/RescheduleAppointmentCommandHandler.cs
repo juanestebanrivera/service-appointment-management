@@ -8,7 +8,7 @@ public sealed class RescheduleAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork,
     TimeProvider timeProvider
-) : IRescheduleAppointmentCommandHandler
+) : ICommandHandler<RescheduleAppointmentCommand>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -21,7 +21,7 @@ public sealed class RescheduleAppointmentCommandHandler(
         if (appointment is null)
             return Result.Failure(AppointmentApplicationErrors.NotFound);
 
-        var currentTime = _timeProvider.GetUtcNow().UtcDateTime;
+        var currentTime = _timeProvider.GetUtcNow();
         var result = appointment.Reschedule(command.NewStartTime, currentTime);
 
         if (result.IsFailure)

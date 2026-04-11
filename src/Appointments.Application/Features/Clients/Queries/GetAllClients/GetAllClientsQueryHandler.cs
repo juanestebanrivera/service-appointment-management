@@ -1,15 +1,18 @@
+using Appointments.Application.Common.Interfaces;
 using Appointments.Domain.Clients;
+using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Clients.Queries.GetAllClients;
 
-public sealed class GetAllClientsQueryHandler(IClientRepository clientRepository) : IGetAllClientsQueryHandler
+public sealed class GetAllClientsQueryHandler(IClientRepository clientRepository)
+    : IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResponse>>
 {
     private readonly IClientRepository _clientRepository = clientRepository;
 
-    public async Task<IEnumerable<ClientResponse>> HandleAsync(GetAllClientsQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<IEnumerable<ClientResponse>>> HandleAsync(GetAllClientsQuery query, CancellationToken cancellationToken = default)
     {
         var clients = await _clientRepository.GetAllAsync(cancellationToken);
 
-        return clients.Select(client => client.ToClientResponse());
+        return Result<IEnumerable<ClientResponse>>.Success(clients.Select(client => client.ToClientResponse()));
     }
 }

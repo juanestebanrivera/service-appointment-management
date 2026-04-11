@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Appointments.Commands.CancelAppointm
 public sealed class CancelAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
     IUnitOfWork unitOfWork
-) : ICancelAppointmentCommandHandler
+) : ICommandHandler<CancelAppointmentCommand>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;

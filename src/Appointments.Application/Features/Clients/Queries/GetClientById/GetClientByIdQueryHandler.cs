@@ -1,9 +1,11 @@
+using Appointments.Application.Common.Interfaces;
 using Appointments.Domain.Clients;
 using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Clients.Queries.GetClientById;
 
-public sealed class GetClientByIdQueryHandler(IClientRepository clientRepository) : IGetClientByIdQueryHandler
+public sealed class GetClientByIdQueryHandler(IClientRepository clientRepository) 
+    : IQueryHandler<GetClientByIdQuery, ClientResponse>
 {
     private readonly IClientRepository _clientRepository = clientRepository;
 

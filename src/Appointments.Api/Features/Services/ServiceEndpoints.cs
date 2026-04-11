@@ -1,4 +1,6 @@
 using Appointments.Api.Abstractions;
+using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Services;
 using Appointments.Application.Features.Services.Commands.CreateService;
 using Appointments.Application.Features.Services.Commands.DeleteService;
 using Appointments.Application.Features.Services.Commands.UpdateService;
@@ -6,7 +8,7 @@ using Appointments.Application.Features.Services.Queries.GetAllServices;
 using Appointments.Application.Features.Services.Queries.GetServiceById;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Appointments.Api.Endpoints;
+namespace Appointments.Api.Features.Services;
 
 public class ServiceEndpoints : IEndpoint
 {
@@ -22,17 +24,20 @@ public class ServiceEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        IGetAllServicesQueryHandler handler,
+        [FromServices] IQueryHandler<GetAllServicesQuery, IEnumerable<ServiceResponse>> handler,
         CancellationToken cancellationToken)
     {
-        var services = await handler.HandleAsync(new GetAllServicesQuery(), cancellationToken);
+        var result = await handler.HandleAsync(new GetAllServicesQuery(), cancellationToken);
         
-        return Results.Ok(services);
+        if (result.IsFailure)
+            return Results.BadRequest(result.Error);
+
+        return Results.Ok(result.Value);
     }
 
     private static async Task<IResult> GetById(
         Guid id,
-        IGetServiceByIdQueryHandler handler,
+        [FromServices] IQueryHandler<GetServiceByIdQuery, ServiceResponse> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetServiceByIdQuery(id), cancellationToken);
@@ -45,7 +50,7 @@ public class ServiceEndpoints : IEndpoint
 
     private static async Task<IResult> Create(
         CreateServiceCommand command,
-        [FromServices] ICreateServiceCommandHandler handler, 
+        [FromServices] ICommandHandler<CreateServiceCommand, Guid> handler, 
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(command, cancellationToken);
@@ -58,11 +63,11 @@ public class ServiceEndpoints : IEndpoint
 
     private static async Task<IResult> Update(
         Guid id,
-        [FromBody] UpdateServiceCommand command,
-        [FromServices] IUpdateServiceCommandHandler handler,
+        [FromBody] UpdateServiceRequest request,
+        [FromServices] ICommandHandler<UpdateServiceCommand> handler,
         CancellationToken cancellationToken)
     {
-        command.ServiceId = id;
+        var command = new UpdateServiceCommand(id, request.Name, request.Description, request.Price, request.Duration, request.IsActive);
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (result.IsFailure)
@@ -73,7 +78,7 @@ public class ServiceEndpoints : IEndpoint
 
     private static async Task<IResult> Delete(
         Guid id,
-        [FromServices] IDeleteServiceCommandHandler handler,
+        [FromServices] ICommandHandler<DeleteServiceCommand> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new DeleteServiceCommand(id), cancellationToken);

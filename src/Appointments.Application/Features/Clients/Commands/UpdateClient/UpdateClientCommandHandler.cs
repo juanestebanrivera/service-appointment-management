@@ -7,7 +7,7 @@ namespace Appointments.Application.Features.Clients.Commands.UpdateClient;
 public sealed class UpdateClientCommandHandler(
     IClientRepository clientRepository,
     IUnitOfWork unitOfWork
-) : IUpdateClientCommandHandler
+) : ICommandHandler<UpdateClientCommand>
 {
     private readonly IClientRepository _clientRepository = clientRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
@@ -19,13 +19,10 @@ public sealed class UpdateClientCommandHandler(
         if (client is null)
             return Result.Failure(ClientApplicationErrors.NotFound);
 
-        if (!string.IsNullOrWhiteSpace(command.FirstName) && !string.IsNullOrWhiteSpace(command.LastName))
-        {
-            var changeResult = client.ChangeName(command.FirstName, command.LastName);
-            
-            if (changeResult.IsFailure)
-                return Result.Failure(changeResult.Error);
-        }
+        var changeResult = client.ChangeName(command.FirstName, command.LastName);
+        
+        if (changeResult.IsFailure)
+            return Result.Failure(changeResult.Error);        
 
         if (!string.IsNullOrWhiteSpace(command.Email))
         {
@@ -35,25 +32,23 @@ public sealed class UpdateClientCommandHandler(
                 return Result.Failure(emailResult.Error);
 
             client.ChangeEmail(emailResult.Value);
-        }
-
-        if (!string.IsNullOrWhiteSpace(command.PhonePrefix) && !string.IsNullOrWhiteSpace(command.PhoneNumber))
+        } 
+        else
         {
-            var phoneResult = PhoneNumber.Create(command.PhonePrefix, command.PhoneNumber);
-
-            if (phoneResult.IsFailure)
-                return Result.Failure(phoneResult.Error);
-
-            client.ChangePhoneNumber(phoneResult.Value);
+            client.ChangeEmail(null);
         }
 
-        if (command.IsActive.HasValue)
-        {
-            if (command.IsActive.Value)
-                client.Activate();
-            else
-                client.Deactivate();   
-        }
+        var phoneResult = PhoneNumber.Create(command.PhonePrefix, command.PhoneNumber);
+
+        if (phoneResult.IsFailure)
+            return Result.Failure(phoneResult.Error);
+
+        client.ChangePhoneNumber(phoneResult.Value);
+
+        if (command.IsActive)
+            client.Activate();
+        else
+            client.Deactivate();   
 
         _clientRepository.Update(client);
         await _unitOfWork.SaveChangesAsync(cancellationToken);

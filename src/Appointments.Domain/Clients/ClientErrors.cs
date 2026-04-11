@@ -11,4 +11,6 @@ public static class ClientErrors
     public static readonly Error LastNameIsRequired = new("Client.LastNameRequired", "Last name is required.");
     public static readonly Error LastNameCannotContainNumbers = new("Client.LastNameCannotContainNumbers", "Last name cannot contain numbers.");
     public static readonly Error LastNameMustBeAtLeastTwoCharacters = new("Client.LastNameMustBeAtLeastTwoCharacters", "Last name must be at least two characters long.");
+
+    public static readonly Error ClientIsInactive = new("Client.ClientIsInactive", "The client is inactive.");
 }
