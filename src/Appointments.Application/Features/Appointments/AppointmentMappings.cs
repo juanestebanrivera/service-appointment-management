@@ -13,8 +13,8 @@ public static class AppointmentMappings
                 appointment.ClientId,
                 appointment.ServiceId,
                 appointment.PriceAtBooking,
-                appointment.StartTime,
-                appointment.EndTime,
+                appointment.TimeRange.StartTime,
+                appointment.TimeRange.EndTime,
                 appointment.Status
             );
         }

@@ -22,7 +22,14 @@ public sealed class RescheduleAppointmentCommandHandler(
             return Result.Failure(AppointmentApplicationErrors.NotFound);
 
         var currentTime = _timeProvider.GetUtcNow();
-        var result = appointment.Reschedule(command.NewStartTime, currentTime);
+        var newEndTime = command.NewStartTime.Add(appointment.TimeRange.Duration);
+
+        var timeRangeResult = TimeRange.Create(command.NewStartTime, newEndTime, currentTime);
+
+        if (timeRangeResult.IsFailure)
+            return Result.Failure(timeRangeResult.Error);
+
+        var result = appointment.Reschedule(timeRangeResult.Value);
 
         if (result.IsFailure)
             return Result.Failure(result.Error);

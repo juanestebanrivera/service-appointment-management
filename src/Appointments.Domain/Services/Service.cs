@@ -10,7 +10,7 @@ public sealed class Service : Entity, IAggregateRoot
     public string? Description { get; private set; }
     public bool IsActive { get; private set; }
 
-    private Service() {}
+    private Service() { }
 
     private Service(Guid id, string name, decimal price, TimeSpan duration, string? description, bool isActive) : base(id)
     {
@@ -35,7 +35,7 @@ public sealed class Service : Entity, IAggregateRoot
         if (duration > TimeSpan.FromDays(1))
             return Result<Service>.Failure(ServiceErrors.DurationMustBeLessThanOneDay);
 
-        return Result<Service>.Success(new (Guid.NewGuid(), name, price, duration, description, isActive));
+        return Result<Service>.Success(new(Guid.NewGuid(), name, price, duration, description, isActive));
     }
 
     public Result UpdateInformation(string newName, string? newDescription)
@@ -73,6 +73,6 @@ public sealed class Service : Entity, IAggregateRoot
     }
 
     public void Activate() => IsActive = true;
-    
+
     public void Deactivate() => IsActive = false;
 }

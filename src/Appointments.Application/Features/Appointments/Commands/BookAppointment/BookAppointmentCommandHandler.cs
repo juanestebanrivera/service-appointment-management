@@ -38,16 +38,18 @@ public sealed class BookAppointmentCommandHandler(
         if (!service.IsActive)
             return Result<Guid>.Failure(ServiceErrors.ServiceIsInactive);
 
-        var endTime = command.StartTime.Add(service.Duration);
         var currentTime = _timeProvider.GetUtcNow();
+        var endTime = command.StartTime.Add(service.Duration);
+        var timeRangeResult = TimeRange.Create(command.StartTime, endTime, currentTime);
+
+        if (timeRangeResult.IsFailure)
+            return Result<Guid>.Failure(timeRangeResult.Error);
 
         var appointmentResult = Appointment.Book(
             command.ClientId,
             command.ServiceId,
-            command.StartTime,
-            endTime,
-            service.Price,
-            currentTime
+            timeRangeResult.Value,
+            service.Price
         );
 
         if (appointmentResult.IsFailure)

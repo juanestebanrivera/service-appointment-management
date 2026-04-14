@@ -30,11 +30,16 @@ internal sealed class AppointmentsConfiguration : IEntityTypeConfiguration<Appoi
             .HasPrecision(18, 2)
             .IsRequired();
 
-        builder.Property(c => c.StartTime)
-            .IsRequired();
+        builder.OwnsOne(c => c.TimeRange, timeRangeBuilder =>
+        {
+            timeRangeBuilder.Property(t => t.StartTime)
+                .HasColumnName("StartTime")
+                .IsRequired();
 
-        builder.Property(c => c.EndTime)
-            .IsRequired();
+            timeRangeBuilder.Property(t => t.EndTime)
+                .HasColumnName("EndTime")
+                .IsRequired();
+        });
 
         builder.Property(c => c.Status)
             .HasDefaultValue(AppointmentStatus.Pending)
