@@ -16,7 +16,7 @@ public class GetAllClientsQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_ReturnsAllClients()
+    public async Task HandleAsync_WhenClientsExist_ReturnsSuccessWithClientData()
     {
         // Arrange
         var query = new GetAllClientsQuery();
@@ -57,7 +57,7 @@ public class GetAllClientsQueryHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WhenNoClientsExist_ReturnsEmptyList()
+    public async Task HandleAsync_WhenNoClientsExist_ReturnsSuccessWithEmptyList()
     {
         // Arrange
         var query = new GetAllClientsQuery();

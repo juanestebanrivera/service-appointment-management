@@ -167,7 +167,7 @@ public class UpdateClientCommandHandlerTests
     public async Task HandleAsync_WhenClientExistsAndDataIsValid_ReturnsSuccessAndUpdatesClient(string? email, bool isActive = true)
     {
         // Arrange
-        Client? capturedClient = null;
+        Client? updatedClient = null;
         var client = CreateValidClient();
 
         var command = new UpdateClientCommand(
@@ -181,21 +181,21 @@ public class UpdateClientCommandHandlerTests
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
-        _clientRepository.Update(Arg.Do<Client>(c => capturedClient = c));
+        _clientRepository.Update(Arg.Do<Client>(c => updatedClient = c));
 
         // Act
         var result = await _handler.HandleAsync(command, default);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.NotNull(capturedClient);
-        Assert.Equal(command.ClientId, capturedClient.Id);
-        Assert.Equal(command.FirstName, capturedClient.FirstName.Value);
-        Assert.Equal(command.LastName, capturedClient.LastName.Value);
-        Assert.Equal(command.Email, capturedClient.Email?.Value);
-        Assert.Equal(command.PhonePrefix, capturedClient.Phone.Prefix);
-        Assert.Equal(command.PhoneNumber, capturedClient.Phone.Number);
-        Assert.Equal(command.IsActive, capturedClient.IsActive);
+        Assert.NotNull(updatedClient);
+        Assert.Equal(command.ClientId, updatedClient.Id);
+        Assert.Equal(command.FirstName, updatedClient.FirstName.Value);
+        Assert.Equal(command.LastName, updatedClient.LastName.Value);
+        Assert.Equal(command.Email, updatedClient.Email?.Value);
+        Assert.Equal(command.PhonePrefix, updatedClient.Phone.Prefix);
+        Assert.Equal(command.PhoneNumber, updatedClient.Phone.Number);
+        Assert.Equal(command.IsActive, updatedClient.IsActive);
 
         _clientRepository.Received(1).Update(Arg.Any<Client>());
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());

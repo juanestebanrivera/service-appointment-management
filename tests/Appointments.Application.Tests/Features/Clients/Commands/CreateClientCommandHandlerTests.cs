@@ -116,7 +116,7 @@ public class CreateClientCommandHandlerTests
     public async Task HandleAsync_WhenCommandIsValid_ReturnsSuccessAndCreatesClient(string? email)
     {
         // Arrange
-        Client? capturedClient = null;
+        Client? createdClient = null;
         var command = new CreateClientCommand(
             FirstName: "FirstName",
             LastName: "LastName",
@@ -125,21 +125,22 @@ public class CreateClientCommandHandlerTests
             Email: email
         );
 
-        _clientRepository.Add(Arg.Do<Client>(c => capturedClient = c));
+        _clientRepository.Add(Arg.Do<Client>(c => createdClient = c));
 
         // Act
         var result = await _handler.HandleAsync(command, default);
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.NotNull(capturedClient);
-        Assert.NotEqual(Guid.Empty, capturedClient.Id);
-        Assert.Equal(command.FirstName, capturedClient.FirstName.Value);
-        Assert.Equal(command.LastName, capturedClient.LastName.Value);
-        Assert.Equal(command.PhonePrefix, capturedClient.Phone.Prefix);
-        Assert.Equal(command.PhoneNumber, capturedClient.Phone.Number);
-        Assert.Equal(email, capturedClient.Email?.Value);
-        Assert.True(capturedClient.IsActive);
+        Assert.NotNull(createdClient);
+        Assert.NotEqual(Guid.Empty, createdClient.Id);
+        Assert.Equal(createdClient.Id, result.Value);
+        Assert.Equal(command.FirstName, createdClient.FirstName.Value);
+        Assert.Equal(command.LastName, createdClient.LastName.Value);
+        Assert.Equal(command.PhonePrefix, createdClient.Phone.Prefix);
+        Assert.Equal(command.PhoneNumber, createdClient.Phone.Number);
+        Assert.Equal(command.Email, createdClient.Email?.Value);
+        Assert.True(createdClient.IsActive);
 
         _clientRepository.Received(1).Add(Arg.Any<Client>());
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
