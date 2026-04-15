@@ -13,6 +13,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Appointments.Infrastructure
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Appointments.Api", "src\Appointments.Api\Appointments.Api.csproj", "{F4A5F200-70F6-4462-AFE4-50FF7BBC0533}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Appointments.Domain.Tests", "tests\Appointments.Domain.Tests\Appointments.Domain.Tests.csproj", "{14AC6A1F-2350-4B3B-8459-DC79DAAA89EA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
