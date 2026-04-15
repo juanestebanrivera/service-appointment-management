@@ -26,12 +26,10 @@ public sealed class Client : Entity, IAggregateRoot
         return Result<Client>.Success(new(Guid.NewGuid(), firstName, lastName, phone, email, true));
     }
 
-    public Result ChangeName(PersonName newFirstName, PersonName newLastName)
+    public void ChangeName(PersonName newFirstName, PersonName newLastName)
     {
         FirstName = newFirstName;
         LastName = newLastName;
-
-        return Result.Success();
     }
 
     public void ChangeEmail(Email? newEmail) => Email = newEmail;

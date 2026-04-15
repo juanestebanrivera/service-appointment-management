@@ -50,7 +50,7 @@ public class ClientTests
     }
 
     [Fact]
-    public void ChangeName_WhenDataIsValid_ReturnsSuccessAndUpdatesName()
+    public void ChangeName_WhenDataIsValid_UpdatesName()
     {
         // Arrange
         var client = CreateValidClient();
@@ -58,10 +58,9 @@ public class ClientTests
         var newLastName = PersonName.Create("New Last Name", "LastName").Value;
 
         // Act
-        var result = client.ChangeName(newFirstName, newLastName);
+        client.ChangeName(newFirstName, newLastName);
 
         // Assert
-        Assert.True(result.IsSuccess);
         Assert.Equal(newFirstName, client.FirstName);
         Assert.Equal(newLastName, client.LastName);
     }

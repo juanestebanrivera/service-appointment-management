@@ -29,10 +29,7 @@ public sealed class UpdateClientCommandHandler(
         if (resultLastName.IsFailure)
             return Result.Failure(resultLastName.Error);
 
-        var changeResult = client.ChangeName(resultFirstName.Value, resultLastName.Value);
-
-        if (changeResult.IsFailure)
-            return Result.Failure(changeResult.Error);
+        client.ChangeName(resultFirstName.Value, resultLastName.Value);
 
         if (!string.IsNullOrWhiteSpace(command.Email))
         {
