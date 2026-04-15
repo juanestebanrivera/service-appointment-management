@@ -1,3 +1,3 @@
 namespace Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
 
-public record GetAllAppointmentsQuery;
+public record GetAllAppointmentsQuery();

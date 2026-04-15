@@ -2,7 +2,7 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Domain.Appointments;
 
-public record class TimeRangeErrors
+public static class TimeRangeErrors
 {
     public static readonly Error CannotBeInThePast = new("TimeRange.CannotBeInThePast", "Time cannot be in the past.");
     public static readonly Error MustBeMoreThanFiveMinutes = new("TimeRange.MustBeMoreThanFiveMinutes", "Time must be more than five minutes.");
