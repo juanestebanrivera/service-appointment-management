@@ -1,6 +1,6 @@
-namespace Appointments.Api.Features.Services.V1;
+namespace Appointments.Api.Features.Services.V1.Contracts;
 
-public record UpdateServiceRequest(
+public record UpdateServiceApiRequest(
     string Name,
     string? Description,
     decimal Price,

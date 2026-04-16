@@ -1,4 +1,5 @@
 using Appointments.Api.Abstractions;
+using Appointments.Api.Features.Appointments.V1.Contracts;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Appointments.Commands.BookAppointment;
@@ -20,14 +21,29 @@ internal class AppointmentEndpoints : IEndpoint
         var group = app.MapGroup("appointments")
                        .WithTags("Appointments");
 
-        group.MapGet("/", GetAll);
-        group.MapGet("/{id:guid}", GetById).WithName("GetAppointment");
-        group.MapPost("/", Book);
-        group.MapPatch("/{id:guid}/cancel", Cancel);
-        group.MapPatch("/{id:guid}/complete", Complete);
-        group.MapPatch("/{id:guid}/confirm", Confirm);
-        group.MapPatch("/{id:guid}/mark-as-no-show", MarkAsNoShow);
-        group.MapPatch("/{id:guid}/reschedule", Reschedule);
+        group.MapGet("/", GetAll)
+             .Produces<IEnumerable<AppointmentApiResponse>>();
+
+        group.MapGet("/{id:guid}", GetById).WithName("GetAppointment")
+             .Produces<AppointmentApiResponse>();
+
+        group.MapPost("/", Book)
+             .Produces<Guid>(StatusCodes.Status201Created);
+
+        group.MapPatch("/{id:guid}/cancel", Cancel)
+             .Produces(StatusCodes.Status204NoContent);
+
+        group.MapPatch("/{id:guid}/complete", Complete)
+             .Produces(StatusCodes.Status204NoContent);
+
+        group.MapPatch("/{id:guid}/confirm", Confirm)
+             .Produces(StatusCodes.Status204NoContent);
+
+        group.MapPatch("/{id:guid}/mark-as-no-show", MarkAsNoShow)
+             .Produces(StatusCodes.Status204NoContent);
+
+        group.MapPatch("/{id:guid}/reschedule", Reschedule)
+             .Produces(StatusCodes.Status204NoContent);
     }
 
     private static async Task<IResult> GetAll(
@@ -39,7 +55,10 @@ internal class AppointmentEndpoints : IEndpoint
         if (result.IsFailure)
             return Results.BadRequest(result.Error);
 
-        return Results.Ok(result.Value);
+        var response = result.Value.Select(a =>
+            new AppointmentApiResponse(a.Id, a.ClientId, a.ServiceId, a.PriceAtBooking, a.StartTime, a.EndTime, a.Status));
+
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetById(
@@ -52,14 +71,24 @@ internal class AppointmentEndpoints : IEndpoint
         if (result.IsFailure)
             return Results.BadRequest(result.Error);
 
-        return Results.Ok(result.Value);
+        var response = new AppointmentApiResponse(
+            result.Value.Id,
+            result.Value.ClientId,
+            result.Value.ServiceId,
+            result.Value.PriceAtBooking,
+            result.Value.StartTime,
+            result.Value.EndTime,
+            result.Value.Status);
+
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> Book(
-        [FromBody] BookAppointmentCommand command,
+        [FromBody] BookAppointmentApiRequest request,
         [FromServices] ICommandHandler<BookAppointmentCommand, Guid> handler,
         CancellationToken cancellationToken)
     {
+        var command = new BookAppointmentCommand(request.ClientId, request.ServiceId, request.StartTime);
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (result.IsFailure)
@@ -122,7 +151,7 @@ internal class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> Reschedule(
         Guid id,
-        [FromBody] RescheduleAppointmentRequest request,
+        [FromBody] RescheduleAppointmentApiRequest request,
         [FromServices] ICommandHandler<RescheduleAppointmentCommand> handler,
         CancellationToken cancellationToken)
     {

@@ -1,6 +1,6 @@
-namespace Appointments.Api.Features.Clients.V1;
+namespace Appointments.Api.Features.Clients.V1.Contracts;
 
-public record UpdateClientRequest(
+public record UpdateClientApiRequest(
     string FirstName,
     string LastName,
     string? Email,

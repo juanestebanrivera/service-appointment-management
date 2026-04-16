@@ -1,4 +1,5 @@
 using Appointments.Api.Abstractions;
+using Appointments.Api.Features.Clients.V1.Contracts;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.CreateClient;
@@ -17,11 +18,20 @@ internal class ClientEndpoints : IEndpoint
         var group = app.MapGroup("clients")
                        .WithTags("Clients");
 
-        group.MapGet("/", GetAll);
-        group.MapGet("/{id:guid}", GetById).WithName("GetClient");
-        group.MapPost("/", Create);
-        group.MapPut("/{id:guid}", Update);
-        group.MapDelete("/{id:guid}", Delete);
+        group.MapGet("/", GetAll)
+             .Produces<IEnumerable<ClientApiResponse>>();
+
+        group.MapGet("/{id:guid}", GetById).WithName("GetClient")
+             .Produces<ClientApiResponse>();
+
+        group.MapPost("/", Create)
+             .Produces<Guid>(StatusCodes.Status201Created);
+
+        group.MapPut("/{id:guid}", Update)
+             .Produces(StatusCodes.Status204NoContent);
+
+        group.MapDelete("/{id:guid}", Delete)
+             .Produces(StatusCodes.Status204NoContent);
     }
 
     private static async Task<IResult> GetAll(
@@ -33,7 +43,10 @@ internal class ClientEndpoints : IEndpoint
         if (result.IsFailure)
             return Results.BadRequest(result.Error);
 
-        return Results.Ok(result.Value);
+        var response = result.Value.Select(c =>
+            new ClientApiResponse(c.Id, c.FirstName, c.LastName, c.PhonePrefix, c.PhoneNumber, c.Email, c.IsActive));
+
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetById(
@@ -46,14 +59,24 @@ internal class ClientEndpoints : IEndpoint
         if (result.IsFailure)
             return Results.BadRequest(result.Error);
 
-        return Results.Ok(result.Value);
+        var response = new ClientApiResponse(
+            result.Value.Id,
+            result.Value.FirstName,
+            result.Value.LastName,
+            result.Value.PhonePrefix,
+            result.Value.PhoneNumber,
+            result.Value.Email,
+            result.Value.IsActive);
+
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> Create(
-        [FromBody] CreateClientCommand command,
+        [FromBody] CreateClientApiRequest request,
         [FromServices] ICommandHandler<CreateClientCommand, Guid> handler,
         CancellationToken cancellationToken)
     {
+        var command = new CreateClientCommand(request.FirstName, request.LastName, request.PhonePrefix, request.PhoneNumber, request.Email);
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (result.IsFailure)
@@ -64,7 +87,7 @@ internal class ClientEndpoints : IEndpoint
 
     private static async Task<IResult> Update(
         Guid id,
-        [FromBody] UpdateClientRequest request,
+        [FromBody] UpdateClientApiRequest request,
         [FromServices] ICommandHandler<UpdateClientCommand> handler,
         CancellationToken cancellationToken)
     {

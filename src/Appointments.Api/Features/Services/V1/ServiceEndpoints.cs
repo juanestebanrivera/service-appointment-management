@@ -1,4 +1,5 @@
 using Appointments.Api.Abstractions;
+using Appointments.Api.Features.Services.V1.Contracts;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Services;
 using Appointments.Application.Features.Services.Commands.CreateService;
@@ -17,11 +18,21 @@ internal class ServiceEndpoints : IEndpoint
         var group = app.MapGroup("services")
                        .WithTags("Services");
 
-        group.MapGet("/", GetAll);
-        group.MapGet("/{id:guid}", GetById).WithName("GetService");
-        group.MapPost("/", Create);
-        group.MapPut("/{id:guid}", Update);
-        group.MapDelete("/{id:guid}", Delete);
+        group.MapGet("/", GetAll)
+             .Produces<IEnumerable<ServiceApiResponse>>();
+
+        group.MapGet("/{id:guid}", GetById)
+             .WithName("GetServiceById")
+             .Produces<ServiceApiResponse>();
+
+        group.MapPost("/", Create)
+             .Produces<Guid>(StatusCodes.Status201Created);
+
+        group.MapPut("/{id:guid}", Update)
+             .Produces(StatusCodes.Status204NoContent);
+
+        group.MapDelete("/{id:guid}", Delete)
+             .Produces(StatusCodes.Status204NoContent);
     }
 
     private static async Task<IResult> GetAll(
@@ -33,7 +44,18 @@ internal class ServiceEndpoints : IEndpoint
         if (result.IsFailure)
             return Results.BadRequest(result.Error);
 
-        return Results.Ok(result.Value);
+        var response = result.Value.Select(s =>
+            new ServiceApiResponse(
+                s.Id,
+                s.Name,
+                s.Description,
+                s.Price,
+                s.Duration,
+                s.IsActive
+            )
+        );
+
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> GetById(
@@ -46,25 +68,35 @@ internal class ServiceEndpoints : IEndpoint
         if (result.IsFailure)
             return Results.BadRequest(result.Error);
 
-        return Results.Ok(result.Value);
+        var response = new ServiceApiResponse(
+            result.Value.Id,
+            result.Value.Name,
+            result.Value.Description,
+            result.Value.Price,
+            result.Value.Duration,
+            result.Value.IsActive
+        );
+
+        return Results.Ok(response);
     }
 
     private static async Task<IResult> Create(
-        CreateServiceCommand command,
+        [FromBody] CreateServiceApiRequest request,
         [FromServices] ICommandHandler<CreateServiceCommand, Guid> handler,
         CancellationToken cancellationToken)
     {
+        var command = new CreateServiceCommand(request.Name, request.Price, request.Duration, request.Description);
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (result.IsFailure)
             return Results.BadRequest(result.Error);
 
-        return Results.CreatedAtRoute("GetService", new { id = result.Value });
+        return Results.CreatedAtRoute("GetServiceById", new { id = result.Value });
     }
 
     private static async Task<IResult> Update(
         Guid id,
-        [FromBody] UpdateServiceRequest request,
+        [FromBody] UpdateServiceApiRequest request,
         [FromServices] ICommandHandler<UpdateServiceCommand> handler,
         CancellationToken cancellationToken)
     {
