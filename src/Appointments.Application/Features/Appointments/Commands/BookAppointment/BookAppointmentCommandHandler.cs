@@ -1,4 +1,6 @@
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Clients;
+using Appointments.Application.Features.Services;
 using Appointments.Domain.Appointments;
 using Appointments.Domain.Clients;
 using Appointments.Domain.Services;
@@ -25,7 +27,7 @@ public sealed class BookAppointmentCommandHandler(
         var client = await _clientRepository.GetByIdAsync(command.ClientId, cancellationToken);
 
         if (client is null)
-            return Result<Guid>.Failure(AppointmentApplicationErrors.ClientNotFound);
+            return Result<Guid>.Failure(ClientApplicationErrors.NotFound);
 
         if (!client.IsActive)
             return Result<Guid>.Failure(ClientErrors.ClientIsInactive);
@@ -33,7 +35,7 @@ public sealed class BookAppointmentCommandHandler(
         var service = await _serviceRepository.GetByIdAsync(command.ServiceId, cancellationToken);
 
         if (service is null)
-            return Result<Guid>.Failure(AppointmentApplicationErrors.ServiceNotFound);
+            return Result<Guid>.Failure(ServiceApplicationErrors.NotFound);
 
         if (!service.IsActive)
             return Result<Guid>.Failure(ServiceErrors.ServiceIsInactive);

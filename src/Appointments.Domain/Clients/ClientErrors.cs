@@ -4,5 +4,5 @@ namespace Appointments.Domain.Clients;
 
 public static class ClientErrors
 {
-    public static readonly Error ClientIsInactive = new("Client.ClientIsInactive", "The client is inactive.");
+    public static readonly Error ClientIsInactive = new("Client.ClientIsInactive", "The client is inactive.", ErrorType.Conflict);
 }

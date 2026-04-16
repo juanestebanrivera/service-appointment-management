@@ -1,8 +1,8 @@
 namespace Appointments.Domain.SharedKernel;
 
-public sealed record Error (string Code, string Description)
+public sealed record Error(string Code, string Description, ErrorType Type)
 {
-    public static readonly Error None = new(string.Empty, string.Empty);
+    public static readonly Error None = new(string.Empty, string.Empty, ErrorType.Failure);
 }
 
 public class Result
@@ -32,9 +32,9 @@ public class Result<TValue> : Result
     private readonly TValue? _value;
     public TValue Value => IsSuccess ? _value! : throw new InvalidOperationException("The value of a failure result can't be accessed.");
 
-    private Result(TValue? value,bool isSuccess, Error error) : base(isSuccess, error)
+    private Result(TValue? value, bool isSuccess, Error error) : base(isSuccess, error)
     {
-        _value = value;    
+        _value = value;
     }
 
     public static Result<TValue> Success(TValue value) => new(value, true, Error.None);
