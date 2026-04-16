@@ -25,7 +25,7 @@ internal class ServiceEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [FromServices] IQueryHandler<GetAllServicesQuery, IEnumerable<ServiceResponse>> handler,
+        [FromServices] IQueryHandler<GetAllServicesQuery, IEnumerable<ServiceResult>> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetAllServicesQuery(), cancellationToken);
@@ -38,7 +38,7 @@ internal class ServiceEndpoints : IEndpoint
 
     private static async Task<IResult> GetById(
         Guid id,
-        [FromServices] IQueryHandler<GetServiceByIdQuery, ServiceResponse> handler,
+        [FromServices] IQueryHandler<GetServiceByIdQuery, ServiceResult> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetServiceByIdQuery(id), cancellationToken);

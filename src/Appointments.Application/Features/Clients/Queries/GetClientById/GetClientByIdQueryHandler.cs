@@ -4,18 +4,18 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Clients.Queries.GetClientById;
 
-public sealed class GetClientByIdQueryHandler(IClientRepository clientRepository) 
-    : IQueryHandler<GetClientByIdQuery, ClientResponse>
+public sealed class GetClientByIdQueryHandler(IClientRepository clientRepository)
+    : IQueryHandler<GetClientByIdQuery, ClientResult>
 {
     private readonly IClientRepository _clientRepository = clientRepository;
 
-    public async Task<Result<ClientResponse>> HandleAsync(GetClientByIdQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<ClientResult>> HandleAsync(GetClientByIdQuery query, CancellationToken cancellationToken = default)
     {
         var client = await _clientRepository.GetByIdAsync(query.ClientId, cancellationToken);
 
         if (client is null)
-            return Result<ClientResponse>.Failure(ClientApplicationErrors.NotFound);
+            return Result<ClientResult>.Failure(ClientApplicationErrors.NotFound);
 
-        return Result<ClientResponse>.Success(client.ToClientResponse());
+        return Result<ClientResult>.Success(client.ToClientResult());
     }
 }

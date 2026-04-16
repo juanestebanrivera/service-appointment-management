@@ -34,15 +34,15 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CreateClientCommand, Guid>, CreateClientCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateClientCommand>, UpdateClientCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteClientCommand>, DeleteClientCommandHandler>();
-        services.AddScoped<IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResponse>>, GetAllClientsQueryHandler>();
-        services.AddScoped<IQueryHandler<GetClientByIdQuery, ClientResponse>, GetClientByIdQueryHandler>();
-        
+        services.AddScoped<IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResult>>, GetAllClientsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetClientByIdQuery, ClientResult>, GetClientByIdQueryHandler>();
+
         // Services
         services.AddScoped<ICommandHandler<CreateServiceCommand, Guid>, CreateServiceCommandHandler>();
         services.AddScoped<ICommandHandler<UpdateServiceCommand>, UpdateServiceCommandHandler>();
         services.AddScoped<ICommandHandler<DeleteServiceCommand>, DeleteServiceCommandHandler>();
-        services.AddScoped<IQueryHandler<GetAllServicesQuery, IEnumerable<ServiceResponse>>, GetAllServicesQueryHandler>();
-        services.AddScoped<IQueryHandler<GetServiceByIdQuery, ServiceResponse>, GetServiceByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllServicesQuery, IEnumerable<ServiceResult>>, GetAllServicesQueryHandler>();
+        services.AddScoped<IQueryHandler<GetServiceByIdQuery, ServiceResult>, GetServiceByIdQueryHandler>();
 
         // Appointments
         services.AddScoped<ICommandHandler<BookAppointmentCommand, Guid>, BookAppointmentCommandHandler>();
@@ -51,8 +51,8 @@ public static class DependencyInjection
         services.AddScoped<ICommandHandler<CancelAppointmentCommand>, CancelAppointmentCommandHandler>();
         services.AddScoped<ICommandHandler<CompleteAppointmentCommand>, CompleteAppointmentCommandHandler>();
         services.AddScoped<ICommandHandler<MarkAppointmentAsNoShowCommand>, MarkAppointmentAsNoShowCommandHandler>();
-        services.AddScoped<IQueryHandler<GetAllAppointmentsQuery, IEnumerable<AppointmentResponse>>, GetAllAppointmentsQueryHandler>();
-        services.AddScoped<IQueryHandler<GetAppointmentByIdQuery, AppointmentResponse>, GetAppointmentByIdQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAllAppointmentsQuery, IEnumerable<AppointmentResult>>, GetAllAppointmentsQueryHandler>();
+        services.AddScoped<IQueryHandler<GetAppointmentByIdQuery, AppointmentResult>, GetAppointmentByIdQueryHandler>();
 
         return services;
     }

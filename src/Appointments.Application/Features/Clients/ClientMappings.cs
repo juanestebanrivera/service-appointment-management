@@ -6,9 +6,9 @@ public static class ClientMappings
 {
     extension(Client client)
     {
-        public ClientResponse ToClientResponse()
+        public ClientResult ToClientResult()
         {
-            return new ClientResponse(
+            return new ClientResult(
                 client.Id,
                 client.FirstName.Value,
                 client.LastName.Value,

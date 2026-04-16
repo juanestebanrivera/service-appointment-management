@@ -1,6 +1,6 @@
 namespace Appointments.Application.Features.Services;
 
-public record ServiceResponse(
+public record ServiceResult(
     Guid Id,
     string Name,
     string? Description,

@@ -31,7 +31,7 @@ internal class AppointmentEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [FromServices] IQueryHandler<GetAllAppointmentsQuery, IEnumerable<AppointmentResponse>> handler,
+        [FromServices] IQueryHandler<GetAllAppointmentsQuery, IEnumerable<AppointmentResult>> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetAllAppointmentsQuery(), cancellationToken);
@@ -44,7 +44,7 @@ internal class AppointmentEndpoints : IEndpoint
 
     private static async Task<IResult> GetById(
         Guid id,
-        [FromServices] IQueryHandler<GetAppointmentByIdQuery, AppointmentResponse> handler,
+        [FromServices] IQueryHandler<GetAppointmentByIdQuery, AppointmentResult> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetAppointmentByIdQuery(id), cancellationToken);

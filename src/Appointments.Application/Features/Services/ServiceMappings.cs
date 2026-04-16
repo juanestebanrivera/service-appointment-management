@@ -6,9 +6,9 @@ public static class ServiceMappings
 {
     extension(Service service)
     {
-        public ServiceResponse ToServiceResponse()
+        public ServiceResult ToServiceResult()
         {
-            return new ServiceResponse(
+            return new ServiceResult(
                 service.Id,
                 service.Name,
                 service.Description,

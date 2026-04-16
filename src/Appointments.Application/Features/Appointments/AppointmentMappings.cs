@@ -6,9 +6,9 @@ public static class AppointmentMappings
 {
     extension(Appointment appointment)
     {
-        public AppointmentResponse ToAppointmentResponse()
+        public AppointmentResult ToAppointmentResult()
         {
-            return new AppointmentResponse(
+            return new AppointmentResult(
                 appointment.Id,
                 appointment.ClientId,
                 appointment.ServiceId,

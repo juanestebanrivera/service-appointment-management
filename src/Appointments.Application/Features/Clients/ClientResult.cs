@@ -1,6 +1,6 @@
 namespace Appointments.Application.Features.Clients;
 
-public record ClientResponse(
+public record ClientResult(
     Guid Id,
     string FirstName,
     string LastName,

@@ -25,7 +25,7 @@ internal class ClientEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [FromServices] IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResponse>> handler,
+        [FromServices] IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResult>> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetAllClientsQuery(), cancellationToken);
@@ -38,7 +38,7 @@ internal class ClientEndpoints : IEndpoint
 
     private static async Task<IResult> GetById(
         Guid id,
-        [FromServices] IQueryHandler<GetClientByIdQuery, ClientResponse> handler,
+        [FromServices] IQueryHandler<GetClientByIdQuery, ClientResult> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetClientByIdQuery(id), cancellationToken);
