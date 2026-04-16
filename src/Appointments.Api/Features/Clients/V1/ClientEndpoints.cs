@@ -1,4 +1,5 @@
 using Appointments.Api.Abstractions;
+using Appointments.Api.Extensions;
 using Appointments.Api.Features.Clients.V1.Contracts;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Clients;
@@ -21,17 +22,23 @@ internal class ClientEndpoints : IEndpoint
         group.MapGet("/", GetAll)
              .Produces<IEnumerable<ClientApiResponse>>();
 
-        group.MapGet("/{id:guid}", GetById).WithName("GetClient")
-             .Produces<ClientApiResponse>();
+        group.MapGet("/{id:guid}", GetById)
+             .WithName("GetClientById")
+             .Produces<ClientApiResponse>()
+             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", Create)
-             .Produces<Guid>(StatusCodes.Status201Created);
+             .Produces<Guid>(StatusCodes.Status201Created)
+             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPut("/{id:guid}", Update)
-             .Produces(StatusCodes.Status204NoContent);
+             .Produces(StatusCodes.Status204NoContent)
+             .ProducesProblem(StatusCodes.Status400BadRequest)
+             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}", Delete)
-             .Produces(StatusCodes.Status204NoContent);
+             .Produces(StatusCodes.Status204NoContent)
+             .ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     private static async Task<IResult> GetAll(
@@ -40,13 +47,7 @@ internal class ClientEndpoints : IEndpoint
     {
         var result = await handler.HandleAsync(new GetAllClientsQuery(), cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        var response = result.Value.Select(c =>
-            new ClientApiResponse(c.Id, c.FirstName, c.LastName, c.PhonePrefix, c.PhoneNumber, c.Email, c.IsActive));
-
-        return Results.Ok(response);
+        return result.ToApiResult(value => Results.Ok(value.Select(v => v.ToClientApiResponse())));
     }
 
     private static async Task<IResult> GetById(
@@ -56,19 +57,7 @@ internal class ClientEndpoints : IEndpoint
     {
         var result = await handler.HandleAsync(new GetClientByIdQuery(id), cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        var response = new ClientApiResponse(
-            result.Value.Id,
-            result.Value.FirstName,
-            result.Value.LastName,
-            result.Value.PhonePrefix,
-            result.Value.PhoneNumber,
-            result.Value.Email,
-            result.Value.IsActive);
-
-        return Results.Ok(response);
+        return result.ToApiResult(value => Results.Ok(value.ToClientApiResponse()));
     }
 
     private static async Task<IResult> Create(
@@ -79,10 +68,7 @@ internal class ClientEndpoints : IEndpoint
         var command = new CreateClientCommand(request.FirstName, request.LastName, request.PhonePrefix, request.PhoneNumber, request.Email);
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        return Results.CreatedAtRoute("GetClient", new { id = result.Value });
+        return result.ToApiResult(() => Results.CreatedAtRoute("GetClientById", new { id = result.Value }));
     }
 
     private static async Task<IResult> Update(
@@ -94,10 +80,7 @@ internal class ClientEndpoints : IEndpoint
         var command = new UpdateClientCommand(id, request.FirstName, request.LastName, request.Email, request.PhonePrefix, request.PhoneNumber, request.IsActive);
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        return Results.NoContent();
+        return result.ToApiResult(() => Results.NoContent());
     }
 
     private static async Task<IResult> Delete(
@@ -107,9 +90,6 @@ internal class ClientEndpoints : IEndpoint
     {
         var result = await handler.HandleAsync(new DeleteClientCommand(id), cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        return Results.NoContent();
+        return result.ToApiResult(() => Results.NoContent());
     }
 }

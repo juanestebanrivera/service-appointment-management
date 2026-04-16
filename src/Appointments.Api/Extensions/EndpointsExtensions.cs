@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 namespace Appointments.Api.Extensions;
 
-public static class EndpointsExtension
+public static class EndpointsExtensions
 {
     public static IServiceCollection AddEndpoints(this IServiceCollection services)
     {
@@ -29,7 +29,8 @@ public static class EndpointsExtension
             .Build();
 
         var globalApiGroup = app.MapGroup("/api/v{version:apiVersion}")
-                                .WithApiVersionSet(apiVersionSet);
+                                .WithApiVersionSet(apiVersionSet)
+                                .ProducesProblem(StatusCodes.Status500InternalServerError);
 
         var endpoints = app.Services.GetRequiredService<IEnumerable<IEndpoint>>();
 

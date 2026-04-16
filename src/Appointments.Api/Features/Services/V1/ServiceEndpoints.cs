@@ -1,4 +1,5 @@
 using Appointments.Api.Abstractions;
+using Appointments.Api.Extensions;
 using Appointments.Api.Features.Services.V1.Contracts;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Services;
@@ -23,16 +24,21 @@ internal class ServiceEndpoints : IEndpoint
 
         group.MapGet("/{id:guid}", GetById)
              .WithName("GetServiceById")
-             .Produces<ServiceApiResponse>();
+             .Produces<ServiceApiResponse>()
+             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", Create)
-             .Produces<Guid>(StatusCodes.Status201Created);
+             .Produces<Guid>(StatusCodes.Status201Created)
+             .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPut("/{id:guid}", Update)
-             .Produces(StatusCodes.Status204NoContent);
+             .Produces(StatusCodes.Status204NoContent)
+             .ProducesProblem(StatusCodes.Status400BadRequest)
+             .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}", Delete)
-             .Produces(StatusCodes.Status204NoContent);
+             .Produces(StatusCodes.Status204NoContent)
+             .ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     private static async Task<IResult> GetAll(
@@ -41,21 +47,7 @@ internal class ServiceEndpoints : IEndpoint
     {
         var result = await handler.HandleAsync(new GetAllServicesQuery(), cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        var response = result.Value.Select(s =>
-            new ServiceApiResponse(
-                s.Id,
-                s.Name,
-                s.Description,
-                s.Price,
-                s.Duration,
-                s.IsActive
-            )
-        );
-
-        return Results.Ok(response);
+        return result.ToApiResult(value => Results.Ok(value.Select(s => s.ToServiceApiResponse())));
     }
 
     private static async Task<IResult> GetById(
@@ -65,19 +57,7 @@ internal class ServiceEndpoints : IEndpoint
     {
         var result = await handler.HandleAsync(new GetServiceByIdQuery(id), cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        var response = new ServiceApiResponse(
-            result.Value.Id,
-            result.Value.Name,
-            result.Value.Description,
-            result.Value.Price,
-            result.Value.Duration,
-            result.Value.IsActive
-        );
-
-        return Results.Ok(response);
+        return result.ToApiResult(value => Results.Ok(value.ToServiceApiResponse()));
     }
 
     private static async Task<IResult> Create(
@@ -88,10 +68,7 @@ internal class ServiceEndpoints : IEndpoint
         var command = new CreateServiceCommand(request.Name, request.Price, request.Duration, request.Description);
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        return Results.CreatedAtRoute("GetServiceById", new { id = result.Value });
+        return result.ToApiResult(() => Results.CreatedAtRoute("GetServiceById", new { id = result.Value }));
     }
 
     private static async Task<IResult> Update(
@@ -103,10 +80,7 @@ internal class ServiceEndpoints : IEndpoint
         var command = new UpdateServiceCommand(id, request.Name, request.Description, request.Price, request.Duration, request.IsActive);
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        return Results.NoContent();
+        return result.ToApiResult(() => Results.NoContent());
     }
 
     private static async Task<IResult> Delete(
@@ -116,10 +90,7 @@ internal class ServiceEndpoints : IEndpoint
     {
         var result = await handler.HandleAsync(new DeleteServiceCommand(id), cancellationToken);
 
-        if (result.IsFailure)
-            return Results.BadRequest(result.Error);
-
-        return Results.NoContent();
+        return result.ToApiResult(() => Results.NoContent());
     }
 
 }
