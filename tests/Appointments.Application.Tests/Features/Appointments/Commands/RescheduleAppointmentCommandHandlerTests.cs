@@ -27,7 +27,7 @@ public class RescheduleAppointmentCommandHandlerTests
     public async Task HandleAsync_WhenAppointmentDoesNotExist_ReturnsFailure()
     {
         // Arrange
-        var command = new RescheduleAppointmentCommand(Guid.NewGuid(), DateTimeOffset.Now.AddDays(1));
+        var command = new RescheduleAppointmentCommand(Guid.NewGuid(), new DateTimeOffset(2026, 1, 1, 10, 0, 0, TimeSpan.Zero));
 
         _appointmentRepository.GetByIdAsync(command.AppointmentId, Arg.Any<CancellationToken>()).Returns((Appointment?)null);
 

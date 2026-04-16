@@ -44,16 +44,17 @@ public class GetAllClientsQueryHandlerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(clients.Count, result.Value.Count());
 
-        var firstClientResponse = result.Value.First();
-        Assert.Equal(clients[0].Id, firstClientResponse.Id);
-        Assert.Equal(clients[0].FirstName.Value, firstClientResponse.FirstName);
-        Assert.Equal(clients[0].LastName.Value, firstClientResponse.LastName);
-        Assert.Equal(clients[0].Phone.Prefix, firstClientResponse.PhonePrefix);
-        Assert.Equal(clients[0].Phone.Number, firstClientResponse.PhoneNumber);
-        Assert.Equal(clients[0].Email?.Value, firstClientResponse.Email);
-        Assert.Equal(clients[0].IsActive, firstClientResponse.IsActive);
+        var resultList = result.Value.ToList();
+        Assert.Equal(clients.Count, resultList.Count);
+
+        Assert.Equal(clients[0].Id, resultList[0].Id);
+        Assert.Equal(clients[0].FirstName.Value, resultList[0].FirstName);
+        Assert.Equal(clients[0].LastName.Value, resultList[0].LastName);
+        Assert.Equal(clients[0].Phone.Prefix, resultList[0].PhonePrefix);
+        Assert.Equal(clients[0].Phone.Number, resultList[0].PhoneNumber);
+        Assert.Equal(clients[0].Email?.Value, resultList[0].Email);
+        Assert.Equal(clients[0].IsActive, resultList[0].IsActive);
     }
 
     [Fact]

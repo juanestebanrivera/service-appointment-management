@@ -6,8 +6,8 @@ namespace Appointments.Application.Tests.Features.Services.Queries;
 
 public class GetServiceByIdQueryHandlerTests
 {
-    private IServiceRepository _serviceRepository;
-    private GetServiceByIdQueryHandler _handler;
+    private readonly IServiceRepository _serviceRepository;
+    private readonly GetServiceByIdQueryHandler _handler;
 
     public GetServiceByIdQueryHandlerTests()
     {

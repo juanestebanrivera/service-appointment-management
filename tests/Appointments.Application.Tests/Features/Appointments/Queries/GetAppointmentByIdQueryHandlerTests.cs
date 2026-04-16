@@ -21,7 +21,7 @@ public class GetAppointmentByIdQueryHandlerTests
         // Arrange
         var query = new GetAppointmentByIdQuery(Guid.NewGuid());
 
-        _appointmentRepository.GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>()).Returns((Appointment?)null);
+        _appointmentRepository.GetByIdAsync(query.AppointmentId, Arg.Any<CancellationToken>()).Returns((Appointment?)null);
 
         // Act
         var result = await _handler.HandleAsync(query, default);

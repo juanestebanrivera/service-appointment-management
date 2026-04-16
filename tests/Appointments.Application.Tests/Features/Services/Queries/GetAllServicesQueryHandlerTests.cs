@@ -45,15 +45,16 @@ public class GetAllServicesQueryHandlerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(services.Count, result.Value.Count());
 
-        var firstServiceResponse = result.Value.First();
-        Assert.Equal(services[0].Id, firstServiceResponse.Id);
-        Assert.Equal(services[0].Name, firstServiceResponse.Name);
-        Assert.Equal(services[0].Description, firstServiceResponse.Description);
-        Assert.Equal(services[0].Price, firstServiceResponse.Price);
-        Assert.Equal(services[0].Duration, firstServiceResponse.Duration);
-        Assert.Equal(services[0].IsActive, firstServiceResponse.IsActive);
+        var resultList = result.Value.ToList();
+        Assert.Equal(services.Count, resultList.Count);
+
+        Assert.Equal(services[0].Id, resultList[0].Id);
+        Assert.Equal(services[0].Name, resultList[0].Name);
+        Assert.Equal(services[0].Description, resultList[0].Description);
+        Assert.Equal(services[0].Price, resultList[0].Price);
+        Assert.Equal(services[0].Duration, resultList[0].Duration);
+        Assert.Equal(services[0].IsActive, resultList[0].IsActive);
     }
 
     [Fact]

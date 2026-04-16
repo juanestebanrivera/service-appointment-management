@@ -1,4 +1,5 @@
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Services;
 using Appointments.Application.Features.Services.Commands.DeleteService;
 using Appointments.Domain.Services;
 using NSubstitute;
@@ -31,7 +32,7 @@ public class DeleteServiceCommandHandlerTests
 
         // Assert
         Assert.True(result.IsFailure);
-        Assert.NotNull(result.Error);
+        Assert.Equal(ServiceApplicationErrors.NotFound, result.Error);
 
         _serviceRepository.DidNotReceive().Delete(Arg.Any<Service>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());

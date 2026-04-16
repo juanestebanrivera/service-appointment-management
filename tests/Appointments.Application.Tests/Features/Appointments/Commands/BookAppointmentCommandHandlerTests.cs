@@ -195,6 +195,7 @@ public class BookAppointmentCommandHandlerTests
         Assert.Equal(command.StartTime, bookedAppointment.TimeRange.StartTime);
         Assert.Equal(command.StartTime.Add(service.Duration), bookedAppointment.TimeRange.EndTime);
         Assert.Equal(service.Price, bookedAppointment.PriceAtBooking);
+        Assert.Equal(AppointmentStatus.Pending, bookedAppointment.Status);
 
         _appointmentRepository.Received(1).Add(Arg.Any<Appointment>());
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());

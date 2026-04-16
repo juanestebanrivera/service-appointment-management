@@ -54,16 +54,17 @@ public class GetAllAppointmentsQueryHandlerTests
         // Assert
         Assert.True(result.IsSuccess);
         Assert.NotNull(result.Value);
-        Assert.Equal(appointments.Count, result.Value.Count());
 
-        var firstAppointmentResponse = result.Value.First();
-        Assert.Equal(appointments[0].Id, firstAppointmentResponse.Id);
-        Assert.Equal(appointments[0].ClientId, firstAppointmentResponse.ClientId);
-        Assert.Equal(appointments[0].ServiceId, firstAppointmentResponse.ServiceId);
-        Assert.Equal(appointments[0].PriceAtBooking, firstAppointmentResponse.PriceAtBooking);
-        Assert.Equal(appointments[0].TimeRange.StartTime, firstAppointmentResponse.StartTime);
-        Assert.Equal(appointments[0].TimeRange.EndTime, firstAppointmentResponse.EndTime);
-        Assert.Equal(appointments[0].Status, firstAppointmentResponse.Status);
+        var resultList = result.Value.ToList();
+        Assert.Equal(appointments.Count, resultList.Count);
+
+        Assert.Equal(appointments[0].Id, resultList[0].Id);
+        Assert.Equal(appointments[0].ClientId, resultList[0].ClientId);
+        Assert.Equal(appointments[0].ServiceId, resultList[0].ServiceId);
+        Assert.Equal(appointments[0].PriceAtBooking, resultList[0].PriceAtBooking);
+        Assert.Equal(appointments[0].TimeRange.StartTime, resultList[0].StartTime);
+        Assert.Equal(appointments[0].TimeRange.EndTime, resultList[0].EndTime);
+        Assert.Equal(appointments[0].Status, resultList[0].Status);
     }
 
     [Fact]

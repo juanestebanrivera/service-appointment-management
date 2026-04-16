@@ -24,10 +24,10 @@ public class UpdateServiceCommandHandlerTests
         // Arrange
         var command = new UpdateServiceCommand(
             ServiceId: Guid.NewGuid(),
-            Name: "Updated Service Name",
+            Name: "New Service Name",
             Price: 150,
             Duration: TimeSpan.FromHours(1.5),
-            Description: "Updated Service Description",
+            Description: "New Service Description",
             IsActive: true
         );
 
@@ -139,7 +139,7 @@ public class UpdateServiceCommandHandlerTests
 
         var command = new UpdateServiceCommand(
             ServiceId: service.Id,
-            Name: "Neew Service Name",
+            Name: "New Service Name",
             Price: 150,
             Duration: TimeSpan.FromHours(1.5),
             Description: "New Service Description",

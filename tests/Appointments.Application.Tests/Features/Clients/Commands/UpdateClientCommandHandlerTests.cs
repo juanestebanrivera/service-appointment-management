@@ -158,13 +158,13 @@ public class UpdateClientCommandHandlerTests
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("newusername@domain.com")]
-    [InlineData("username@domain.com")]
+    [InlineData(null, true)]
+    [InlineData("newusername@domain.com", true)]
+    [InlineData("username@domain.com", true)]
     [InlineData(null, false)]
     [InlineData("newusername@domain.com", false)]
     [InlineData("username@domain.com", false)]
-    public async Task HandleAsync_WhenClientExistsAndDataIsValid_ReturnsSuccessAndUpdatesClient(string? email, bool isActive = true)
+    public async Task HandleAsync_WhenClientExistsAndDataIsValid_ReturnsSuccessAndUpdatesClient(string? email, bool isActive)
     {
         // Arrange
         Client? updatedClient = null;
