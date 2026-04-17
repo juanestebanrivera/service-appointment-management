@@ -1,5 +1,5 @@
 using Appointments.Api;
-using Appointments.Api.Extensions;
+using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Application;
 using Appointments.Infrastructure;
 
@@ -9,7 +9,7 @@ string connectionString = builder.Configuration.GetConnectionString("DefaultConn
 builder.Services
     .AddApplication()
     .AddInfrastructure(connectionString)
-    .AddPresentation();
+    .AddPresentation(builder.Configuration);
 
 var app = builder.Build();
 

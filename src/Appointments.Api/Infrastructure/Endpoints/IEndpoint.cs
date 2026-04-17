@@ -1,4 +1,4 @@
-namespace Appointments.Api.Abstractions;
+namespace Appointments.Api.Infrastructure.Endpoints;
 
 internal interface IEndpoint
 {

@@ -1,11 +1,11 @@
-using Appointments.Api.Extensions;
+using Appointments.Api.Infrastructure.Endpoints;
 using Asp.Versioning;
 
 namespace Appointments.Api;
 
 public static class DependencyInjection
 {
-    public static IServiceCollection AddPresentation(this IServiceCollection services)
+    public static IServiceCollection AddPresentation(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddApiVersion();
         services.AddOpenApi();

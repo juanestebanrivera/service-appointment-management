@@ -1,6 +1,5 @@
-using Appointments.Api.Abstractions;
-using Appointments.Api.Extensions;
 using Appointments.Api.Features.Services.V1.Contracts;
+using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Services;
 using Appointments.Application.Features.Services.Commands.CreateService;

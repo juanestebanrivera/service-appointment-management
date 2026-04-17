@@ -1,7 +1,6 @@
-using Appointments.Api.Abstractions;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 
-namespace Appointments.Api.Extensions;
+namespace Appointments.Api.Infrastructure.Endpoints;
 
 public static class EndpointExtensions
 {

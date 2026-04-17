@@ -1,6 +1,5 @@
-using Appointments.Api.Abstractions;
-using Appointments.Api.Extensions;
 using Appointments.Api.Features.Appointments.V1.Contracts;
+using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Appointments.Commands.BookAppointment;

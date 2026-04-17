@@ -1,6 +1,6 @@
 using Appointments.Domain.SharedKernel;
 
-namespace Appointments.Api.Extensions;
+namespace Appointments.Api;
 
 public static class ResultExtensions
 {
