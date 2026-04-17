@@ -14,6 +14,7 @@ public static class DependencyInjection
         services.AddProblemDetails();
 
         services.AddCustomRateLimiting(configuration);
+        services.AddOutputCaching();
 
         return services;
     }
@@ -30,6 +31,17 @@ public static class DependencyInjection
         {
             options.GroupNameFormat = "'v'V";
             options.SubstituteApiVersionInUrl = true;
+        });
+
+        return services;
+    }
+
+    private static IServiceCollection AddOutputCaching(this IServiceCollection services)
+    {
+        services.AddOutputCache(options =>
+        {
+            options.DefaultExpirationTimeSpan = TimeSpan.FromSeconds(60);
+            options.MaximumBodySize = 1024 * 1024; // 1 MB
         });
 
         return services;

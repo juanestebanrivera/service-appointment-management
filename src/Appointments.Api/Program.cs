@@ -26,7 +26,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRateLimiter();
+app.UseOutputCache();
 
-app.RegisterEndpoints();
+app.MapApiEndpoints();
 
 app.Run();

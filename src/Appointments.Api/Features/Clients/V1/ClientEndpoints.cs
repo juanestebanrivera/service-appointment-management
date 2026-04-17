@@ -8,20 +8,24 @@ using Appointments.Application.Features.Clients.Commands.UpdateClient;
 using Appointments.Application.Features.Clients.Queries.GetAllClients;
 using Appointments.Application.Features.Clients.Queries.GetClientById;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Appointments.Api.Features.Clients.V1;
 
 internal class ClientEndpoints : IEndpoint
 {
+    private const string CacheTag = "clients";
     public void MapEndpoints(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("clients")
                        .WithTags("Clients");
 
         group.MapGet("/", GetAll)
+             .CacheOutput(builder => builder.Tag(CacheTag))
              .Produces<IEnumerable<ClientApiResponse>>();
 
         group.MapGet("/{id:guid}", GetById)
+             .CacheOutput(builder => builder.Tag(CacheTag))
              .WithName("GetClientById")
              .Produces<ClientApiResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound);
@@ -62,10 +66,16 @@ internal class ClientEndpoints : IEndpoint
     private static async Task<IResult> Create(
         [FromBody] CreateClientApiRequest request,
         [FromServices] ICommandHandler<CreateClientCommand, Guid> handler,
+        IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
         var command = new CreateClientCommand(request.FirstName, request.LastName, request.PhonePrefix, request.PhoneNumber, request.Email);
         var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            await cacheStore.EvictByTagAsync(CacheTag, cancellationToken);
+        }
 
         return result.ToApiResult(() => Results.CreatedAtRoute("GetClientById", new { id = result.Value }));
     }
@@ -74,10 +84,16 @@ internal class ClientEndpoints : IEndpoint
         Guid id,
         [FromBody] UpdateClientApiRequest request,
         [FromServices] ICommandHandler<UpdateClientCommand> handler,
+        IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
         var command = new UpdateClientCommand(id, request.FirstName, request.LastName, request.Email, request.PhonePrefix, request.PhoneNumber, request.IsActive);
         var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            await cacheStore.EvictByTagAsync(CacheTag, cancellationToken);
+        }
 
         return result.ToApiResult(() => Results.NoContent());
     }
@@ -85,9 +101,15 @@ internal class ClientEndpoints : IEndpoint
     private static async Task<IResult> Delete(
         Guid id,
         [FromServices] ICommandHandler<DeleteClientCommand> handler,
+        IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new DeleteClientCommand(id), cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            await cacheStore.EvictByTagAsync(CacheTag, cancellationToken);
+        }
 
         return result.ToApiResult(() => Results.NoContent());
     }

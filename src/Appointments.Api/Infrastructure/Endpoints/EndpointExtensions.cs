@@ -20,7 +20,7 @@ public static class EndpointExtensions
         return services;
     }
 
-    public static IApplicationBuilder RegisterEndpoints(this WebApplication app)
+    public static IApplicationBuilder MapApiEndpoints(this WebApplication app)
     {
         var apiVersionSet = app.NewApiVersionSet()
             .HasApiVersion(new(1))

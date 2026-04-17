@@ -8,20 +8,25 @@ using Appointments.Application.Features.Services.Commands.UpdateService;
 using Appointments.Application.Features.Services.Queries.GetAllServices;
 using Appointments.Application.Features.Services.Queries.GetServiceById;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Appointments.Api.Features.Services.V1;
 
 internal class ServiceEndpoints : IEndpoint
 {
+    private const string CacheTag = "services";
+
     public void MapEndpoints(IEndpointRouteBuilder app)
     {
         var group = app.MapGroup("services")
                        .WithTags("Services");
 
         group.MapGet("/", GetAll)
+             .CacheOutput(builder => builder.Tag(CacheTag).Expire(TimeSpan.FromHours(24)))
              .Produces<IEnumerable<ServiceApiResponse>>();
 
         group.MapGet("/{id:guid}", GetById)
+             .CacheOutput(builder => builder.Tag(CacheTag).Expire(TimeSpan.FromHours(24)))
              .WithName("GetServiceById")
              .Produces<ServiceApiResponse>()
              .ProducesProblem(StatusCodes.Status404NotFound);
@@ -62,10 +67,16 @@ internal class ServiceEndpoints : IEndpoint
     private static async Task<IResult> Create(
         [FromBody] CreateServiceApiRequest request,
         [FromServices] ICommandHandler<CreateServiceCommand, Guid> handler,
+        IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
         var command = new CreateServiceCommand(request.Name, request.Price, request.Duration, request.Description);
         var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            await cacheStore.EvictByTagAsync(CacheTag, cancellationToken);
+        }
 
         return result.ToApiResult(() => Results.CreatedAtRoute("GetServiceById", new { id = result.Value }));
     }
@@ -74,10 +85,16 @@ internal class ServiceEndpoints : IEndpoint
         Guid id,
         [FromBody] UpdateServiceApiRequest request,
         [FromServices] ICommandHandler<UpdateServiceCommand> handler,
+        IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
         var command = new UpdateServiceCommand(id, request.Name, request.Description, request.Price, request.Duration, request.IsActive);
         var result = await handler.HandleAsync(command, cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            await cacheStore.EvictByTagAsync(CacheTag, cancellationToken);
+        }
 
         return result.ToApiResult(() => Results.NoContent());
     }
@@ -85,9 +102,15 @@ internal class ServiceEndpoints : IEndpoint
     private static async Task<IResult> Delete(
         Guid id,
         [FromServices] ICommandHandler<DeleteServiceCommand> handler,
+        IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new DeleteServiceCommand(id), cancellationToken);
+
+        if (result.IsSuccess)
+        {
+            await cacheStore.EvictByTagAsync(CacheTag, cancellationToken);
+        }
 
         return result.ToApiResult(() => Results.NoContent());
     }
