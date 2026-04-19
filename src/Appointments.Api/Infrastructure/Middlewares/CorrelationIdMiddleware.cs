@@ -1,10 +1,12 @@
 namespace Appointments.Api.Infrastructure.Middlewares;
 
-public class CorrelationIdMiddleware(RequestDelegate next)
+public class CorrelationIdMiddleware(RequestDelegate next, ILogger<CorrelationIdMiddleware> logger)
 {
     private const string CorrelationIdHeaderKey = "X-Correlation-ID";
 
-    public async Task InvokeAsync(HttpContext context, ILogger<CorrelationIdMiddleware> logger)
+    private readonly ILogger<CorrelationIdMiddleware> _logger = logger;
+
+    public async Task InvokeAsync(HttpContext context)
     {
         string correlationId =
             context.Request.Headers.TryGetValue(CorrelationIdHeaderKey, out var headerValue) &&
@@ -14,7 +16,7 @@ public class CorrelationIdMiddleware(RequestDelegate next)
 
         context.Response.Headers[CorrelationIdHeaderKey] = correlationId;
 
-        using (logger.BeginScope(new { CorrelationId = correlationId }))
+        using (_logger.BeginScope(new { CorrelationId = correlationId }))
         {
             await next(context);
         }

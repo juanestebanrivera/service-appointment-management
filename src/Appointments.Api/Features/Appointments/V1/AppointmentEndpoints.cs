@@ -1,5 +1,6 @@
 using Appointments.Api.Features.Appointments.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
+using Appointments.Api.Shared.Filters.Idempotency;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Appointments.Commands.BookAppointment;
@@ -30,6 +31,7 @@ internal class AppointmentEndpoints : IEndpoint
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", Book)
+             .AddEndpointFilter<IdempotencyFilter>()
              .Produces(StatusCodes.Status201Created)
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status404NotFound)
