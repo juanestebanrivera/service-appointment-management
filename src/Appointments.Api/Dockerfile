@@ -7,14 +7,13 @@ USER app
 FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 WORKDIR /build
 
-COPY ["Appointments.sln", "./"]
 COPY ["src/Appointments.Domain/Appointments.Domain.csproj", "src/Appointments.Domain/"]
 COPY ["src/Appointments.Application/Appointments.Application.csproj", "src/Appointments.Application/"]
 COPY ["src/Appointments.Infrastructure/Appointments.Infrastructure.csproj", "src/Appointments.Infrastructure/"]
 COPY ["src/Appointments.Api/Appointments.Api.csproj", "src/Appointments.Api/"]
 
 RUN --mount=type=cache,target=/root/.nuget/packages \
-    dotnet restore "Appointments.sln"
+    dotnet restore "src/Appointments.Api/Appointments.Api.csproj"
 
 COPY . .
 
