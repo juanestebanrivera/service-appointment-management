@@ -1,6 +1,7 @@
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Clients.Commands.UpdateClient;
 using Appointments.Domain.Clients;
+using Appointments.Domain.SharedKernel.ValueObjects;
 using NSubstitute;
 
 namespace Appointments.Application.Tests.Features.Clients.Commands;

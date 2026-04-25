@@ -2,6 +2,7 @@ using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.DeleteClient;
 using Appointments.Domain.Clients;
+using Appointments.Domain.SharedKernel.ValueObjects;
 using NSubstitute;
 
 namespace Appointments.Application.Tests.Features.Clients.Commands;

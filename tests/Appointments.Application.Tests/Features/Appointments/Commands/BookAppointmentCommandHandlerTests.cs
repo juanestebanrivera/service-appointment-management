@@ -3,6 +3,7 @@ using Appointments.Application.Features.Appointments.Commands.BookAppointment;
 using Appointments.Domain.Appointments;
 using Appointments.Domain.Clients;
 using Appointments.Domain.Services;
+using Appointments.Domain.SharedKernel.ValueObjects;
 using Microsoft.Extensions.Time.Testing;
 using NSubstitute;
 

@@ -1,4 +1,5 @@
 using Appointments.Domain.SharedKernel;
+using Appointments.Domain.SharedKernel.ValueObjects;
 
 namespace Appointments.Domain.Clients;
 

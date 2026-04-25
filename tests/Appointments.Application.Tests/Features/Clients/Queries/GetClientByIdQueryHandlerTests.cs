@@ -1,6 +1,7 @@
 using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Queries.GetClientById;
 using Appointments.Domain.Clients;
+using Appointments.Domain.SharedKernel.ValueObjects;
 using NSubstitute;
 
 namespace Appointments.Application.Tests.Features.Clients.Queries;

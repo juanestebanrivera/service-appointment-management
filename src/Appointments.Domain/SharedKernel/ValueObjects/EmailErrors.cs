@@ -1,6 +1,4 @@
-using Appointments.Domain.SharedKernel;
-
-namespace Appointments.Domain.Clients;
+namespace Appointments.Domain.SharedKernel.ValueObjects;
 
 public static class EmailErrors
 {

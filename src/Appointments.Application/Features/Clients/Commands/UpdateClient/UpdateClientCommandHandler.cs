@@ -1,6 +1,7 @@
 using Appointments.Application.Common.Interfaces;
 using Appointments.Domain.Clients;
 using Appointments.Domain.SharedKernel;
+using Appointments.Domain.SharedKernel.ValueObjects;
 
 namespace Appointments.Application.Features.Clients.Commands.UpdateClient;
 

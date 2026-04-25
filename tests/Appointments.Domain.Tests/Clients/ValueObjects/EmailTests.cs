@@ -1,4 +1,4 @@
-using Appointments.Domain.Clients;
+using Appointments.Domain.SharedKernel.ValueObjects;
 
 namespace Appointments.Domain.Tests.Clients.ValueObjects;
 
