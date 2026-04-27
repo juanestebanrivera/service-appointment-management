@@ -20,6 +20,7 @@ using Appointments.Application.Features.Services.Commands.DeleteService;
 using Appointments.Application.Features.Services.Commands.UpdateService;
 using Appointments.Application.Features.Services.Queries.GetAllServices;
 using Appointments.Application.Features.Services.Queries.GetServiceById;
+using Appointments.Application.Features.Users.Commands.ChangeUserStatus;
 using Appointments.Application.Features.Users.Commands.UserLogin;
 using Appointments.Application.Features.Users.Commands.UserRegister;
 using Microsoft.Extensions.DependencyInjection;
@@ -61,6 +62,7 @@ public static class DependencyInjection
             // Users
             services.AddScoped<ICommandHandler<UserLoginCommand, AuthenticationResult>, UserLoginCommandHandler>();
             services.AddScoped<ICommandHandler<UserRegisterCommand>, UserRegisterCommandHandler>();
+            services.AddScoped<ICommandHandler<ChangeUserStatusCommand>, ChangeUserStatusCommandHandler>();
 
             return services;
         }
