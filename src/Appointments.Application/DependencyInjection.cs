@@ -20,6 +20,8 @@ using Appointments.Application.Features.Services.Commands.DeleteService;
 using Appointments.Application.Features.Services.Commands.UpdateService;
 using Appointments.Application.Features.Services.Queries.GetAllServices;
 using Appointments.Application.Features.Services.Queries.GetServiceById;
+using Appointments.Application.Features.Users.Commands.UserLogin;
+using Appointments.Application.Features.Users.Commands.UserRegister;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Appointments.Application;
@@ -55,6 +57,10 @@ public static class DependencyInjection
             services.AddScoped<ICommandHandler<MarkAppointmentAsNoShowCommand>, MarkAppointmentAsNoShowCommandHandler>();
             services.AddScoped<IQueryHandler<GetAllAppointmentsQuery, IEnumerable<AppointmentResult>>, GetAllAppointmentsQueryHandler>();
             services.AddScoped<IQueryHandler<GetAppointmentByIdQuery, AppointmentResult>, GetAppointmentByIdQueryHandler>();
+
+            // Users
+            services.AddScoped<ICommandHandler<UserLoginCommand, AuthenticationResult>, UserLoginCommandHandler>();
+            services.AddScoped<ICommandHandler<UserRegisterCommand>, UserRegisterCommandHandler>();
 
             return services;
         }
