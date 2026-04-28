@@ -36,6 +36,7 @@ public static class ResultExtensions
             ErrorType.Validation => "Validation Error",
             ErrorType.NotFound => "Resource Not Found",
             ErrorType.Conflict => "Conflict",
+            ErrorType.Unauthorized => "Unauthorized",
             _ => "Internal Server Error"
         };
     }
@@ -47,6 +48,7 @@ public static class ResultExtensions
             ErrorType.Validation => StatusCodes.Status400BadRequest,
             ErrorType.NotFound => StatusCodes.Status404NotFound,
             ErrorType.Conflict => StatusCodes.Status409Conflict,
+            ErrorType.Unauthorized => StatusCodes.Status401Unauthorized,
             _ => StatusCodes.Status500InternalServerError
         };
     }

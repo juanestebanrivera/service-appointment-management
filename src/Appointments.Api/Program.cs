@@ -28,6 +28,9 @@ if (app.Environment.IsDevelopment())
 app.UseExceptionHandler();
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseHttpLogging();
 

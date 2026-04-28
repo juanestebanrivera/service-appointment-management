@@ -1,3 +1,4 @@
+using Appointments.Api.Infrastructure.Authentication;
 using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Api.Infrastructure.Logging;
 using Appointments.Api.Infrastructure.Middlewares;
@@ -14,9 +15,7 @@ public static class DependencyInjection
         {
             services.AddApiVersion();
             services.AddEndpoints();
-            services.AddEndpointsApiExplorer(); // Test
             services.AddOpenApi();
-            services.AddProblemDetails();
 
             services.AddCustomRateLimiting(builder.Configuration);
             services.AddCustomHttpLogging(builder.Environment);
@@ -31,6 +30,8 @@ public static class DependencyInjection
                     context.ProblemDetails.Instance = $"{context.HttpContext.Request.Method} {context.HttpContext.Request.Path}";
                 };
             });
+
+            services.AddJwtAuthentication(builder.Configuration);
 
             return services;
         }
