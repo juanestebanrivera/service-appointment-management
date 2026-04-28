@@ -13,9 +13,10 @@ public class ClientTests
         var lastName = PersonName.Create("Last Name", "LastName").Value;
         var phone = PhoneNumber.Create("+57", "1234567890").Value;
         var email = Email.Create("username@domain.com").Value;
+        var userId = Guid.NewGuid();
 
         // Act
-        var result = Client.Register(firstName, lastName, phone, email);
+        var result = Client.Register(firstName, lastName, phone, userId, email);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -35,9 +36,10 @@ public class ClientTests
         var firstName = PersonName.Create("First Name", "FirstName").Value;
         var lastName = PersonName.Create("Last Name", "LastName").Value;
         var phone = PhoneNumber.Create("+57", "1234567890").Value;
+        var userId = Guid.NewGuid();
 
         // Act
-        var result = Client.Register(firstName, lastName, phone);
+        var result = Client.Register(firstName, lastName, phone, userId);
 
         // Assert
         Assert.True(result.IsSuccess);
@@ -168,6 +170,7 @@ public class ClientTests
             PersonName.Create("First Name", "FirstName").Value,
             PersonName.Create("Last Name", "LastName").Value,
             PhoneNumber.Create("+57", "1234567890").Value,
+            userId: Guid.NewGuid(),
             Email.Create("username@domain.com").Value
         );
 

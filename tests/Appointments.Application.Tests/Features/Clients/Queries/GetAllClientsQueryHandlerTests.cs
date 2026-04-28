@@ -27,12 +27,14 @@ public class GetAllClientsQueryHandlerTests
                 PersonName.Create("FirstNameOne", nameof(Client.FirstName)).Value,
                 PersonName.Create("LastNameOne", nameof(Client.LastName)).Value,
                 PhoneNumber.Create("+1", "1234567890").Value,
+                userId: Guid.NewGuid(),
                 Email.Create("username1@domain.com").Value
             ).Value,
             Client.Register(
                 PersonName.Create("FirstNameTwo", nameof(Client.FirstName)).Value,
                 PersonName.Create("LastNameTwo", nameof(Client.LastName)).Value,
                 PhoneNumber.Create("+1", "0987654321").Value,
+                userId: Guid.NewGuid(),
                 Email.Create("username2@domain.com").Value
             ).Value
         };

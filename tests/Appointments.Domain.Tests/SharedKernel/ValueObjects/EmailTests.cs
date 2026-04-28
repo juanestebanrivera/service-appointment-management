@@ -1,6 +1,6 @@
 using Appointments.Domain.SharedKernel.ValueObjects;
 
-namespace Appointments.Domain.Tests.Clients.ValueObjects;
+namespace Appointments.Domain.Tests.SharedKernel.ValueObjects;
 
 public class EmailTests
 {

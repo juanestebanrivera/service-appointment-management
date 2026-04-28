@@ -208,6 +208,7 @@ public class UpdateClientCommandHandlerTests
             PersonName.Create("FirstName", nameof(Client.FirstName)).Value,
             PersonName.Create("LastName", nameof(Client.LastName)).Value,
             PhoneNumber.Create("+1", "1234567890").Value,
+            userId: Guid.NewGuid(),
             Email.Create("username@domain.com").Value
         ).Value;
     }
