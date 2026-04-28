@@ -1,5 +1,6 @@
 using Appointments.Api.Features.Appointments.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
+using Appointments.Api.Shared;
 using Appointments.Api.Shared.Filters.Idempotency;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Appointments;
@@ -23,6 +24,7 @@ internal class AppointmentEndpoints : IEndpoint
                        .WithTags("Appointments");
 
         group.MapGet("/", GetAll)
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces<IEnumerable<AppointmentApiResponse>>();
 
         group.MapGet("/{id:guid}", GetById)
@@ -43,6 +45,7 @@ internal class AppointmentEndpoints : IEndpoint
              .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPatch("/{id:guid}/complete", Complete)
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict);
@@ -53,6 +56,7 @@ internal class AppointmentEndpoints : IEndpoint
              .ProducesProblem(StatusCodes.Status409Conflict);
 
         group.MapPatch("/{id:guid}/mark-as-no-show", MarkAsNoShow)
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict);

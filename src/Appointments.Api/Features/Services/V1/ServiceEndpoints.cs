@@ -1,5 +1,6 @@
 using Appointments.Api.Features.Services.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
+using Appointments.Api.Shared;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Services;
 using Appointments.Application.Features.Services.Commands.CreateService;
@@ -32,15 +33,18 @@ internal class ServiceEndpoints : IEndpoint
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapPost("/", Create)
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces(StatusCodes.Status201Created)
              .ProducesProblem(StatusCodes.Status400BadRequest);
 
         group.MapPut("/{id:guid}", Update)
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status400BadRequest)
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}", Delete)
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound);
     }

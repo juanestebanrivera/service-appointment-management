@@ -28,6 +28,7 @@ public static class EndpointExtensions
             .Build();
 
         var globalApiGroup = app.MapGroup("/api/v{version:apiVersion}")
+                                .RequireAuthorization()
                                 .WithApiVersionSet(apiVersionSet)
                                 .ProducesProblem(StatusCodes.Status429TooManyRequests)
                                 .ProducesProblem(StatusCodes.Status500InternalServerError);

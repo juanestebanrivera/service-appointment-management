@@ -1,5 +1,6 @@
 using Appointments.Api.Features.Clients.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
+using Appointments.Api.Shared;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.CreateClient;
@@ -22,6 +23,7 @@ internal class ClientEndpoints : IEndpoint
 
         group.MapGet("/", GetAll)
              .CacheOutput(builder => builder.Tag(CacheTag))
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces<IEnumerable<ClientApiResponse>>();
 
         group.MapGet("/{id:guid}", GetById)
@@ -40,6 +42,7 @@ internal class ClientEndpoints : IEndpoint
              .ProducesProblem(StatusCodes.Status404NotFound);
 
         group.MapDelete("/{id:guid}", Delete)
+             .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound);
     }
