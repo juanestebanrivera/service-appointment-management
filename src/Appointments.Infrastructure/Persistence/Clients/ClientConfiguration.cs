@@ -1,4 +1,5 @@
 using Appointments.Domain.Clients;
+using Appointments.Domain.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -61,5 +62,11 @@ internal sealed class ClientConfiguration : IEntityTypeConfiguration<Client>
         builder.Property(c => c.IsActive)
             .HasDefaultValue(true)
             .IsRequired();
+
+        builder.HasOne<User>()
+               .WithOne()
+               .HasForeignKey<Client>(c => c.UserId)
+               .IsRequired()
+               .OnDelete(DeleteBehavior.Restrict);
     }
 }

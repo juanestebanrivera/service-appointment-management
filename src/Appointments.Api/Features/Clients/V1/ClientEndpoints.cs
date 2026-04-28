@@ -69,7 +69,7 @@ internal class ClientEndpoints : IEndpoint
         IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
-        var command = new CreateClientCommand(request.FirstName, request.LastName, request.PhonePrefix, request.PhoneNumber, request.Email);
+        var command = new CreateClientCommand(request.UserId, request.FirstName, request.LastName, request.PhonePrefix, request.PhoneNumber, request.Email);
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (result.IsSuccess)

@@ -2,10 +2,13 @@ using Appointments.Application.Common.Interfaces;
 using Appointments.Domain.Appointments;
 using Appointments.Domain.Clients;
 using Appointments.Domain.Services;
+using Appointments.Domain.Users;
+using Appointments.Infrastructure.Authentication;
 using Appointments.Infrastructure.Persistence;
 using Appointments.Infrastructure.Persistence.Appointments;
 using Appointments.Infrastructure.Persistence.Clients;
 using Appointments.Infrastructure.Persistence.Services;
+using Appointments.Infrastructure.Persistence.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -26,6 +29,8 @@ public static class DependencyInjection
             services.AddScoped<IClientRepository, ClientRepository>();
             services.AddScoped<IServiceRepository, ServiceRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
+
 
             return services;
         }

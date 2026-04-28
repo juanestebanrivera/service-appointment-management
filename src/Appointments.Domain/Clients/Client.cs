@@ -11,20 +11,24 @@ public sealed class Client : Entity, IAggregateRoot
     public Email? Email { get; private set; }
     public bool IsActive { get; private set; }
 
+    public Guid UserId { get; private set; }
+
     private Client() { }
 
-    private Client(Guid id, PersonName firstName, PersonName lastName, PhoneNumber phone, Email? email, bool isActive) : base(id)
+    private Client(Guid id, PersonName firstName, PersonName lastName, PhoneNumber phone, Email? email, bool isActive, Guid userId)
+        : base(id)
     {
         FirstName = firstName;
         LastName = lastName;
         Phone = phone;
         Email = email;
         IsActive = isActive;
+        UserId = userId;
     }
 
-    public static Result<Client> Register(PersonName firstName, PersonName lastName, PhoneNumber phone, Email? email = null)
+    public static Result<Client> Register(PersonName firstName, PersonName lastName, PhoneNumber phone, Guid userId, Email? email = null)
     {
-        return Result<Client>.Success(new(Guid.NewGuid(), firstName, lastName, phone, email, true));
+        return Result<Client>.Success(new(Guid.NewGuid(), firstName, lastName, phone, email, true, userId));
     }
 
     public void ChangeName(PersonName newFirstName, PersonName newLastName)

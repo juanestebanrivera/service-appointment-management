@@ -13,7 +13,8 @@ public class User : Entity, IAggregateRoot
 
     private User() { }
 
-    private User(Email email, string passwordHash, UserRole role, bool isActive)
+    private User(Guid id, Email email, string passwordHash, UserRole role, bool isActive)
+        : base(id)
     {
         Email = email;
         PasswordHash = passwordHash;
@@ -33,7 +34,7 @@ public class User : Entity, IAggregateRoot
 
         string hash = passwordHasher.Hash(password);
 
-        return Result<User>.Success(new User(email, hash, UserRole.Client, isActive: true));
+        return Result<User>.Success(new User(Guid.NewGuid(), email, hash, UserRole.Client, isActive: true));
     }
 
     public void Activate() => IsActive = true;

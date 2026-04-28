@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Appointments.Infrastructure.Persistence.Appointments;
 
-internal sealed class AppointmentsConfiguration : IEntityTypeConfiguration<Appointment>
+internal sealed class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
 {
     public void Configure(EntityTypeBuilder<Appointment> builder)
     {
