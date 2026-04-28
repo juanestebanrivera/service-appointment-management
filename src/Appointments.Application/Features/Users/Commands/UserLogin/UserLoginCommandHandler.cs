@@ -17,10 +17,14 @@ public class UserLoginCommandHandler(
 
     public async Task<Result<AuthenticationResult>> HandleAsync(UserLoginCommand command, CancellationToken cancellationToken = default)
     {
-        var hashedPassword = _passwordHasher.Hash(command.Password);
-        var user = await _userRepository.GetUserByEmailAndPasswordAsync(command.Email, hashedPassword, cancellationToken);
+        var user = await _userRepository.GetByEmailAsync(command.Email, cancellationToken);
 
         if (user is null or { IsActive: false })
+            return Result<AuthenticationResult>.Failure(UserApplicationErrors.InvalidCredentials);
+
+        var verified = _passwordHasher.Verify(command.Password, user.PasswordHash);
+
+        if (!verified)
             return Result<AuthenticationResult>.Failure(UserApplicationErrors.InvalidCredentials);
 
         var accessToken = _tokenGenerator.GenerateToken(user);

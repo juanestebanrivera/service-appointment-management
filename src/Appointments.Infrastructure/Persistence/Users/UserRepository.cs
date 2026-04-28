@@ -12,9 +12,9 @@ internal class UserRepository(ApplicationDbContext dbContext) : IUserRepository
         return await _users.FirstOrDefaultAsync(user => user.Id == id, cancellationToken);
     }
 
-    public async Task<User?> GetUserByEmailAndPasswordAsync(string email, string passwordHash, CancellationToken cancellationToken = default)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
-        return await _users.FirstOrDefaultAsync(user => user.Email.Value == email && user.PasswordHash == passwordHash, cancellationToken);
+        return await _users.FirstOrDefaultAsync(user => user.Email.Value == email, cancellationToken);
     }
 
     public async Task<bool> VerifyIfEmailExistsAsync(string email, CancellationToken cancellationToken = default)
