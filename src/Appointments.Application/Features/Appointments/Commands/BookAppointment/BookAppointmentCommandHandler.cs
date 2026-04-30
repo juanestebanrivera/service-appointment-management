@@ -42,10 +42,16 @@ public sealed class BookAppointmentCommandHandler(
 
         var currentTime = _timeProvider.GetUtcNow();
         var endTime = command.StartTime.Add(service.Duration);
+
         var timeRangeResult = TimeRange.Create(command.StartTime, endTime, currentTime);
 
         if (timeRangeResult.IsFailure)
             return Result<Guid>.Failure(timeRangeResult.Error);
+
+        var isAvailable = await _appointmentRepository.VerifyAvailabilityAsync(timeRangeResult.Value.StartTime, timeRangeResult.Value.EndTime, excludeAppointmentId: null, cancellationToken);
+
+        if (!isAvailable)
+            return Result<Guid>.Failure(AppointmentErrors.TimeSlotUnavailable);
 
         var appointmentResult = Appointment.Book(
             command.ClientId,

@@ -17,6 +17,16 @@ internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IA
         return await _appointments.FirstOrDefaultAsync(a => a.Id == id, cancellationToken);
     }
 
+    public async Task<bool> VerifyAvailabilityAsync(DateTimeOffset startTime, DateTimeOffset endTime, Guid? excludeAppointmentId = null, CancellationToken cancellationToken = default)
+    {
+        return !await _appointments.AnyAsync(a =>
+            a.Id != excludeAppointmentId &&
+            ((startTime >= a.TimeRange.StartTime && startTime < a.TimeRange.EndTime) ||
+             (endTime > a.TimeRange.StartTime && endTime <= a.TimeRange.EndTime) ||
+             (startTime <= a.TimeRange.StartTime && endTime >= a.TimeRange.EndTime)),
+            cancellationToken);
+    }
+
     public void Add(Appointment appointment)
     {
         _appointments.Add(appointment);
