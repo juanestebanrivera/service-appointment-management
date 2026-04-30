@@ -166,6 +166,36 @@ public class BookAppointmentCommandHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WhenTimeIsNotAvailable_ReturnsFailure()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var service = CreateValidService();
+
+        var command = new BookAppointmentCommand(
+            ClientId: client.Id,
+            ServiceId: service.Id,
+            StartTime: new DateTimeOffset(2026, 1, 2, 10, 0, 0, TimeSpan.Zero)
+        );
+
+        var endTime = command.StartTime.Add(service.Duration);
+
+        _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+        _serviceRepository.GetByIdAsync(command.ServiceId, Arg.Any<CancellationToken>()).Returns(service);
+        _appointmentRepository.VerifyAvailabilityAsync(command.StartTime, endTime, null, Arg.Any<CancellationToken>()).Returns(false);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.NotNull(result.Error);
+
+        _appointmentRepository.DidNotReceive().Add(Arg.Any<Appointment>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task HandleAsync_WhenAllDataIsValid_ReturnsSuccessAndBooksAppointment()
     {
         // Arrange
@@ -179,8 +209,11 @@ public class BookAppointmentCommandHandlerTests
             StartTime: new DateTimeOffset(2026, 1, 2, 10, 0, 0, TimeSpan.Zero)
         );
 
+        var endTime = command.StartTime.Add(service.Duration);
+
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
         _serviceRepository.GetByIdAsync(command.ServiceId, Arg.Any<CancellationToken>()).Returns(service);
+        _appointmentRepository.VerifyAvailabilityAsync(command.StartTime, endTime, null, Arg.Any<CancellationToken>()).Returns(true);
         _appointmentRepository.Add(Arg.Do<Appointment>(a => bookedAppointment = a));
 
         // Act
