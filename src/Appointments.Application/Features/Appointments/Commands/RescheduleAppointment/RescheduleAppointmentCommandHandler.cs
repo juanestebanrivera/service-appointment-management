@@ -29,6 +29,11 @@ public sealed class RescheduleAppointmentCommandHandler(
         if (timeRangeResult.IsFailure)
             return Result.Failure(timeRangeResult.Error);
 
+        var isAvailable = await _appointmentRepository.VerifyAvailabilityAsync(timeRangeResult.Value.StartTime, timeRangeResult.Value.EndTime, excludeAppointmentId: appointment.Id, cancellationToken);
+
+        if (!isAvailable)
+            return Result.Failure(AppointmentErrors.TimeSlotUnavailable);
+
         var result = appointment.Reschedule(timeRangeResult.Value);
 
         if (result.IsFailure)
