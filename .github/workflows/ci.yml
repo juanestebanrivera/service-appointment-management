@@ -3,7 +3,10 @@ name: Build and Test
 on:
   push:
     branches: ["main"]
-    paths: ["backend/**"]
+    paths:
+      - "backend/**"
+      - ".github/workflows/ci.yml"
+
   workflow_dispatch:
 
 concurrency:
@@ -17,6 +20,7 @@ jobs:
   build:
     runs-on: ubuntu-24.04
     timeout-minutes: 10
+
     defaults:
       run:
         working-directory: ./backend
