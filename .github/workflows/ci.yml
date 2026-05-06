@@ -34,8 +34,8 @@ jobs:
           dotnet-version: "10.0.x"
           cache: true
           cache-dependency-path: |
-            src/**/packages.lock.json
-            tests/**/packages.lock.json
+            backend/src/**/packages.lock.json
+            backend/tests/**/packages.lock.json
 
       - name: Restore dependencies
         run: dotnet restore --locked-mode
