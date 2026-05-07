@@ -16,25 +16,30 @@ namespace Appointments.Infrastructure;
 
 public static class DependencyInjection
 {
-    extension(IServiceCollection services)
+    public static IServiceCollection AddInfrastructure(this IServiceCollection services, string connectionString)
     {
-        public IServiceCollection AddInfrastructure(string connectionString)
-        {
-            if (string.IsNullOrEmpty(connectionString))
-                throw new ArgumentException("Connection string cannot be null or empty.", nameof(connectionString));
+        if (string.IsNullOrEmpty(connectionString))
+            throw new ArgumentException("Connection string cannot be null or empty.", nameof(connectionString));
 
-            services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
+        services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
-            services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
-            services.AddScoped<IClientRepository, ClientRepository>();
-            services.AddScoped<IServiceRepository, ServiceRepository>();
-            services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-            services.AddScoped<IUserRepository, UserRepository>();
+        services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
+        services.AddScoped<IClientRepository, ClientRepository>();
+        services.AddScoped<IServiceRepository, ServiceRepository>();
+        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+        services.AddScoped<IUserRepository, UserRepository>();
 
-            services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
-            services.AddScoped<IPasswordHasher, PasswordHasher>();
+        services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
+        services.AddScoped<IPasswordHasher, PasswordHasher>();
 
-            return services;
-        }
+        return services;
+    }
+
+    public static async Task ApplyMigrationsAsync(this IServiceProvider services)
+    {
+        using var scope = services.CreateScope();
+        var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+
+        await db.Database.MigrateAsync();
     }
 }

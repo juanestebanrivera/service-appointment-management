@@ -16,6 +16,11 @@ var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
+    await app.Services.ApplyMigrationsAsync();
+}
+
+if (app.Environment.IsDevelopment())
+{
     app.MapOpenApi();
     app.UseSwaggerUI(options =>
     {
