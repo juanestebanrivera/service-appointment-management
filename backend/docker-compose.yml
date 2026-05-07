@@ -1,37 +1,53 @@
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:17.9-alpine
     container_name: appointments-db
-    restart: always
+    restart: unless-stopped
     ports:
-      - "5432:5432"
+      - "127.0.0.1:5432:5432"
     environment:
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASSWORD}
-      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER:-appointments_admin}
+      - POSTGRES_DB=${DB_NAME:-appointments}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-appointments_pass}
     volumes:
       - appointments-db-data:/var/lib/postgresql/data
     networks:
-      - appointments-network
+      - appointments-internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      start_period: 5s
+      start_interval: 2s
+      timeout: 5s
+      retries: 3
 
   app:
-    image: appointments-api
+    image: appointments-api:${APP_VERSION:-latest}
     container_name: appointments-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"
     build:
       context: .
       dockerfile: src/Appointments.Api/Dockerfile
-    ports:
-      - "8080:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT}
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${DB_NAME};User ID=${DB_USER};Password=${DB_PASSWORD}
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT:-Production}
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=${DB_NAME:-appointments};User ID=${DB_USER:-appointments_admin};Password=${DB_PASSWORD:-appointments_pass}
+      - JwtSettings__Secret=${JWT_SECRET:-example_secret_key_which_should_be_changed}
+      - JwtSettings__Issuer=${JWT_ISSUER:-AppointmentsApi}
+      - JwtSettings__Audience=${JWT_AUDIENCE:-AppointmentsApi}
+      - JwtSettings__ExpirationMinutes=${JWT_EXPIRATION:-30}
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     networks:
-      - appointments-network
+      - appointments-internal
+    read_only: true
 
 volumes:
   appointments-db-data:
+    driver: local
 
 networks:
-  appointments-network:
+  appointments-internal:
+    driver: bridge
