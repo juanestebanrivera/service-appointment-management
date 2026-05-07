@@ -57,15 +57,28 @@ La forma más sencilla de probar la aplicación localmente es utilizando Docker.
 
 ### Pasos
 
-1. En la carpeta raíz del proyecto, ejecute el siguiente comando para iniciar los servicios:
+> [!NOTE]
+> Si quiere configurar automáticamente la base de datos al iniciar el contenedor, puede crear un archivo `.env` en la raíz del proyecto con el siguiente contenido:
+
+```env
+ENVIRONMENT=Development
+```
+
+1. Navegue a la carpeta `backend` del proyecto:
+
+```bash
+cd backend
+```
+
+2. Una vez dentro de la carpeta `backend`, ejecute el siguiente comando para iniciar los servicios:
 
 ```bash
 docker-compose up -d
 ```
 
-2. Para interactuar con la API, abra el navegador y acceda a `http://localhost:8080`.
+3. Para interactuar con la API, abra el navegador y acceda a `http://localhost:8080`.
 
-3. Para detener los servicios, ejecute:
+4. Para detener los servicios, ejecute:
 
 ```bash
 docker-compose down
