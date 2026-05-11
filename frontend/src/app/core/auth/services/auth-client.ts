@@ -36,6 +36,6 @@ export class AuthClient {
     this.#authTokenStorage.destroyToken();
     this.#authState.removeUser();
 
-    this.#router.navigate([APP_ROUTES.LOGIN]);
+    this.#router.navigate([APP_ROUTES.AUTH.LOGIN]);
   }
 }
