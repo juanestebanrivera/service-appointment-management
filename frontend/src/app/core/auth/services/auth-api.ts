@@ -11,7 +11,7 @@ import { AuthState } from './auth-state';
 @Injectable({
   providedIn: 'root',
 })
-export class AuthClient {
+export class AuthApi {
   readonly #http = inject(HttpClient);
   readonly #router = inject(Router);
   readonly #authTokenStorage = inject(AuthTokenStorage);

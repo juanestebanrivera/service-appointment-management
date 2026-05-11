@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core';
-import { AuthClient } from '../../../core/auth/services/auth-client';
+import { AuthApi } from '../../../core/auth/services/auth-api';
 import {
   FormControl,
   NonNullableFormBuilder,
@@ -19,7 +19,7 @@ interface LoginFormGroup {
   templateUrl: './login.html',
 })
 export class Login {
-  readonly #auth = inject(AuthClient);
+  readonly #auth = inject(AuthApi);
   readonly #formBuilder = inject(NonNullableFormBuilder);
 
   loginForm = this.#formBuilder.group<LoginFormGroup>({
