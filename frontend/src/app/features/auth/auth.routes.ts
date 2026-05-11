@@ -1,8 +1,14 @@
 import { Routes } from '@angular/router';
-import { Login } from './login/login';
-import { APP_PATHS } from '@core/constants';
+import { APP_ROUTES_SEGMENTS } from '@core/constants';
 
 export const AUTH_ROUTES: Routes = [
-  { path: APP_PATHS.AUTH.LOGIN, component: Login },
-  { path: '', redirectTo: APP_PATHS.AUTH.LOGIN, pathMatch: 'full' },
+  {
+    path: APP_ROUTES_SEGMENTS.AUTH.LOGIN,
+    loadComponent: () => import('./login/login').then(f => f.Login),
+  },
+  {
+    path: APP_ROUTES_SEGMENTS.EMPTY,
+    redirectTo: APP_ROUTES_SEGMENTS.AUTH.LOGIN,
+    pathMatch: 'full',
+  },
 ];
