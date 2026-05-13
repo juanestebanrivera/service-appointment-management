@@ -2,7 +2,7 @@ using Appointments.Application.Common.Pagination;
 
 namespace Appointments.Api.Features.Clients.V1.Contracts;
 
-public record GetAllClientsRequest(
+public record GetClientsRequest(
     int Page = PaginationParams.DefaultPage,
     int Size = PaginationParams.DefaultPageSize,
     string? Search = null,

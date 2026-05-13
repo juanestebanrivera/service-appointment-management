@@ -49,7 +49,7 @@ internal class ClientEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [AsParameters] GetAllClientsRequest request,
+        [AsParameters] GetClientsRequest request,
         [FromServices] IQueryHandler<GetAllClientsQuery, PagedResult<ClientResult>> handler,
         CancellationToken cancellationToken)
     {
