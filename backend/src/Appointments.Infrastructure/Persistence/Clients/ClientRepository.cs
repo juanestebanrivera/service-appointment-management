@@ -9,17 +9,27 @@ internal sealed class ClientRepository(ApplicationDbContext dbContext) : IClient
 {
     private readonly DbSet<Client> _clients = dbContext.Set<Client>();
 
-    public async Task<(IEnumerable<Client> Items, int TotalCount)> GetPagedAsync(PaginationParams pagination, string? searchQuery = null, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Client> Items, int TotalCount)> GetPagedAsync(
+        PaginationParams pagination,
+        string? searchQuery = null,
+        bool status = true,
+        CancellationToken cancellationToken = default)
     {
-        var query = _clients.AsQueryable().AsNoTracking();
+        var query = _clients.AsQueryable()
+                            .AsNoTracking()
+                            .Where(c => c.IsActive == status);
 
         if (!string.IsNullOrWhiteSpace(searchQuery))
         {
-            var pattern = $"%{searchQuery}%";
+            var trimmedSearchQuery = searchQuery.Trim();
+            var pattern = $"%{trimmedSearchQuery}%";
+            var containsDigits = trimmedSearchQuery.Any(char.IsDigit);
+
             query = query.Where(c =>
                 EF.Functions.ILike(c.FirstName.Value, pattern) ||
                 EF.Functions.ILike(c.LastName.Value, pattern) ||
-                (c.Email != null && EF.Functions.ILike(c.Email.Value, pattern)));
+                (c.Email != null && EF.Functions.ILike(c.Email.Value, pattern)) ||
+                (containsDigits && EF.Functions.ILike(c.Phone.Number, pattern)));
         }
 
         var totalCount = await query.CountAsync(cancellationToken);

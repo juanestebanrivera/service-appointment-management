@@ -49,10 +49,16 @@ internal class ClientEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [AsParameters] GetAllClientsQuery query,
+        [AsParameters] GetAllClientsRequest request,
         [FromServices] IQueryHandler<GetAllClientsQuery, PagedResult<ClientResult>> handler,
         CancellationToken cancellationToken)
     {
+        var query = new GetAllClientsQuery(
+            request.Page,
+            request.Size,
+            request.Search,
+            request.Status);
+
         var result = await handler.HandleAsync(query, cancellationToken);
 
         return result.ToApiResult(value => Results.Ok(value.ToPagedResponse(v => v.ToClientApiResponse())));

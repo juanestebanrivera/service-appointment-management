@@ -41,7 +41,7 @@ public class GetAllClientsQueryHandlerTests
             ).Value
         };
 
-        _clientRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+        _clientRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                          .Returns((clients, clients.Count));
 
         // Act
@@ -71,7 +71,7 @@ public class GetAllClientsQueryHandlerTests
         const int TOTAL_CLIENTS = 0;
         var query = new GetAllClientsQuery();
 
-        _clientRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+        _clientRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                          .Returns(([], TOTAL_CLIENTS));
 
         // Act
@@ -109,8 +109,8 @@ public class GetAllClientsQueryHandlerTests
         var query = new GetAllClientsQuery(Page: 1, PageSize: 1);
         var paginationParams = new PaginationParams(query.Page, query.PageSize);
 
-        _clientRepository.GetPagedAsync(paginationParams, Arg.Any<string?>(), Arg.Any<CancellationToken>())
-                         .Returns((clients.Take(1).ToList(), clients.Count));
+        _clientRepository.GetPagedAsync(paginationParams, Arg.Any<string?>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
+                          .Returns((clients.Take(1).ToList(), clients.Count));
 
         // Act
         var result = await _handler.HandleAsync(query, default);

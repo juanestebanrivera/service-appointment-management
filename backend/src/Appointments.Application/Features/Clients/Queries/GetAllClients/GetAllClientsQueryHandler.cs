@@ -13,7 +13,7 @@ public sealed class GetAllClientsQueryHandler(IClientQueryRepository clientRepos
     {
         var pagination = new PaginationParams(query.Page, query.PageSize);
 
-        var (items, totalCount) = await _clientRepository.GetPagedAsync(pagination, query.SearchTerm, cancellationToken);
+        var (items, totalCount) = await _clientRepository.GetPagedAsync(pagination, query.SearchTerm, query.Status, cancellationToken);
 
         var pagedResult = new PagedResult<ClientResult>
         (
