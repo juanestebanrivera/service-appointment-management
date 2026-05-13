@@ -1,5 +1,5 @@
-using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Common.Pagination;
+using Appointments.Application.Features.Clients.Queries;
 using Appointments.Application.Features.Clients.Queries.GetAllClients;
 using Appointments.Domain.Clients;
 using Appointments.Domain.SharedKernel.ValueObjects;
@@ -9,12 +9,12 @@ namespace Appointments.Application.Tests.Features.Clients.Queries;
 
 public class GetAllClientsQueryHandlerTests
 {
-    private readonly IQueryableRepository<Client> _clientRepository;
+    private readonly IClientQueryRepository _clientRepository;
     private readonly GetAllClientsQueryHandler _handler;
 
     public GetAllClientsQueryHandlerTests()
     {
-        _clientRepository = Substitute.For<IQueryableRepository<Client>>();
+        _clientRepository = Substitute.For<IClientQueryRepository>();
         _handler = new GetAllClientsQueryHandler(_clientRepository);
     }
 

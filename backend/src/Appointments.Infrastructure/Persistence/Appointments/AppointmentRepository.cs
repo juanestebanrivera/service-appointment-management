@@ -1,11 +1,11 @@
-using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Common.Pagination;
+using Appointments.Application.Features.Appointments.Queries;
 using Appointments.Domain.Appointments;
 using Microsoft.EntityFrameworkCore;
 
 namespace Appointments.Infrastructure.Persistence.Appointments;
 
-internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IAppointmentRepository, IQueryableRepository<Appointment>
+internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IAppointmentRepository, IAppointmentQueryRepository
 {
     private readonly DbSet<Appointment> _appointments = dbContext.Set<Appointment>();
 

@@ -1,4 +1,7 @@
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Appointments.Queries;
+using Appointments.Application.Features.Clients.Queries;
+using Appointments.Application.Features.Services.Queries;
 using Appointments.Domain.Appointments;
 using Appointments.Domain.Clients;
 using Appointments.Domain.Services;
@@ -26,15 +29,15 @@ public static class DependencyInjection
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
         services.AddScoped<ClientRepository>();
         services.AddScoped<IClientRepository>(sp => sp.GetRequiredService<ClientRepository>());
-        services.AddScoped<IQueryableRepository<Client>>(sp => sp.GetRequiredService<ClientRepository>());
+        services.AddScoped<IClientQueryRepository>(sp => sp.GetRequiredService<ClientRepository>());
 
         services.AddScoped<ServiceRepository>();
         services.AddScoped<IServiceRepository>(sp => sp.GetRequiredService<ServiceRepository>());
-        services.AddScoped<IQueryableRepository<Service>>(sp => sp.GetRequiredService<ServiceRepository>());
+        services.AddScoped<IServiceQueryRepository>(sp => sp.GetRequiredService<ServiceRepository>());
 
         services.AddScoped<AppointmentRepository>();
         services.AddScoped<IAppointmentRepository>(sp => sp.GetRequiredService<AppointmentRepository>());
-        services.AddScoped<IQueryableRepository<Appointment>>(sp => sp.GetRequiredService<AppointmentRepository>());
+        services.AddScoped<IAppointmentQueryRepository>(sp => sp.GetRequiredService<AppointmentRepository>());
 
         services.AddScoped<IUserRepository, UserRepository>();
 

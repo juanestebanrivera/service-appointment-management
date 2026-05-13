@@ -1,14 +1,13 @@
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Common.Pagination;
-using Appointments.Domain.Appointments;
 using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
 
-public sealed class GetAllAppointmentsQueryHandler(IQueryableRepository<Appointment> appointmentRepository)
+public sealed class GetAllAppointmentsQueryHandler(IAppointmentQueryRepository appointmentRepository)
     : IQueryHandler<GetAllAppointmentsQuery, PagedResult<AppointmentResult>>
 {
-    private readonly IQueryableRepository<Appointment> _appointmentRepository = appointmentRepository;
+    private readonly IAppointmentQueryRepository _appointmentRepository = appointmentRepository;
 
     public async Task<Result<PagedResult<AppointmentResult>>> HandleAsync(GetAllAppointmentsQuery query, CancellationToken cancellationToken = default)
     {

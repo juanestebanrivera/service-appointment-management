@@ -1,5 +1,5 @@
-using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Common.Pagination;
+using Appointments.Application.Features.Services.Queries;
 using Appointments.Application.Features.Services.Queries.GetAllServices;
 using Appointments.Domain.Services;
 using NSubstitute;
@@ -8,12 +8,12 @@ namespace Appointments.Application.Tests.Features.Services.Queries;
 
 public class GetAllServicesQueryHandlerTests
 {
-    private readonly IQueryableRepository<Service> _serviceRepository;
+    private readonly IServiceQueryRepository _serviceRepository;
     private readonly GetAllServicesQueryHandler _handler;
 
     public GetAllServicesQueryHandlerTests()
     {
-        _serviceRepository = Substitute.For<IQueryableRepository<Service>>();
+        _serviceRepository = Substitute.For<IServiceQueryRepository>();
         _handler = new GetAllServicesQueryHandler(_serviceRepository);
     }
 
