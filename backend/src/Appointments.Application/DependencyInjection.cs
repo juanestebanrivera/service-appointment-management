@@ -8,7 +8,7 @@ using Appointments.Application.Features.Appointments.Commands.CompleteAppointmen
 using Appointments.Application.Features.Appointments.Commands.ConfirmAppointment;
 using Appointments.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
 using Appointments.Application.Features.Appointments.Commands.RescheduleAppointment;
-using Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
+using Appointments.Application.Features.Appointments.Queries.GetAppointmentsByDate;
 using Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
 using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.CreateClient;
@@ -58,8 +58,8 @@ public static class DependencyInjection
             services.AddScoped<ICommandHandler<CancelAppointmentCommand>, CancelAppointmentCommandHandler>();
             services.AddScoped<ICommandHandler<CompleteAppointmentCommand>, CompleteAppointmentCommandHandler>();
             services.AddScoped<ICommandHandler<MarkAppointmentAsNoShowCommand>, MarkAppointmentAsNoShowCommandHandler>();
-            services.AddScoped<IQueryHandler<GetAllAppointmentsQuery, PagedResult<AppointmentResult>>, GetAllAppointmentsQueryHandler>();
-            services.AddScoped<IQueryHandler<GetAppointmentByIdQuery, AppointmentResult>, GetAppointmentByIdQueryHandler>();
+            services.AddScoped<IQueryHandler<GetAppointmentsByDateQuery, IEnumerable<AppointmentDetailResult>>, GetAppointmentsByDateQueryHandler>();
+            services.AddScoped<IQueryHandler<GetAppointmentByIdQuery, AppointmentDetailResult>, GetAppointmentByIdQueryHandler>();
 
             // Users
             services.AddScoped<ICommandHandler<UserLoginCommand, AuthenticationResult>, UserLoginCommandHandler>();

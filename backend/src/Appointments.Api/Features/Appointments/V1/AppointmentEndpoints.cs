@@ -3,7 +3,6 @@ using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Api.Shared;
 using Appointments.Api.Shared.Filters.Idempotency;
 using Appointments.Application.Common.Interfaces;
-using Appointments.Application.Common.Pagination;
 using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Appointments.Commands.BookAppointment;
 using Appointments.Application.Features.Appointments.Commands.CancelAppointment;
@@ -11,7 +10,7 @@ using Appointments.Application.Features.Appointments.Commands.CompleteAppointmen
 using Appointments.Application.Features.Appointments.Commands.ConfirmAppointment;
 using Appointments.Application.Features.Appointments.Commands.MarkAppointmentAsNoShow;
 using Appointments.Application.Features.Appointments.Commands.RescheduleAppointment;
-using Appointments.Application.Features.Appointments.Queries.GetAllAppointments;
+using Appointments.Application.Features.Appointments.Queries.GetAppointmentsByDate;
 using Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,9 +23,9 @@ internal class AppointmentEndpoints : IEndpoint
         var group = app.MapGroup("appointments")
                        .WithTags("Appointments");
 
-        group.MapGet("/", GetAll)
+        group.MapGet("/", GetByDate)
              .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
-             .Produces<PagedResponse<AppointmentApiResponse>>();
+             .Produces<IEnumerable<AppointmentApiResponse>>();
 
         group.MapGet("/{id:guid}", GetById)
              .WithName("GetAppointmentById")
@@ -68,19 +67,19 @@ internal class AppointmentEndpoints : IEndpoint
              .ProducesProblem(StatusCodes.Status409Conflict);
     }
 
-    private static async Task<IResult> GetAll(
-        [AsParameters] GetAllAppointmentsQuery query,
-        [FromServices] IQueryHandler<GetAllAppointmentsQuery, PagedResult<AppointmentResult>> handler,
+    private static async Task<IResult> GetByDate(
+        [AsParameters] GetAppointmentsRequest request,
+        [FromServices] IQueryHandler<GetAppointmentsByDateQuery, IEnumerable<AppointmentDetailResult>> handler,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(query, cancellationToken);
+        var result = await handler.HandleAsync(new GetAppointmentsByDateQuery(request.Date ?? default), cancellationToken);
 
-        return result.ToApiResult(value => Results.Ok(value.ToPagedResponse(a => a.ToAppointmentApiResponse())));
+        return result.ToApiResult(value => Results.Ok(value.Select(a => a.ToAppointmentApiResponse())));
     }
 
     private static async Task<IResult> GetById(
         Guid id,
-        [FromServices] IQueryHandler<GetAppointmentByIdQuery, AppointmentResult> handler,
+        [FromServices] IQueryHandler<GetAppointmentByIdQuery, AppointmentDetailResult> handler,
         CancellationToken cancellationToken)
     {
         var result = await handler.HandleAsync(new GetAppointmentByIdQuery(id), cancellationToken);
