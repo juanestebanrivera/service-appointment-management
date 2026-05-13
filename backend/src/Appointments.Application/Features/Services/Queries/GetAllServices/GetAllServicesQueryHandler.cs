@@ -13,7 +13,7 @@ public sealed class GetAllServicesQueryHandler(IServiceQueryRepository serviceRe
     {
         var pagination = new PaginationParams(query.Page, query.PageSize);
 
-        var (items, totalCount) = await _serviceRepository.GetPagedAsync(pagination, query.SearchTerm, cancellationToken);
+        var (items, totalCount) = await _serviceRepository.GetPagedAsync(pagination, query.SearchTerm, query.Status, cancellationToken);
 
         var pagedResult = new PagedResult<ServiceResult>
         (

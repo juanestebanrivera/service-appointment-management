@@ -39,7 +39,7 @@ public class GetAllServicesQueryHandlerTests
 
         var query = new GetAllServicesQuery();
 
-        _serviceRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+        _serviceRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                           .Returns((services, services.Count));
 
         // Act
@@ -68,7 +68,7 @@ public class GetAllServicesQueryHandlerTests
         const int TOTAL_SERVICES = 0;
         var query = new GetAllServicesQuery();
 
-        _serviceRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<CancellationToken>())
+        _serviceRepository.GetPagedAsync(Arg.Any<PaginationParams>(), Arg.Any<string?>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                           .Returns(([], TOTAL_SERVICES));
 
         // Act
@@ -104,7 +104,7 @@ public class GetAllServicesQueryHandlerTests
         var query = new GetAllServicesQuery(Page: 1, PageSize: 1);
         var paginationParams = new PaginationParams(query.Page, query.PageSize);
 
-        _serviceRepository.GetPagedAsync(paginationParams, Arg.Any<string?>(), Arg.Any<CancellationToken>())
+        _serviceRepository.GetPagedAsync(paginationParams, Arg.Any<string?>(), Arg.Any<bool>(), Arg.Any<CancellationToken>())
                           .Returns((services.Take(1).ToList(), services.Count));
 
         // Act

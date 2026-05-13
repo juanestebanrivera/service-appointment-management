@@ -9,9 +9,11 @@ internal sealed class ServiceRepository(ApplicationDbContext dbContext) : IServi
 {
     private readonly DbSet<Service> _services = dbContext.Set<Service>();
 
-    public async Task<(IEnumerable<Service> Items, int TotalCount)> GetPagedAsync(PaginationParams pagination, string? searchQuery = null, CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Service> Items, int TotalCount)> GetPagedAsync(PaginationParams pagination, string? searchQuery = null, bool status = true, CancellationToken cancellationToken = default)
     {
-        var query = _services.AsQueryable().AsNoTracking();
+        var query = _services.AsQueryable()
+                             .AsNoTracking()
+                             .Where(s => s.IsActive == status);
 
         if (!string.IsNullOrWhiteSpace(searchQuery))
         {
