@@ -1,18 +1,29 @@
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Common.Pagination;
 using Appointments.Domain.Clients;
 using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Clients.Queries.GetAllClients;
 
-public sealed class GetAllClientsQueryHandler(IClientRepository clientRepository)
-    : IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResult>>
+public sealed class GetAllClientsQueryHandler(IQueryableRepository<Client> clientRepository)
+    : IQueryHandler<GetAllClientsQuery, PagedResult<ClientResult>>
 {
-    private readonly IClientRepository _clientRepository = clientRepository;
+    private readonly IQueryableRepository<Client> _clientRepository = clientRepository;
 
-    public async Task<Result<IEnumerable<ClientResult>>> HandleAsync(GetAllClientsQuery query, CancellationToken cancellationToken = default)
+    public async Task<Result<PagedResult<ClientResult>>> HandleAsync(GetAllClientsQuery query, CancellationToken cancellationToken = default)
     {
-        var clients = await _clientRepository.GetAllAsync(cancellationToken);
+        var pagination = new PaginationParams(query.Page, query.PageSize);
 
-        return Result<IEnumerable<ClientResult>>.Success(clients.Select(client => client.ToClientResult()));
+        var (items, totalCount) = await _clientRepository.GetPagedAsync(pagination, query.SearchTerm, cancellationToken);
+
+        var pagedResult = new PagedResult<ClientResult>
+        (
+            items.Select(c => c.ToClientResult()),
+            totalCount,
+            pagination.Page,
+            pagination.PageSize
+        );
+
+        return Result<PagedResult<ClientResult>>.Success(pagedResult);
     }
 }

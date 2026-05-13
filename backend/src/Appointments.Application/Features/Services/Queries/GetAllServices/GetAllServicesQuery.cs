@@ -1,3 +1,8 @@
+using Appointments.Application.Common.Pagination;
+
 namespace Appointments.Application.Features.Services.Queries.GetAllServices;
 
-public record GetAllServicesQuery();
+public record GetAllServicesQuery(
+    int Page = PaginationParams.DefaultPage,
+    int PageSize = PaginationParams.DefaultPageSize,
+    string? SearchTerm = null);

@@ -1,15 +1,33 @@
+using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Common.Pagination;
 using Appointments.Domain.Appointments;
 using Microsoft.EntityFrameworkCore;
 
 namespace Appointments.Infrastructure.Persistence.Appointments;
 
-internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IAppointmentRepository
+internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IAppointmentRepository, IQueryableRepository<Appointment>
 {
     private readonly DbSet<Appointment> _appointments = dbContext.Set<Appointment>();
 
-    public async Task<IEnumerable<Appointment>> GetAllAsync(CancellationToken cancellationToken = default)
+    public async Task<(IEnumerable<Appointment> Items, int TotalCount)> GetPagedAsync(PaginationParams pagination, string? searchQuery = null, CancellationToken cancellationToken = default)
     {
-        return await _appointments.ToListAsync(cancellationToken);
+        var query = _appointments.AsQueryable().AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(searchQuery) &&
+            Enum.TryParse<AppointmentStatus>(searchQuery, ignoreCase: true, out var status))
+        {
+            query = query.Where(a => a.Status == status);
+        }
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .OrderByDescending(a => a.TimeRange.StartTime)
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
     }
 
     public async Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
@@ -35,10 +53,5 @@ internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IA
     public void Update(Appointment appointment)
     {
         _appointments.Update(appointment);
-    }
-
-    public void Delete(Appointment appointment)
-    {
-        _appointments.Remove(appointment);
     }
 }

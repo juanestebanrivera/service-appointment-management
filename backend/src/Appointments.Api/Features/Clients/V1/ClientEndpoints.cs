@@ -2,6 +2,7 @@ using Appointments.Api.Features.Clients.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Api.Shared;
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Common.Pagination;
 using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.CreateClient;
 using Appointments.Application.Features.Clients.Commands.DeleteClient;
@@ -24,7 +25,7 @@ internal class ClientEndpoints : IEndpoint
         group.MapGet("/", GetAll)
              .CacheOutput(builder => builder.Tag(CacheTag))
              .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
-             .Produces<IEnumerable<ClientApiResponse>>();
+             .Produces<PagedResponse<ClientApiResponse>>();
 
         group.MapGet("/{id:guid}", GetById)
              .CacheOutput(builder => builder.Tag(CacheTag))
@@ -48,12 +49,13 @@ internal class ClientEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [FromServices] IQueryHandler<GetAllClientsQuery, IEnumerable<ClientResult>> handler,
+        [AsParameters] GetAllClientsQuery query,
+        [FromServices] IQueryHandler<GetAllClientsQuery, PagedResult<ClientResult>> handler,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(new GetAllClientsQuery(), cancellationToken);
+        var result = await handler.HandleAsync(query, cancellationToken);
 
-        return result.ToApiResult(value => Results.Ok(value.Select(v => v.ToClientApiResponse())));
+        return result.ToApiResult(value => Results.Ok(value.ToPagedResponse(v => v.ToClientApiResponse())));
     }
 
     private static async Task<IResult> GetById(

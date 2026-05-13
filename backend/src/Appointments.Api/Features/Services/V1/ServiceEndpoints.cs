@@ -2,6 +2,7 @@ using Appointments.Api.Features.Services.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Api.Shared;
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Common.Pagination;
 using Appointments.Application.Features.Services;
 using Appointments.Application.Features.Services.Commands.CreateService;
 using Appointments.Application.Features.Services.Commands.DeleteService;
@@ -24,7 +25,7 @@ internal class ServiceEndpoints : IEndpoint
 
         group.MapGet("/", GetAll)
              .CacheOutput(builder => builder.Tag(CacheTag).Expire(TimeSpan.FromHours(24)))
-             .Produces<IEnumerable<ServiceApiResponse>>();
+             .Produces<PagedResponse<ServiceApiResponse>>();
 
         group.MapGet("/{id:guid}", GetById)
              .CacheOutput(builder => builder.Tag(CacheTag).Expire(TimeSpan.FromHours(24)))
@@ -50,12 +51,13 @@ internal class ServiceEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [FromServices] IQueryHandler<GetAllServicesQuery, IEnumerable<ServiceResult>> handler,
+        [AsParameters] GetAllServicesQuery query,
+        [FromServices] IQueryHandler<GetAllServicesQuery, PagedResult<ServiceResult>> handler,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(new GetAllServicesQuery(), cancellationToken);
+        var result = await handler.HandleAsync(query, cancellationToken);
 
-        return result.ToApiResult(value => Results.Ok(value.Select(s => s.ToServiceApiResponse())));
+        return result.ToApiResult(value => Results.Ok(value.ToPagedResponse(v => v.ToServiceApiResponse())));
     }
 
     private static async Task<IResult> GetById(

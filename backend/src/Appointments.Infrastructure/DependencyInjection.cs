@@ -24,9 +24,18 @@ public static class DependencyInjection
         services.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connectionString));
 
         services.AddScoped<IUnitOfWork>(sp => sp.GetRequiredService<ApplicationDbContext>());
-        services.AddScoped<IClientRepository, ClientRepository>();
-        services.AddScoped<IServiceRepository, ServiceRepository>();
-        services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+        services.AddScoped<ClientRepository>();
+        services.AddScoped<IClientRepository>(sp => sp.GetRequiredService<ClientRepository>());
+        services.AddScoped<IQueryableRepository<Client>>(sp => sp.GetRequiredService<ClientRepository>());
+
+        services.AddScoped<ServiceRepository>();
+        services.AddScoped<IServiceRepository>(sp => sp.GetRequiredService<ServiceRepository>());
+        services.AddScoped<IQueryableRepository<Service>>(sp => sp.GetRequiredService<ServiceRepository>());
+
+        services.AddScoped<AppointmentRepository>();
+        services.AddScoped<IAppointmentRepository>(sp => sp.GetRequiredService<AppointmentRepository>());
+        services.AddScoped<IQueryableRepository<Appointment>>(sp => sp.GetRequiredService<AppointmentRepository>());
+
         services.AddScoped<IUserRepository, UserRepository>();
 
         services.AddScoped<ITokenGenerator, JwtTokenGenerator>();
