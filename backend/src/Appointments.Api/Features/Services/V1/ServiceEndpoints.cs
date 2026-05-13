@@ -51,7 +51,7 @@ internal class ServiceEndpoints : IEndpoint
     }
 
     private static async Task<IResult> GetAll(
-        [AsParameters] GetAllServicesRequest request,
+        [AsParameters] GetServicesRequest request,
         [FromServices] IQueryHandler<GetAllServicesQuery, PagedResult<ServiceResult>> handler,
         CancellationToken cancellationToken)
     {
