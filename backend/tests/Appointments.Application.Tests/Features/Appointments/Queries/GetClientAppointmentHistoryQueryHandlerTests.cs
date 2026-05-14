@@ -27,7 +27,7 @@ public class GetClientAppointmentHistoryQueryHandlerTests
     public async Task HandleAsync_WhenClientDoesNotExist_ReturnsFailure()
     {
         // Arrange
-        var query = new GetClientAppointmentHistoryQuery(ClientId: Guid.NewGuid(), Page: 1, PageSize: 10);
+        var query = new GetClientAppointmentHistoryQuery(ClientId: Guid.NewGuid(), Page: 1, PageSize: 10, CurrentUserId: Guid.NewGuid(), IsAdmin: false);
 
         _clientRepository.GetByIdAsync(query.ClientId, Arg.Any<CancellationToken>()).Returns((Client?)null);
 
@@ -44,11 +44,72 @@ public class GetClientAppointmentHistoryQueryHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WhenUserIsNotOwnerAndNotAdmin_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientAppointmentHistoryQuery(ClientId: client.Id, Page: 1, PageSize: 10, CurrentUserId: Guid.NewGuid(), IsAdmin: false);
+
+        _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.Forbidden, result.Error);
+
+        await _appointmentRepository
+            .DidNotReceive()
+            .GetClientAppointmentHistoryAsync(Arg.Any<Guid>(), Arg.Any<PaginationParams>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenUserIsAdminAndNotOwner_ReturnsPagedResult()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientAppointmentHistoryQuery(ClientId: client.Id, Page: 1, PageSize: 10, CurrentUserId: Guid.NewGuid(), IsAdmin: true);
+
+        _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
+        _appointmentRepository
+            .GetClientAppointmentHistoryAsync(client.Id, Arg.Any<PaginationParams>(), Arg.Any<CancellationToken>())
+            .Returns(([], 0));
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenUserIsOwnerAndNotAdmin_ReturnsPagedResult()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientAppointmentHistoryQuery(ClientId: client.Id, Page: 1, PageSize: 10, CurrentUserId: client.UserId, IsAdmin: false);
+
+        _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
+        _appointmentRepository
+            .GetClientAppointmentHistoryAsync(client.Id, Arg.Any<PaginationParams>(), Arg.Any<CancellationToken>())
+            .Returns(([], 0));
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
+    }
+
+    [Fact]
     public async Task HandleAsync_WhenClientExistsWithAppointments_ReturnsPagedResult()
     {
         // Arrange
         var client = CreateValidClient();
-        var query = new GetClientAppointmentHistoryQuery(ClientId: client.Id, Page: 1, PageSize: 10);
+        var query = new GetClientAppointmentHistoryQuery(ClientId: client.Id, Page: 1, PageSize: 10, CurrentUserId: client.UserId, IsAdmin: false);
 
         var items = new List<ClientAppointmentResult>
         {
@@ -95,7 +156,7 @@ public class GetClientAppointmentHistoryQueryHandlerTests
         // Arrange
         const int TOTAL_COUNT = 0;
         var client = CreateValidClient();
-        var query = new GetClientAppointmentHistoryQuery(ClientId: client.Id, Page: 1, PageSize: 10);
+        var query = new GetClientAppointmentHistoryQuery(ClientId: client.Id, Page: 1, PageSize: 10, CurrentUserId: client.UserId, IsAdmin: false);
 
         _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
         _appointmentRepository

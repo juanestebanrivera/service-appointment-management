@@ -21,6 +21,9 @@ public sealed class GetClientAppointmentHistoryQueryHandler(
         if (client is null)
             return Result<PagedResult<ClientAppointmentResult>>.Failure(ClientApplicationErrors.NotFound);
 
+        if (!query.IsAdmin && client.UserId != query.CurrentUserId)
+            return Result<PagedResult<ClientAppointmentResult>>.Failure(ClientApplicationErrors.Forbidden);
+
         var pagination = new PaginationParams(query.Page, query.PageSize);
 
         var (items, totalCount) = await _appointmentRepository.GetClientAppointmentHistoryAsync(query.ClientId, pagination, cancellationToken);

@@ -26,7 +26,7 @@ public class GetClientUpcomingAppointmentQueryHandlerTests
     public async Task HandleAsync_WhenClientDoesNotExist_ReturnsFailure()
     {
         // Arrange
-        var query = new GetClientUpcomingAppointmentQuery(ClientId: Guid.NewGuid(), IncludeLast: false);
+        var query = new GetClientUpcomingAppointmentQuery(ClientId: Guid.NewGuid(), IncludeLast: false, CurrentUserId: Guid.NewGuid(), IsAdmin: false);
 
         _clientRepository.GetByIdAsync(query.ClientId, Arg.Any<CancellationToken>()).Returns((Client?)null);
 
@@ -42,11 +42,67 @@ public class GetClientUpcomingAppointmentQueryHandlerTests
     }
 
     [Fact]
+    public async Task HandleAsync_WhenUserIsNotOwnerAndNotAdmin_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: false, CurrentUserId: Guid.NewGuid(), IsAdmin: false);
+
+        _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.Forbidden, result.Error);
+
+        await _appointmentRepository.DidNotReceive().GetClientUpcomingAppointmentAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        await _appointmentRepository.DidNotReceive().GetClientLastCompletedAppointmentAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenUserIsAdminAndNotOwner_ReturnsSuccess()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: false, CurrentUserId: Guid.NewGuid(), IsAdmin: true);
+
+        _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
+        _appointmentRepository.GetClientUpcomingAppointmentAsync(client.Id, Arg.Any<CancellationToken>()).Returns((ClientAppointmentResult?)null);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenUserIsOwner_ReturnsSuccess()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: false, CurrentUserId: client.UserId, IsAdmin: false);
+
+        _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
+        _appointmentRepository.GetClientUpcomingAppointmentAsync(client.Id, Arg.Any<CancellationToken>()).Returns((ClientAppointmentResult?)null);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
+    }
+
+    [Fact]
     public async Task HandleAsync_WhenIncludeLastIsFalse_ReturnsOnlyNextAppointment()
     {
         // Arrange
         var client = CreateValidClient();
-        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: false);
+        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: false, CurrentUserId: client.UserId, IsAdmin: false);
 
         var nextAppointment = CreateClientAppointmentResult(AppointmentStatus.Confirmed);
 
@@ -71,7 +127,7 @@ public class GetClientUpcomingAppointmentQueryHandlerTests
     {
         // Arrange
         var client = CreateValidClient();
-        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: true);
+        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: true, CurrentUserId: client.UserId, IsAdmin: false);
 
         var nextAppointment = CreateClientAppointmentResult(AppointmentStatus.Confirmed);
         var lastAppointment = CreateClientAppointmentResult(AppointmentStatus.Completed);
@@ -95,7 +151,7 @@ public class GetClientUpcomingAppointmentQueryHandlerTests
     {
         // Arrange
         var client = CreateValidClient();
-        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: true);
+        var query = new GetClientUpcomingAppointmentQuery(ClientId: client.Id, IncludeLast: true, CurrentUserId: client.UserId, IsAdmin: false);
 
         _clientRepository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
         _appointmentRepository.GetClientUpcomingAppointmentAsync(client.Id, Arg.Any<CancellationToken>()).Returns((ClientAppointmentResult?)null);

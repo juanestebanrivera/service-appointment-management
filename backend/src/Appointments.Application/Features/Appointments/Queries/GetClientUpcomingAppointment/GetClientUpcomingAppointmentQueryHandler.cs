@@ -18,6 +18,9 @@ public sealed class GetClientUpcomingAppointmentQueryHandler(IAppointmentQueryRe
         if (client is null)
             return Result<ClientUpcomingAppointmentsResult>.Failure(ClientApplicationErrors.NotFound);
 
+        if (!query.IsAdmin && client.UserId != query.CurrentUserId)
+            return Result<ClientUpcomingAppointmentsResult>.Failure(ClientApplicationErrors.Forbidden);
+
         var nextAppointment = await _appointmentRepository.GetClientUpcomingAppointmentAsync(query.ClientId, cancellationToken);
 
         ClientAppointmentResult? lastAppointment = null;
