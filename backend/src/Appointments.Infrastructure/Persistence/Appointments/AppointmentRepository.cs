@@ -1,5 +1,6 @@
 using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Appointments.Queries;
+using Appointments.Application.Common.Pagination;
 using Appointments.Domain.Appointments;
 using Appointments.Domain.Clients;
 using Appointments.Domain.Services;
@@ -20,7 +21,8 @@ internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IA
             .Where(a => a.TimeRange.StartTime.Date == date.Date)
             .Join(_clients.AsNoTracking(), a => a.ClientId, c => c.Id, (appointment, client) => new { appointment, client })
             .Join(_services.AsNoTracking(), r => r.appointment.ServiceId, s => s.Id, (result, service) => new { result.appointment, result.client, service })
-            .Select(r => new AppointmentDetailResult(
+            .Select(r => new AppointmentDetailResult
+            (
                 r.appointment.Id,
                 r.appointment.PriceAtBooking,
                 r.appointment.TimeRange.StartTime,
@@ -43,7 +45,8 @@ internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IA
             .Where(a => a.Id == id)
             .Join(_clients.AsNoTracking(), a => a.ClientId, c => c.Id, (appointment, client) => new { appointment, client })
             .Join(_services.AsNoTracking(), r => r.appointment.ServiceId, s => s.Id, (result, service) => new { result.appointment, result.client, service })
-            .Select(r => new AppointmentDetailResult(
+            .Select(r => new AppointmentDetailResult
+            (
                 r.appointment.Id,
                 r.appointment.PriceAtBooking,
                 r.appointment.TimeRange.StartTime,
@@ -83,5 +86,32 @@ internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IA
     public void Update(Appointment appointment)
     {
         _appointments.Update(appointment);
+    }
+
+    public async Task<(IEnumerable<ClientAppointmentResult> items, int totalCount)> GetClientAppointmentHistoryAsync(Guid clientId, PaginationParams pagination, CancellationToken cancellationToken = default)
+    {
+        var query = _appointments
+            .AsNoTracking()
+            .Where(a => a.ClientId == clientId)
+            .OrderByDescending(a => a.TimeRange.StartTime)
+            .Join(_services.AsNoTracking(), a => a.ServiceId, s => s.Id, (appointment, service) => new ClientAppointmentResult
+            (
+                appointment.Id,
+                appointment.PriceAtBooking,
+                appointment.TimeRange.StartTime,
+                appointment.TimeRange.EndTime,
+                appointment.Status,
+                service.Id,
+                service.Name
+            ));
+
+        var totalCount = await query.CountAsync(cancellationToken);
+
+        var items = await query
+            .Skip((pagination.Page - 1) * pagination.PageSize)
+            .Take(pagination.PageSize)
+            .ToListAsync(cancellationToken);
+
+        return (items, totalCount);
     }
 }

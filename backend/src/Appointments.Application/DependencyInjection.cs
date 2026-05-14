@@ -26,6 +26,7 @@ using Appointments.Application.Features.Users.Commands.ChangeUserStatus;
 using Appointments.Application.Features.Users.Commands.UserLogin;
 using Appointments.Application.Features.Users.Commands.UserRegister;
 using Microsoft.Extensions.DependencyInjection;
+using Appointments.Application.Features.Appointments.Queries.GetClientAppointmentHistory;
 
 namespace Appointments.Application;
 
@@ -43,6 +44,9 @@ public static class DependencyInjection
             services.AddScoped<ICommandHandler<DeleteClientCommand>, DeleteClientCommandHandler>();
             services.AddScoped<IQueryHandler<GetAllClientsQuery, PagedResult<ClientResult>>, GetAllClientsQueryHandler>();
             services.AddScoped<IQueryHandler<GetClientByIdQuery, ClientResult>, GetClientByIdQueryHandler>();
+
+            // Client Appointments
+            services.AddScoped<IQueryHandler<GetClientAppointmentHistoryQuery, PagedResult<ClientAppointmentResult>>, GetClientAppointmentHistoryQueryHandler>();
 
             // Services
             services.AddScoped<ICommandHandler<CreateServiceCommand, Guid>, CreateServiceCommandHandler>();
