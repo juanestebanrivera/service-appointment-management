@@ -54,6 +54,8 @@ public class PhoneNumberTests
     [InlineData("+57", "123456")]
     [InlineData("+57", "1234567abc")]
     [InlineData("+57", "123 456 7890")]
+    [InlineData("+57", "123-456-7890")]
+    [InlineData("+57", "123+456789")]
     public void Create_WhenNumberFormatIsInvalid_ReturnsFailure(string prefix, string number)
     {
         // Act
@@ -67,6 +69,7 @@ public class PhoneNumberTests
     [Theory]
     [InlineData("+57", "1234567")]
     [InlineData("+1", "9876543210")]
+    [InlineData("+123", "1234567890")]
     public void Create_WhenPhoneNumberIsValid_ReturnsSuccessAndCreatesPhoneNumber(string prefix, string number)
     {
         // Act
