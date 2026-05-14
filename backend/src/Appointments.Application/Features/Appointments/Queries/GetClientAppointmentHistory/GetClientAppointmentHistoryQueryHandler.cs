@@ -6,8 +6,10 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Queries.GetClientAppointmentHistory;
 
-public sealed class GetClientAppointmentHistoryQueryHandler(IAppointmentQueryRepository appointmentRepository, IClientRepository clientRepository)
-    : IQueryHandler<GetClientAppointmentHistoryQuery, PagedResult<ClientAppointmentResult>>
+public sealed class GetClientAppointmentHistoryQueryHandler(
+    IAppointmentQueryRepository appointmentRepository,
+    IClientRepository clientRepository
+) : IQueryHandler<GetClientAppointmentHistoryQuery, PagedResult<ClientAppointmentResult>>
 {
     private readonly IAppointmentQueryRepository _appointmentRepository = appointmentRepository;
     private readonly IClientRepository _clientRepository = clientRepository;
