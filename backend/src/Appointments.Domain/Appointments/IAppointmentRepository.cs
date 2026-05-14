@@ -4,7 +4,6 @@ namespace Appointments.Domain.Appointments;
 
 public interface IAppointmentRepository : IRepository<Appointment>
 {
-    Task<Appointment?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
     Task<bool> VerifyAvailabilityAsync(DateTimeOffset startTime, DateTimeOffset endTime, Guid? excludeAppointmentId = null, CancellationToken cancellationToken = default);
     Task<bool> HasActiveAppointmentAsync(Guid clientId, CancellationToken cancellationToken = default);
 

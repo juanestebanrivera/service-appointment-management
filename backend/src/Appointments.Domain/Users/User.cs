@@ -39,5 +39,5 @@ public class User : Entity, IAggregateRoot
 
     public void Activate() => IsActive = true;
 
-    public void Desactivate() => IsActive = false;
+    public void Deactivate() => IsActive = false;
 }

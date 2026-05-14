@@ -25,7 +25,7 @@ public class ChangeUserStatusCommandHandler(
         }
         else
         {
-            user.Desactivate();
+            user.Deactivate();
         }
 
         _userRepository.Update(user);
