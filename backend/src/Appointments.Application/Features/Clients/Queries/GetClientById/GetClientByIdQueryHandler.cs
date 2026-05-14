@@ -16,6 +16,9 @@ public sealed class GetClientByIdQueryHandler(IClientRepository clientRepository
         if (client is null)
             return Result<ClientResult>.Failure(ClientApplicationErrors.NotFound);
 
+        if (!query.IsAdmin && client.UserId != query.CurrentUserId)
+            return Result<ClientResult>.Failure(ClientApplicationErrors.Forbidden);
+
         return Result<ClientResult>.Success(client.ToClientResult());
     }
 }

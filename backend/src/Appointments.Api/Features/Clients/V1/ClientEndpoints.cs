@@ -1,6 +1,7 @@
 using Appointments.Api.Features.Clients.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Api.Shared;
+using Appointments.Api.Shared.Authentication;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Common.Pagination;
 using Appointments.Application.Features.Clients;
@@ -11,6 +12,7 @@ using Appointments.Application.Features.Clients.Queries.GetAllClients;
 using Appointments.Application.Features.Clients.Queries.GetClientById;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OutputCaching;
+using System.Security.Claims;
 
 namespace Appointments.Api.Features.Clients.V1;
 
@@ -67,9 +69,10 @@ internal class ClientEndpoints : IEndpoint
     private static async Task<IResult> GetById(
         Guid id,
         [FromServices] IQueryHandler<GetClientByIdQuery, ClientResult> handler,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(new GetClientByIdQuery(id), cancellationToken);
+        var result = await handler.HandleAsync(new GetClientByIdQuery(id, user.GetUserId(), user.IsAdmin()), cancellationToken);
 
         return result.ToApiResult(value => Results.Ok(value.ToClientApiResponse()));
     }
@@ -77,10 +80,11 @@ internal class ClientEndpoints : IEndpoint
     private static async Task<IResult> Create(
         [FromBody] CreateClientApiRequest request,
         [FromServices] ICommandHandler<CreateClientCommand, Guid> handler,
+        ClaimsPrincipal user,
         IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
-        var command = new CreateClientCommand(request.UserId, request.FirstName, request.LastName, request.PhonePrefix, request.PhoneNumber, request.Email);
+        var command = new CreateClientCommand(request.UserId, request.FirstName, request.LastName, request.PhonePrefix, request.PhoneNumber, user.GetUserId(), request.Email);
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (result.IsSuccess)
@@ -95,10 +99,11 @@ internal class ClientEndpoints : IEndpoint
         Guid id,
         [FromBody] UpdateClientApiRequest request,
         [FromServices] ICommandHandler<UpdateClientCommand> handler,
+        ClaimsPrincipal user,
         IOutputCacheStore cacheStore,
         CancellationToken cancellationToken)
     {
-        var command = new UpdateClientCommand(id, request.FirstName, request.LastName, request.Email, request.PhonePrefix, request.PhoneNumber, request.IsActive);
+        var command = new UpdateClientCommand(id, request.FirstName, request.LastName, request.Email, request.PhonePrefix, request.PhoneNumber, request.IsActive, user.GetUserId(), user.IsAdmin());
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (result.IsSuccess)

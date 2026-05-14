@@ -6,5 +6,6 @@ public record CreateClientCommand(
     string LastName,
     string PhonePrefix,
     string PhoneNumber,
+    Guid CurrentUserId,
     string? Email = null
 );

@@ -1,4 +1,5 @@
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.CreateClient;
 using Appointments.Application.Features.Users;
 using Appointments.Domain.Clients;
@@ -24,15 +25,42 @@ public class CreateClientCommandHandlerTests
     }
 
     [Fact]
-    public async Task HandleAsync_WhenPhoneIsInvalid_ReturnsFailure()
+    public async Task HandleAsync_WhenCurrentUserIsNotTheLinkedUser_ReturnsForbidden()
     {
         // Arrange
         var command = new CreateClientCommand(
             UserId: Guid.NewGuid(),
             FirstName: "FirstName",
             LastName: "LastName",
+            PhonePrefix: "+1",
+            PhoneNumber: "1234567890",
+            CurrentUserId: Guid.NewGuid(),
+            Email: "username@domain.com"
+        );
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.Forbidden, result.Error);
+
+        _clientRepository.DidNotReceive().Add(Arg.Any<Client>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenPhoneIsInvalid_ReturnsFailure()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var command = new CreateClientCommand(
+            UserId: userId,
+            FirstName: "FirstName",
+            LastName: "LastName",
             PhonePrefix: "InvalidPrefix",
             PhoneNumber: "InvalidNumber",
+            CurrentUserId: userId,
             Email: "username@domain.com"
         );
 
@@ -51,12 +79,14 @@ public class CreateClientCommandHandlerTests
     public async Task HandleAsync_WhenEmailIsInvalid_ReturnsFailure()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var command = new CreateClientCommand(
-            UserId: Guid.NewGuid(),
+            UserId: userId,
             FirstName: "FirstName",
             LastName: "LastName",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
+            CurrentUserId: userId,
             Email: "InvalidEmail"
         );
 
@@ -75,12 +105,14 @@ public class CreateClientCommandHandlerTests
     public async Task HandleAsync_WhenFirstNameIsInvalid_ReturnsFailure()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var command = new CreateClientCommand(
-            UserId: Guid.NewGuid(),
+            UserId: userId,
             FirstName: "",
             LastName: "LastName",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
+            CurrentUserId: userId,
             Email: "username@domain.com"
         );
 
@@ -99,12 +131,14 @@ public class CreateClientCommandHandlerTests
     public async Task HandleAsync_WhenLastNameIsInvalid_ReturnsFailure()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var command = new CreateClientCommand(
-            UserId: Guid.NewGuid(),
+            UserId: userId,
             FirstName: "FirstName",
             LastName: "",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
+            CurrentUserId: userId,
             Email: "username@domain.com"
         );
 
@@ -123,12 +157,14 @@ public class CreateClientCommandHandlerTests
     public async Task HandleAsync_WhenUserDoesNotExist_ReturnsFailure()
     {
         // Arrange
+        var userId = Guid.NewGuid();
         var command = new CreateClientCommand(
-            UserId: Guid.NewGuid(),
+            UserId: userId,
             FirstName: "FirstName",
             LastName: "LastName",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
+            CurrentUserId: userId,
             Email: "username@domain.com"
         );
 
@@ -161,6 +197,7 @@ public class CreateClientCommandHandlerTests
             LastName: "LastName",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
+            CurrentUserId: user.Id,
             Email: "username@domain.com"
         );
 
@@ -189,12 +226,14 @@ public class CreateClientCommandHandlerTests
 
         var user = User.Register(Email.Create("username@domain.com").Value, userPassword, passwordHasher).Value;
 
+        var userId = Guid.NewGuid();
         var command = new CreateClientCommand(
-            UserId: Guid.NewGuid(),
+            UserId: userId,
             FirstName: "FirstName",
             LastName: "LastName",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
+            CurrentUserId: userId,
             Email: email
         );
 

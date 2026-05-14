@@ -7,5 +7,7 @@ public record UpdateClientCommand(
     string? Email,
     string PhonePrefix,
     string PhoneNumber,
-    bool IsActive
+    bool IsActive,
+    Guid CurrentUserId,
+    bool IsAdmin
 );

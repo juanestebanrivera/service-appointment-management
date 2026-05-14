@@ -19,6 +19,10 @@ public sealed class CreateClientCommandHandler(
 
     public async Task<Result<Guid>> HandleAsync(CreateClientCommand command, CancellationToken cancellationToken = default)
     {
+        // The client can only be created when user is creating.
+        if (command.UserId != command.CurrentUserId)
+            return Result<Guid>.Failure(ClientApplicationErrors.Forbidden);
+
         var phoneResult = PhoneNumber.Create(command.PhonePrefix, command.PhoneNumber);
 
         if (phoneResult.IsFailure)

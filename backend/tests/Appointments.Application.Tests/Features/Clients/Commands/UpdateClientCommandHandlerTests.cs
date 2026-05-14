@@ -1,4 +1,5 @@
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Clients;
 using Appointments.Application.Features.Clients.Commands.UpdateClient;
 using Appointments.Domain.Clients;
 using Appointments.Domain.SharedKernel.ValueObjects;
@@ -30,7 +31,9 @@ public class UpdateClientCommandHandlerTests
             Email: "username@domain.com",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
-            IsActive: true
+            IsActive: true,
+            CurrentUserId: Guid.NewGuid(),
+            IsAdmin: false
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns((Client?)null);
@@ -58,7 +61,9 @@ public class UpdateClientCommandHandlerTests
             Email: "username@domain.com",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
-            IsActive: true
+            IsActive: true,
+            CurrentUserId: client.UserId,
+            IsAdmin: true
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
@@ -86,7 +91,9 @@ public class UpdateClientCommandHandlerTests
             Email: "username@domain.com",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
-            IsActive: true
+            IsActive: true,
+            CurrentUserId: client.UserId,
+            IsAdmin: true
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
@@ -114,7 +121,9 @@ public class UpdateClientCommandHandlerTests
             Email: "invalid-email",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
-            IsActive: true
+            IsActive: true,
+            CurrentUserId: client.UserId,
+            IsAdmin: true
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
@@ -142,7 +151,9 @@ public class UpdateClientCommandHandlerTests
             Email: "username@domain.com",
             PhonePrefix: "+1",
             PhoneNumber: "invalid-phone",
-            IsActive: true
+            IsActive: true,
+            CurrentUserId: client.UserId,
+            IsAdmin: true
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
@@ -178,7 +189,9 @@ public class UpdateClientCommandHandlerTests
             Email: email,
             PhonePrefix: "+57",
             PhoneNumber: "0987654321",
-            IsActive: isActive
+            IsActive: isActive,
+            CurrentUserId: client.UserId,
+            IsAdmin: true
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
@@ -197,6 +210,94 @@ public class UpdateClientCommandHandlerTests
         Assert.Equal(command.PhonePrefix, updatedClient.Phone.Prefix);
         Assert.Equal(command.PhoneNumber, updatedClient.Phone.Number);
         Assert.Equal(command.IsActive, updatedClient.IsActive);
+
+        _clientRepository.Received(1).Update(Arg.Any<Client>());
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenCurrentUserIsNotOwnerAndNotAdmin_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var command = new UpdateClientCommand(
+            ClientId: client.Id,
+            FirstName: "NewFirstName",
+            LastName: "NewLastName",
+            Email: "new@domain.com",
+            PhonePrefix: "+1",
+            PhoneNumber: "1234567890",
+            IsActive: true,
+            CurrentUserId: Guid.NewGuid(),
+            IsAdmin: false
+        );
+
+        _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.Forbidden, result.Error);
+
+        _clientRepository.DidNotReceive().Update(Arg.Any<Client>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenCurrentUserIsOwner_ReturnsSuccess()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var command = new UpdateClientCommand(
+            ClientId: client.Id,
+            FirstName: "NewFirstName",
+            LastName: "NewLastName",
+            Email: "new@domain.com",
+            PhonePrefix: "+1",
+            PhoneNumber: "1234567890",
+            IsActive: true,
+            CurrentUserId: client.UserId,
+            IsAdmin: false
+        );
+
+        _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+
+        _clientRepository.Received(1).Update(Arg.Any<Client>());
+        await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenCurrentUserIsAdmin_ReturnsSuccess()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var command = new UpdateClientCommand(
+            ClientId: client.Id,
+            FirstName: "NewFirstName",
+            LastName: "NewLastName",
+            Email: "new@domain.com",
+            PhonePrefix: "+1",
+            PhoneNumber: "1234567890",
+            IsActive: true,
+            CurrentUserId: Guid.NewGuid(),
+            IsAdmin: true
+        );
+
+        _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
 
         _clientRepository.Received(1).Update(Arg.Any<Client>());
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());

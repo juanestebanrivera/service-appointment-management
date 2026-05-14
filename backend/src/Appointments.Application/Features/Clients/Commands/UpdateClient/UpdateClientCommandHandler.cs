@@ -20,6 +20,9 @@ public sealed class UpdateClientCommandHandler(
         if (client is null)
             return Result.Failure(ClientApplicationErrors.NotFound);
 
+        if (!command.IsAdmin && client.UserId != command.CurrentUserId)
+            return Result.Failure(ClientApplicationErrors.Forbidden);
+
         var resultFirstName = PersonName.Create(command.FirstName, nameof(Client.FirstName));
 
         if (resultFirstName.IsFailure)

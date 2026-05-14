@@ -21,7 +21,7 @@ public class GetClientByIdQueryHandlerTests
     public async Task HandleAsync_WhenClientDoesNotExist_ReturnsFailure()
     {
         // Arrange
-        var query = new GetClientByIdQuery(Guid.NewGuid());
+        var query = new GetClientByIdQuery(ClientId: Guid.NewGuid(), CurrentUserId: Guid.NewGuid(), IsAdmin: false);
         _clientRepository.GetByIdAsync(query.ClientId, Arg.Any<CancellationToken>()).Returns((Client?)null);
 
         // Act
@@ -30,6 +30,22 @@ public class GetClientByIdQueryHandlerTests
         // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(ClientApplicationErrors.NotFound, result.Error);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenClientExistsAndCurrentUserIsNotOwnerAndNotAdmin_ReturnsForbidden()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientByIdQuery(client.Id, CurrentUserId: Guid.NewGuid(), IsAdmin: false);
+        _clientRepository.GetByIdAsync(query.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.Forbidden, result.Error);
     }
 
     [Fact]
@@ -44,7 +60,7 @@ public class GetClientByIdQueryHandlerTests
             Email.Create("username@domain.com").Value
         ).Value;
 
-        var query = new GetClientByIdQuery(client.Id);
+        var query = new GetClientByIdQuery(client.Id, client.UserId, IsAdmin: false);
         _clientRepository.GetByIdAsync(query.ClientId, Arg.Any<CancellationToken>()).Returns(client);
 
         // Act
@@ -60,5 +76,32 @@ public class GetClientByIdQueryHandlerTests
         Assert.Equal(client.Phone.Number, result.Value.PhoneNumber);
         Assert.Equal(client.Email?.Value, result.Value.Email);
         Assert.Equal(client.IsActive, result.Value.IsActive);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenClientExistsAndCurrentUserIsAdmin_ReturnsSuccess()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var query = new GetClientByIdQuery(client.Id, CurrentUserId: Guid.NewGuid(), IsAdmin: true);
+        _clientRepository.GetByIdAsync(query.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(client.Id, result.Value.Id);
+    }
+
+    private static Client CreateValidClient()
+    {
+        return Client.Register(
+            PersonName.Create("FirstName", nameof(Client.FirstName)).Value,
+            PersonName.Create("LastName", nameof(Client.LastName)).Value,
+            PhoneNumber.Create("+1", "1234567890").Value,
+            userId: Guid.NewGuid(),
+            Email.Create("username@domain.com").Value
+        ).Value;
     }
 }
