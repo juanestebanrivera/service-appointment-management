@@ -86,6 +86,7 @@ public class AppointmentTests
         // Arrange
         var currentTime = GetDefaultCurrentTime();
         var appointment = CreateValidAppointment(currentTime);
+        var originalTimeRange = appointment.TimeRange;
 
         appointment.Cancel();
 
@@ -101,6 +102,7 @@ public class AppointmentTests
         // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(AppointmentErrors.InvalidStatusTransition, result.Error);
+        Assert.Equal(originalTimeRange, appointment.TimeRange);
     }
 
     [Fact]
@@ -109,6 +111,7 @@ public class AppointmentTests
         // Arrange
         var currentTime = GetDefaultCurrentTime();
         var appointment = CreateValidAppointment(currentTime);
+        var originalTimeRange = appointment.TimeRange;
 
         appointment.Confirm();
         appointment.Complete();
@@ -125,6 +128,7 @@ public class AppointmentTests
         // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(AppointmentErrors.InvalidStatusTransition, result.Error);
+        Assert.Equal(originalTimeRange, appointment.TimeRange);
     }
 
     [Fact]
@@ -133,6 +137,7 @@ public class AppointmentTests
         // Arrange
         var currentTime = GetDefaultCurrentTime();
         var appointment = CreateValidAppointment(currentTime);
+        var originalTimeRange = appointment.TimeRange;
 
         appointment.Confirm();
         appointment.MarkAsNoShow();
@@ -149,6 +154,7 @@ public class AppointmentTests
         // Assert
         Assert.True(result.IsFailure);
         Assert.Equal(AppointmentErrors.InvalidStatusTransition, result.Error);
+        Assert.Equal(originalTimeRange, appointment.TimeRange);
     }
 
     [Fact]
@@ -195,6 +201,49 @@ public class AppointmentTests
         Assert.True(result.IsSuccess);
         Assert.Equal(newTimeRange.StartTime, appointment.TimeRange.StartTime);
         Assert.Equal(newTimeRange.EndTime, appointment.TimeRange.EndTime);
+    }
+
+    [Fact]
+    public void Reschedule_WhenStatusIsPending_ReturnsSuccessAndResetsStatusToPending()
+    {
+        // Arrange
+        var currentTime = GetDefaultCurrentTime();
+        var appointment = CreateValidAppointment(currentTime);
+
+        var newTimeRange = TimeRange.Create(
+            startTime: new(2026, 1, 2, 10, 0, 0, TimeSpan.Zero),
+            endTime: new(2026, 1, 2, 11, 0, 0, TimeSpan.Zero),
+            currentTime: currentTime
+        ).Value;
+
+        // Act
+        var result = appointment.Reschedule(newTimeRange);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(AppointmentStatus.Pending, appointment.Status);
+    }
+
+    [Fact]
+    public void Reschedule_WhenStatusIsConfirmed_ReturnsSuccessAndResetsStatusToPending()
+    {
+        // Arrange
+        var currentTime = GetDefaultCurrentTime();
+        var appointment = CreateValidAppointment(currentTime);
+        appointment.Confirm();
+
+        var newTimeRange = TimeRange.Create(
+            startTime: new(2026, 1, 2, 10, 0, 0, TimeSpan.Zero),
+            endTime: new(2026, 1, 2, 11, 0, 0, TimeSpan.Zero),
+            currentTime: currentTime
+        ).Value;
+
+        // Act
+        var result = appointment.Reschedule(newTimeRange);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(AppointmentStatus.Pending, appointment.Status);
     }
 
     [Fact]

@@ -106,6 +106,23 @@ public class ServiceTests
         Assert.Equal(isActive, result.Value.IsActive);
     }
 
+    [Fact]
+    public void Create_WhenDescriptionIsNull_ReturnsSuccess()
+    {
+        // Arrange
+        string name = "Service Name";
+        decimal price = 100;
+        TimeSpan duration = TimeSpan.FromMinutes(30);
+        string? description = null;
+
+        // Act
+        var result = Service.Create(name, price, duration, description);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Null(result.Value.Description);
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]

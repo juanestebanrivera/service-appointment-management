@@ -27,6 +27,7 @@ public class ClientTests
         Assert.Equal(phone, result.Value.Phone);
         Assert.Equal(email, result.Value.Email);
         Assert.True(result.Value.IsActive);
+        Assert.Equal(userId, result.Value.UserId);
     }
 
     [Fact]
@@ -50,10 +51,11 @@ public class ClientTests
         Assert.Equal(phone, result.Value.Phone);
         Assert.Null(result.Value.Email);
         Assert.True(result.Value.IsActive);
+        Assert.Equal(userId, result.Value.UserId);
     }
 
     [Fact]
-    public void UpdateContactInfo_WhenEmailIsProvided_UpdatesAllFields()
+    public void UpdateContactInfo_WhenEmailIsProvided_UpdatesAllContactInfo()
     {
         // Arrange
         var client = CreateValidClient();
@@ -90,6 +92,42 @@ public class ClientTests
         Assert.Equal(newLastName, client.LastName);
         Assert.Null(client.Email);
         Assert.Equal(newPhone, client.Phone);
+    }
+
+    [Fact]
+    public void UpdateContactInfo_WhenCalled_MaintainsUserId()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var originalUserId = client.UserId;
+
+        var newFirstName = PersonName.Create("New First", nameof(Client.FirstName)).Value;
+        var newLastName = PersonName.Create("New Last", nameof(Client.LastName)).Value;
+        var newPhone = PhoneNumber.Create("+57", "0987654321").Value;
+
+        // Act
+        client.UpdateContactInfo(newFirstName, newLastName, null, newPhone);
+
+        // Assert
+        Assert.Equal(originalUserId, client.UserId);
+    }
+
+    [Fact]
+    public void UpdateContactInfo_WhenCalled_MaintainsIsActiveState()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        client.Deactivate();
+
+        var newFirstName = PersonName.Create("New First", nameof(Client.FirstName)).Value;
+        var newLastName = PersonName.Create("New Last", nameof(Client.LastName)).Value;
+        var newPhone = PhoneNumber.Create("+57", "0987654321").Value;
+
+        // Act
+        client.UpdateContactInfo(newFirstName, newLastName, null, newPhone);
+
+        // Assert
+        Assert.False(client.IsActive);
     }
 
     [Fact]
