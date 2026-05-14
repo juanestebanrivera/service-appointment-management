@@ -1,4 +1,5 @@
 using Appointments.Application.Common.Interfaces;
+using Appointments.Application.Features.Clients.Queries;
 using Appointments.Domain.Appointments;
 using Appointments.Domain.SharedKernel;
 
@@ -6,11 +7,13 @@ namespace Appointments.Application.Features.Appointments.Commands.RescheduleAppo
 
 public sealed class RescheduleAppointmentCommandHandler(
     IAppointmentRepository appointmentRepository,
+    IClientQueryRepository clientQueryRepository,
     IUnitOfWork unitOfWork,
     TimeProvider timeProvider
 ) : ICommandHandler<RescheduleAppointmentCommand>
 {
     private readonly IAppointmentRepository _appointmentRepository = appointmentRepository;
+    private readonly IClientQueryRepository _clientQueryRepository = clientQueryRepository;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
     private readonly TimeProvider _timeProvider = timeProvider;
 
@@ -20,6 +23,11 @@ public sealed class RescheduleAppointmentCommandHandler(
 
         if (appointment is null)
             return Result.Failure(AppointmentApplicationErrors.NotFound);
+
+        var client = await _clientQueryRepository.GetByIdAsync(appointment.ClientId, cancellationToken);
+
+        if (client?.UserId != command.CurrentUserId)
+            return Result.Failure(AppointmentApplicationErrors.Forbidden);
 
         var currentTime = _timeProvider.GetUtcNow();
         var newEndTime = command.NewStartTime.Add(appointment.TimeRange.Duration);

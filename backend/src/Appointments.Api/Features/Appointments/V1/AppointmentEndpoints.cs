@@ -1,6 +1,7 @@
 using Appointments.Api.Features.Appointments.V1.Contracts;
 using Appointments.Api.Infrastructure.Endpoints;
 using Appointments.Api.Shared;
+using Appointments.Api.Shared.Authentication;
 using Appointments.Api.Shared.Filters.Idempotency;
 using Appointments.Application.Common.Interfaces;
 using Appointments.Application.Features.Appointments;
@@ -13,6 +14,7 @@ using Appointments.Application.Features.Appointments.Commands.RescheduleAppointm
 using Appointments.Application.Features.Appointments.Queries.GetAppointmentsByDate;
 using Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace Appointments.Api.Features.Appointments.V1;
 
@@ -80,9 +82,10 @@ internal class AppointmentEndpoints : IEndpoint
     private static async Task<IResult> GetById(
         Guid id,
         [FromServices] IQueryHandler<GetAppointmentByIdQuery, AppointmentDetailResult> handler,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(new GetAppointmentByIdQuery(id), cancellationToken);
+        var result = await handler.HandleAsync(new GetAppointmentByIdQuery(id, user.GetUserId(), user.IsAdmin()), cancellationToken);
 
         return result.ToApiResult(value => Results.Ok(value.ToAppointmentApiResponse()));
     }
@@ -101,9 +104,10 @@ internal class AppointmentEndpoints : IEndpoint
     private static async Task<IResult> Cancel(
         Guid id,
         [FromServices] ICommandHandler<CancelAppointmentCommand> handler,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(new CancelAppointmentCommand(id), cancellationToken);
+        var result = await handler.HandleAsync(new CancelAppointmentCommand(id, user.GetUserId()), cancellationToken);
 
         return result.ToApiResult(() => Results.NoContent());
     }
@@ -121,9 +125,10 @@ internal class AppointmentEndpoints : IEndpoint
     private static async Task<IResult> Confirm(
         Guid id,
         [FromServices] ICommandHandler<ConfirmAppointmentCommand> handler,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
-        var result = await handler.HandleAsync(new ConfirmAppointmentCommand(id), cancellationToken);
+        var result = await handler.HandleAsync(new ConfirmAppointmentCommand(id, user.GetUserId()), cancellationToken);
 
         return result.ToApiResult(() => Results.NoContent());
     }
@@ -142,9 +147,10 @@ internal class AppointmentEndpoints : IEndpoint
         Guid id,
         [FromBody] RescheduleAppointmentApiRequest request,
         [FromServices] ICommandHandler<RescheduleAppointmentCommand> handler,
+        ClaimsPrincipal user,
         CancellationToken cancellationToken)
     {
-        var command = new RescheduleAppointmentCommand(id, request.NewStartTime);
+        var command = new RescheduleAppointmentCommand(id, request.NewStartTime, user.GetUserId());
         var result = await handler.HandleAsync(command, cancellationToken);
 
         return result.ToApiResult(() => Results.NoContent());

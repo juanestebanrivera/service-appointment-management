@@ -21,7 +21,7 @@ public class GetAppointmentByIdQueryHandlerTests
     public async Task HandleAsync_WhenAppointmentDoesNotExist_ReturnsFailure()
     {
         // Arrange
-        var query = new GetAppointmentByIdQuery(Guid.NewGuid());
+        var query = new GetAppointmentByIdQuery(Guid.NewGuid(), Guid.NewGuid(), IsAdmin: false);
 
         _appointmentRepository.GetDetailByIdAsync(query.AppointmentId, Arg.Any<CancellationToken>())
                               .Returns((AppointmentDetailResult?)null);
@@ -31,30 +31,52 @@ public class GetAppointmentByIdQueryHandlerTests
 
         // Assert
         Assert.True(result.IsFailure);
-        Assert.NotNull(result.Error);
+        Assert.Equal(AppointmentApplicationErrors.NotFound, result.Error);
     }
 
     [Fact]
-    public async Task HandleAsync_WhenAppointmentExists_ReturnsSuccessWithAppointmentData()
+    public async Task HandleAsync_WhenUserIsNotOwnerAndNotAdmin_ReturnsForbidden()
     {
         // Arrange
-        var appointment = new AppointmentDetailResult(
-            Id: Guid.NewGuid(),
-            PriceAtBooking: 100,
-            StartTime: new DateTimeOffset(2026, 1, 1, 10, 0, 0, TimeSpan.Zero),
-            EndTime: new DateTimeOffset(2026, 1, 1, 11, 0, 0, TimeSpan.Zero),
-            Status: AppointmentStatus.Pending,
-            ClientId: Guid.NewGuid(),
-            ClientFirstName: "FirstName",
-            ClientLastName: "LastName",
-            ClientEmail: "username@domain.com",
-            ClientPhonePrefix: "+1",
-            ClientPhoneNumber: "123456789",
-            ServiceId: Guid.NewGuid(),
-            ServiceName: "Service Name"
-        );
+        var appointment = CreateAppointmentDetailResult();
+        var query = new GetAppointmentByIdQuery(appointment.Id, CurrentUserId: Guid.NewGuid(), IsAdmin: false);
 
-        var query = new GetAppointmentByIdQuery(appointment.Id);
+        _appointmentRepository.GetDetailByIdAsync(query.AppointmentId, Arg.Any<CancellationToken>())
+                              .Returns(appointment);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(AppointmentApplicationErrors.Forbidden, result.Error);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenUserIsAdminAndNotOwner_ReturnsSuccess()
+    {
+        // Arrange
+        var appointment = CreateAppointmentDetailResult();
+        var query = new GetAppointmentByIdQuery(appointment.Id, CurrentUserId: Guid.NewGuid(), IsAdmin: true);
+
+        _appointmentRepository.GetDetailByIdAsync(query.AppointmentId, Arg.Any<CancellationToken>())
+                              .Returns(appointment);
+
+        // Act
+        var result = await _handler.HandleAsync(query, default);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenUserIsOwner_ReturnsSuccessWithAppointmentData()
+    {
+        // Arrange
+        var userId = Guid.NewGuid();
+        var appointment = CreateAppointmentDetailResult(clientUserId: userId);
+        var query = new GetAppointmentByIdQuery(appointment.Id, CurrentUserId: userId, IsAdmin: false);
 
         _appointmentRepository.GetDetailByIdAsync(query.AppointmentId, Arg.Any<CancellationToken>())
                               .Returns(appointment);
@@ -78,5 +100,25 @@ public class GetAppointmentByIdQueryHandlerTests
         Assert.Equal(appointment.StartTime, result.Value.StartTime);
         Assert.Equal(appointment.EndTime, result.Value.EndTime);
         Assert.Equal(appointment.Status, result.Value.Status);
+    }
+
+    private static AppointmentDetailResult CreateAppointmentDetailResult(Guid? clientUserId = null)
+    {
+        return new(
+            Id: Guid.NewGuid(),
+            PriceAtBooking: 100,
+            StartTime: new DateTimeOffset(2026, 1, 1, 10, 0, 0, TimeSpan.Zero),
+            EndTime: new DateTimeOffset(2026, 1, 1, 11, 0, 0, TimeSpan.Zero),
+            Status: AppointmentStatus.Pending,
+            ClientId: Guid.NewGuid(),
+            ClientUserId: clientUserId ?? Guid.NewGuid(),
+            ClientFirstName: "FirstName",
+            ClientLastName: "LastName",
+            ClientEmail: "username@domain.com",
+            ClientPhonePrefix: "+1",
+            ClientPhoneNumber: "123456789",
+            ServiceId: Guid.NewGuid(),
+            ServiceName: "Service Name"
+        );
     }
 }

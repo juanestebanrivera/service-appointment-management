@@ -1,3 +1,3 @@
 namespace Appointments.Application.Features.Appointments.Commands.CancelAppointment;
 
-public record CancelAppointmentCommand(Guid AppointmentId);
+public record CancelAppointmentCommand(Guid AppointmentId, Guid CurrentUserId);

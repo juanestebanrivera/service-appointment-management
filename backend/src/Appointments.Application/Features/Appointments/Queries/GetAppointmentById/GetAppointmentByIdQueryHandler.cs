@@ -3,8 +3,9 @@ using Appointments.Domain.SharedKernel;
 
 namespace Appointments.Application.Features.Appointments.Queries.GetAppointmentById;
 
-public sealed class GetAppointmentByIdQueryHandler(IAppointmentQueryRepository appointmentRepository)
-    : IQueryHandler<GetAppointmentByIdQuery, AppointmentDetailResult>
+public sealed class GetAppointmentByIdQueryHandler(
+    IAppointmentQueryRepository appointmentRepository
+) : IQueryHandler<GetAppointmentByIdQuery, AppointmentDetailResult>
 {
     private readonly IAppointmentQueryRepository _appointmentRepository = appointmentRepository;
 
@@ -14,6 +15,9 @@ public sealed class GetAppointmentByIdQueryHandler(IAppointmentQueryRepository a
 
         if (appointment is null)
             return Result<AppointmentDetailResult>.Failure(AppointmentApplicationErrors.NotFound);
+
+        if (!query.IsAdmin && appointment.ClientUserId != query.CurrentUserId)
+            return Result<AppointmentDetailResult>.Failure(AppointmentApplicationErrors.Forbidden);
 
         return Result<AppointmentDetailResult>.Success(appointment);
     }

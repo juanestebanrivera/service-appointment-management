@@ -9,6 +9,7 @@ public record AppointmentDetailResult(
     DateTimeOffset EndTime,
     AppointmentStatus Status,
     Guid ClientId,
+    Guid ClientUserId,
     string ClientFirstName,
     string ClientLastName,
     string? ClientEmail,

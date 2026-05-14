@@ -27,6 +27,7 @@ public class GetAppointmentsByDateQueryHandlerTests
             new(
                 Id: Guid.NewGuid(),
                 ClientId: Guid.NewGuid(),
+                ClientUserId: Guid.NewGuid(),
                 ClientFirstName: "FirstName",
                 ClientLastName: "LastName",
                 ClientEmail: "username@domain.com",
@@ -42,6 +43,7 @@ public class GetAppointmentsByDateQueryHandlerTests
             new(
                 Id: Guid.NewGuid(),
                 ClientId: Guid.NewGuid(),
+                ClientUserId: Guid.NewGuid(),
                 ClientFirstName: "FirstName Two",
                 ClientLastName: "LastName Two",
                 ClientEmail: "username2@domain.com",
@@ -72,11 +74,14 @@ public class GetAppointmentsByDateQueryHandlerTests
         Assert.Equal(appointments.Count, resultList.Count);
 
         Assert.Equal(appointments[0].Id, resultList[0].Id);
+        Assert.Equal(appointments[0].ClientId, resultList[0].ClientId);
+        Assert.Equal(appointments[0].ClientUserId, resultList[0].ClientUserId);
         Assert.Equal(appointments[0].ClientFirstName, resultList[0].ClientFirstName);
         Assert.Equal(appointments[0].ClientLastName, resultList[0].ClientLastName);
         Assert.Equal(appointments[0].ClientEmail, resultList[0].ClientEmail);
         Assert.Equal(appointments[0].ClientPhonePrefix, resultList[0].ClientPhonePrefix);
         Assert.Equal(appointments[0].ClientPhoneNumber, resultList[0].ClientPhoneNumber);
+        Assert.Equal(appointments[0].ServiceId, resultList[0].ServiceId);
         Assert.Equal(appointments[0].ServiceName, resultList[0].ServiceName);
         Assert.Equal(appointments[0].PriceAtBooking, resultList[0].PriceAtBooking);
         Assert.Equal(appointments[0].StartTime, resultList[0].StartTime);

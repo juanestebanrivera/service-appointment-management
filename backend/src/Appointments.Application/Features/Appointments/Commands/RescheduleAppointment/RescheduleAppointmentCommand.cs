@@ -2,5 +2,6 @@ namespace Appointments.Application.Features.Appointments.Commands.RescheduleAppo
 
 public record RescheduleAppointmentCommand(
     Guid AppointmentId,
-    DateTimeOffset NewStartTime
+    DateTimeOffset NewStartTime,
+    Guid CurrentUserId
 );
