@@ -4,12 +4,12 @@ namespace Appointments.Domain.Appointments;
 
 public static class AppointmentErrors
 {
-    public static readonly Error ClientIsRequired = new("Appointment.ClientIsRequired", "Client is required", ErrorType.Validation);
+    public static readonly Error ClientIsRequired = new(ErrorType.Validation, "Client is required");
 
-    public static readonly Error ServiceIsRequired = new("Appointment.ServiceIsRequired", "Service is required", ErrorType.Validation);
-    public static readonly Error PriceAtBookingMustBeGreaterThanZero = new("Appointment.PriceAtBookingMustBeGreaterThanZero", "Price at booking must be greater than zero", ErrorType.Validation);
+    public static readonly Error ServiceIsRequired = new(ErrorType.Validation, "Service is required");
+    public static readonly Error PriceAtBookingMustBeGreaterThanZero = new(ErrorType.Validation, "Price at booking must be greater than zero");
 
-    public static readonly Error InvalidStatusTransition = new("Appointment.InvalidStatusTransition", "Invalid status transition", ErrorType.Conflict);
-    public static readonly Error TimeSlotUnavailable = new("Appointment.TimeSlotUnavailable", "Time slot is unavailable", ErrorType.Conflict);
-    public static readonly Error ClientAlreadyHasActiveAppointment = new("Appointment.ClientAlreadyHasActiveAppointment", "Client already has a pending or confirmed appointment", ErrorType.Conflict);
+    public static readonly Error InvalidStatusTransition = new(ErrorType.Conflict, "Invalid status transition");
+    public static readonly Error TimeSlotUnavailable = new(ErrorType.Conflict, "Time slot is unavailable");
+    public static readonly Error ClientAlreadyHasActiveAppointment = new(ErrorType.Conflict, "Client already has a pending or confirmed appointment");
 }

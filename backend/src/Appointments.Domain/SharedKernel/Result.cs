@@ -1,8 +1,8 @@
 namespace Appointments.Domain.SharedKernel;
 
-public sealed record Error(string Code, string Description, ErrorType Type)
+public sealed record Error(ErrorType Type, string Description)
 {
-    public static readonly Error None = new(string.Empty, string.Empty, ErrorType.Failure);
+    public static readonly Error None = new(ErrorType.Failure, string.Empty);
 }
 
 public class Result
