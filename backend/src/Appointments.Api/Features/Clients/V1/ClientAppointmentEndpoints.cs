@@ -20,6 +20,10 @@ internal class ClientAppointmentEndpoints : IEndpoint
         group.MapGet("/", GetHistory)
              .Produces<PagedResponse<ClientAppointmentApiResponse>>()
              .ProducesProblem(StatusCodes.Status404NotFound);
+
+        group.MapGet("/upcoming", GetUpcoming)
+             .Produces<ClientUpcomingAppointmentsApiResponse>()
+             .ProducesProblem(StatusCodes.Status404NotFound);
     }
 
     private static async Task<IResult> GetHistory(
@@ -33,4 +37,21 @@ internal class ClientAppointmentEndpoints : IEndpoint
 
         return result.ToApiResult(value => Results.Ok(value.ToPagedResponse(a => a.ToClientAppointmentApiResponse())));
     }
+
+    private static async Task<IResult> GetUpcoming(
+        Guid id,
+        [AsParameters] GetClientUpcomingRequest request,
+        [FromServices] IQueryHandler<GetClientUpcomingAppointmentQuery, ClientUpcomingAppointmentsResult> handler,
+        CancellationToken cancellationToken)
+    {
+        var query = new GetClientUpcomingAppointmentQuery(id, request.IncludeLast);
+        var result = await handler.HandleAsync(query, cancellationToken);
+
+        return result.ToApiResult(value => Results.Ok(new ClientUpcomingAppointmentsApiResponse
+        (
+            value.NextAppointment?.ToClientAppointmentApiResponse(),
+            value.LastAppointment?.ToClientAppointmentApiResponse()
+        )));
+    }
+
 }

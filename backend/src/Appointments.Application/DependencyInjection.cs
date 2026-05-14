@@ -27,6 +27,7 @@ using Appointments.Application.Features.Users.Commands.UserLogin;
 using Appointments.Application.Features.Users.Commands.UserRegister;
 using Microsoft.Extensions.DependencyInjection;
 using Appointments.Application.Features.Appointments.Queries.GetClientAppointmentHistory;
+using Appointments.Application.Features.Appointments.Queries.GetClientUpcomingAppointment;
 
 namespace Appointments.Application;
 
@@ -47,6 +48,7 @@ public static class DependencyInjection
 
             // Client Appointments
             services.AddScoped<IQueryHandler<GetClientAppointmentHistoryQuery, PagedResult<ClientAppointmentResult>>, GetClientAppointmentHistoryQueryHandler>();
+            services.AddScoped<IQueryHandler<GetClientUpcomingAppointmentQuery, ClientUpcomingAppointmentsResult>, GetClientUpcomingAppointmentQueryHandler>();
 
             // Services
             services.AddScoped<ICommandHandler<CreateServiceCommand, Guid>, CreateServiceCommandHandler>();

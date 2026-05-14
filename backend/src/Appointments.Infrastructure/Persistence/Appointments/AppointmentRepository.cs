@@ -114,4 +114,48 @@ internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IA
 
         return (items, totalCount);
     }
+
+    public async Task<ClientAppointmentResult?> GetClientUpcomingAppointmentAsync(Guid clientId, CancellationToken cancellationToken = default)
+    {
+        var now = DateTimeOffset.UtcNow;
+
+        return await _appointments
+            .AsNoTracking()
+            .Where(a =>
+                a.ClientId == clientId &&
+                (a.Status == AppointmentStatus.Pending || a.Status == AppointmentStatus.Confirmed) &&
+                a.TimeRange.StartTime > now
+            )
+            .OrderBy(a => a.TimeRange.StartTime)
+            .Join(_services.AsNoTracking(), a => a.ServiceId, s => s.Id, (appointment, service) => new ClientAppointmentResult
+            (
+                appointment.Id,
+                appointment.PriceAtBooking,
+                appointment.TimeRange.StartTime,
+                appointment.TimeRange.EndTime,
+                appointment.Status,
+                service.Id,
+                service.Name
+            ))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
+
+    public async Task<ClientAppointmentResult?> GetClientLastCompletedAppointmentAsync(Guid clientId, CancellationToken cancellationToken = default)
+    {
+        return await _appointments
+            .AsNoTracking()
+            .Where(a => a.ClientId == clientId && a.Status == AppointmentStatus.Completed)
+            .OrderByDescending(a => a.TimeRange.StartTime)
+            .Join(_services.AsNoTracking(), a => a.ServiceId, s => s.Id, (appointment, service) => new ClientAppointmentResult
+            (
+                appointment.Id,
+                appointment.PriceAtBooking,
+                appointment.TimeRange.StartTime,
+                appointment.TimeRange.EndTime,
+                appointment.Status,
+                service.Id,
+                service.Name
+            ))
+            .FirstOrDefaultAsync(cancellationToken);
+    }
 }
