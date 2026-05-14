@@ -145,6 +145,38 @@ public class CreateClientCommandHandlerTests
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task HandleAsync_WhenUserIsInactive_ReturnsFailure()
+    {
+        // Arrange
+        var passwordHasher = Substitute.For<IPasswordHasher>();
+        passwordHasher.Hash(Arg.Any<string>()).Returns("HashedPassword");
+
+        var user = User.Register(Email.Create("username@domain.com").Value, "UserPassword", passwordHasher).Value;
+        user.Deactivate();
+
+        var command = new CreateClientCommand(
+            UserId: user.Id,
+            FirstName: "FirstName",
+            LastName: "LastName",
+            PhonePrefix: "+1",
+            PhoneNumber: "1234567890",
+            Email: "username@domain.com"
+        );
+
+        _userRepository.GetByIdAsync(command.UserId, Arg.Any<CancellationToken>()).Returns(user);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(UserApplicationErrors.UserNotFound, result.Error);
+
+        _clientRepository.DidNotReceive().Add(Arg.Any<Client>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("username@domain.com")]
