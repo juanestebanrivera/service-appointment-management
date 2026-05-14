@@ -68,7 +68,39 @@ public class PersonNameTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal(name, result.Value!.Value);
+        Assert.NotNull(result.Value);
+        Assert.Equal(name, result.Value.Value);
+    }
+
+    [Theory]
+    [InlineData("FirstName")]
+    [InlineData("LastName")]
+    public void Create_WhenValueIsRequired_ErrorDescriptionContainsFieldName(string fieldName)
+    {
+        // Act
+        var result = PersonName.Create("", fieldName);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Contains(fieldName, result.Error.Description);
+    }
+
+    [Theory]
+    [InlineData("Valid Name ")]
+    [InlineData(" Valid Name")]
+    [InlineData(" Valid Name ")]
+    public void Create_WhenValueHasLeadingAndTrailingSpaces_TrimsAndReturnsSuccess(string name)
+    {
+        // Arrange
+        string fieldName = "Name";
+
+        // Act
+        var result = PersonName.Create(name, fieldName);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.NotNull(result.Value);
+        Assert.Equal(name.Trim(), result.Value.Value);
     }
 
     [Fact]
@@ -83,6 +115,7 @@ public class PersonNameTests
 
         // Assert
         Assert.True(result.IsSuccess);
-        Assert.Equal(name, result.Value!.Value);
+        Assert.NotNull(result.Value);
+        Assert.Equal(name, result.Value.Value);
     }
 }

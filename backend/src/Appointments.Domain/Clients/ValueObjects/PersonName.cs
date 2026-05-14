@@ -19,9 +19,11 @@ public record PersonName
         if (value.Any(char.IsNumber))
             return Result<PersonName>.Failure(PersonNameErrors.CannotContainNumbers(fieldName));
 
-        if (value.Length < 2)
+        string trimmedValue = value.Trim();
+
+        if (trimmedValue.Length < 2)
             return Result<PersonName>.Failure(PersonNameErrors.MustBeAtLeastTwoCharacters(fieldName));
 
-        return Result<PersonName>.Success(new PersonName(value));
+        return Result<PersonName>.Success(new PersonName(trimmedValue));
     }
 }
