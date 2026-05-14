@@ -38,26 +38,41 @@ public static class DependencyInjection
         public IServiceCollection AddApplication()
         {
             services.AddSingleton(TimeProvider.System);
+            services.AddClientInjections();
+            services.AddServiceInjections();
+            services.AddAppointmentInjections();
+            services.AddUserInjections();
 
-            // Clients
+            return services;
+        }
+
+        private IServiceCollection AddClientInjections()
+        {
             services.AddScoped<ICommandHandler<CreateClientCommand, Guid>, CreateClientCommandHandler>();
             services.AddScoped<ICommandHandler<UpdateClientCommand>, UpdateClientCommandHandler>();
             services.AddScoped<ICommandHandler<DeleteClientCommand>, DeleteClientCommandHandler>();
             services.AddScoped<IQueryHandler<GetAllClientsQuery, PagedResult<ClientResult>>, GetAllClientsQueryHandler>();
             services.AddScoped<IQueryHandler<GetClientByIdQuery, ClientResult>, GetClientByIdQueryHandler>();
 
-            // Client Appointments
             services.AddScoped<IQueryHandler<GetClientAppointmentHistoryQuery, PagedResult<ClientAppointmentResult>>, GetClientAppointmentHistoryQueryHandler>();
             services.AddScoped<IQueryHandler<GetClientUpcomingAppointmentQuery, ClientUpcomingAppointmentsResult>, GetClientUpcomingAppointmentQueryHandler>();
 
-            // Services
+            return services;
+        }
+
+        private IServiceCollection AddServiceInjections()
+        {
             services.AddScoped<ICommandHandler<CreateServiceCommand, Guid>, CreateServiceCommandHandler>();
             services.AddScoped<ICommandHandler<UpdateServiceCommand>, UpdateServiceCommandHandler>();
             services.AddScoped<ICommandHandler<DeleteServiceCommand>, DeleteServiceCommandHandler>();
             services.AddScoped<IQueryHandler<GetAllServicesQuery, PagedResult<ServiceResult>>, GetAllServicesQueryHandler>();
             services.AddScoped<IQueryHandler<GetServiceByIdQuery, ServiceResult>, GetServiceByIdQueryHandler>();
 
-            // Appointments
+            return services;
+        }
+
+        private IServiceCollection AddAppointmentInjections()
+        {
             services.AddScoped<ICommandHandler<BookAppointmentCommand, Guid>, BookAppointmentCommandHandler>();
             services.AddScoped<ICommandHandler<RescheduleAppointmentCommand>, RescheduleAppointmentCommandHandler>();
             services.AddScoped<ICommandHandler<ConfirmAppointmentCommand>, ConfirmAppointmentCommandHandler>();
@@ -67,7 +82,11 @@ public static class DependencyInjection
             services.AddScoped<IQueryHandler<GetAppointmentsByDateQuery, IEnumerable<AppointmentDetailResult>>, GetAppointmentsByDateQueryHandler>();
             services.AddScoped<IQueryHandler<GetAppointmentByIdQuery, AppointmentDetailResult>, GetAppointmentByIdQueryHandler>();
 
-            // Users
+            return services;
+        }
+
+        private IServiceCollection AddUserInjections()
+        {
             services.AddScoped<ICommandHandler<UserLoginCommand, AuthenticationResult>, UserLoginCommandHandler>();
             services.AddScoped<ICommandHandler<UserRegisterCommand>, UserRegisterCommandHandler>();
             services.AddScoped<ICommandHandler<ChangeUserStatusCommand>, ChangeUserStatusCommandHandler>();
