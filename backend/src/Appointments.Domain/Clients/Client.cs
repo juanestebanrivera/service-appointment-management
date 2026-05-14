@@ -31,15 +31,13 @@ public sealed class Client : Entity, IAggregateRoot
         return Result<Client>.Success(new(Guid.NewGuid(), firstName, lastName, phone, email, true, userId));
     }
 
-    public void ChangeName(PersonName newFirstName, PersonName newLastName)
+    public void UpdateContactInfo(PersonName firstName, PersonName lastName, Email? email, PhoneNumber phone)
     {
-        FirstName = newFirstName;
-        LastName = newLastName;
+        FirstName = firstName;
+        LastName = lastName;
+        Email = email;
+        Phone = phone;
     }
-
-    public void ChangeEmail(Email? newEmail) => Email = newEmail;
-
-    public void ChangePhoneNumber(PhoneNumber newPhone) => Phone = newPhone;
 
     public void Activate() => IsActive = true;
 

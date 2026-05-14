@@ -9,8 +9,8 @@ public class ClientTests
     public void Register_WhenDataIsValid_ReturnsSuccessAndCreatesClient()
     {
         // Arrange
-        var firstName = PersonName.Create("First Name", "FirstName").Value;
-        var lastName = PersonName.Create("Last Name", "LastName").Value;
+        var firstName = PersonName.Create("First Name", nameof(Client.FirstName)).Value;
+        var lastName = PersonName.Create("Last Name", nameof(Client.LastName)).Value;
         var phone = PhoneNumber.Create("+57", "1234567890").Value;
         var email = Email.Create("username@domain.com").Value;
         var userId = Guid.NewGuid();
@@ -33,8 +33,8 @@ public class ClientTests
     public void Register_WhenEmailIsNotProvided_ReturnsSuccessAndCreatesClient()
     {
         // Arrange
-        var firstName = PersonName.Create("First Name", "FirstName").Value;
-        var lastName = PersonName.Create("Last Name", "LastName").Value;
+        var firstName = PersonName.Create("First Name", nameof(Client.FirstName)).Value;
+        var lastName = PersonName.Create("Last Name", nameof(Client.LastName)).Value;
         var phone = PhoneNumber.Create("+57", "1234567890").Value;
         var userId = Guid.NewGuid();
 
@@ -53,60 +53,42 @@ public class ClientTests
     }
 
     [Fact]
-    public void ChangeName_WhenDataIsValid_UpdatesName()
+    public void UpdateContactInfo_WhenEmailIsProvided_UpdatesAllFields()
     {
         // Arrange
         var client = CreateValidClient();
-        var newFirstName = PersonName.Create("New First Name", "FirstName").Value;
-        var newLastName = PersonName.Create("New Last Name", "LastName").Value;
+        var newFirstName = PersonName.Create("New First Name", nameof(Client.FirstName)).Value;
+        var newLastName = PersonName.Create("New Last Name", nameof(Client.LastName)).Value;
+        var newEmail = Email.Create("newusername@domain.com").Value;
+        var newPhone = PhoneNumber.Create("+57", "0987654321").Value;
 
         // Act
-        client.ChangeName(newFirstName, newLastName);
+        client.UpdateContactInfo(newFirstName, newLastName, newEmail, newPhone);
 
         // Assert
         Assert.Equal(newFirstName, client.FirstName);
         Assert.Equal(newLastName, client.LastName);
+        Assert.Equal(newEmail, client.Email);
+        Assert.Equal(newPhone, client.Phone);
     }
 
     [Fact]
-    public void ChangeEmail_WhenEmailIsNull_UpdatesEmailToNull()
+    public void UpdateContactInfo_WhenEmailIsNull_ClearsEmail()
     {
         // Arrange
         var client = CreateValidClient();
+        var newFirstName = PersonName.Create("New First Name", nameof(Client.FirstName)).Value;
+        var newLastName = PersonName.Create("New Last Name", nameof(Client.LastName)).Value;
+        var newPhone = PhoneNumber.Create("+57", "0987654321").Value;
         Email? newEmail = null;
 
         // Act
-        client.ChangeEmail(newEmail);
+        client.UpdateContactInfo(newFirstName, newLastName, newEmail, newPhone);
 
         // Assert
+        Assert.Equal(newFirstName, client.FirstName);
+        Assert.Equal(newLastName, client.LastName);
         Assert.Null(client.Email);
-    }
-
-    [Fact]
-    public void ChangeEmail_WhenEmailIsValid_UpdatesEmail()
-    {
-        // Arrange
-        var client = CreateValidClient();
-        var newEmail = Email.Create("newusername@domain.com").Value;
-
-        // Act
-        client.ChangeEmail(newEmail);
-
-        // Assert
-        Assert.Equal(newEmail, client.Email);
-    }
-
-    [Fact]
-    public void ChangePhoneNumber_WhenPhoneNumberIsValid_UpdatesPhoneNumber()
-    {
-        // Arrange
-        var client = CreateValidClient();
-        var newPhone = PhoneNumber.Create("+57", "0987654321").Value;
-
-        // Act
-        client.ChangePhoneNumber(newPhone);
-
-        // Assert
         Assert.Equal(newPhone, client.Phone);
     }
 
@@ -167,8 +149,8 @@ public class ClientTests
     private static Client CreateValidClient()
     {
         var result = Client.Register(
-            PersonName.Create("First Name", "FirstName").Value,
-            PersonName.Create("Last Name", "LastName").Value,
+            PersonName.Create("First Name", nameof(Client.FirstName)).Value,
+            PersonName.Create("Last Name", nameof(Client.LastName)).Value,
             PhoneNumber.Create("+57", "1234567890").Value,
             userId: Guid.NewGuid(),
             Email.Create("username@domain.com").Value

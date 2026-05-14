@@ -30,7 +30,12 @@ public sealed class UpdateClientCommandHandler(
         if (resultLastName.IsFailure)
             return Result.Failure(resultLastName.Error);
 
-        client.ChangeName(resultFirstName.Value, resultLastName.Value);
+        var phoneResult = PhoneNumber.Create(command.PhonePrefix, command.PhoneNumber);
+
+        if (phoneResult.IsFailure)
+            return Result.Failure(phoneResult.Error);
+
+        Email? email = null;
 
         if (!string.IsNullOrWhiteSpace(command.Email))
         {
@@ -39,19 +44,10 @@ public sealed class UpdateClientCommandHandler(
             if (emailResult.IsFailure)
                 return Result.Failure(emailResult.Error);
 
-            client.ChangeEmail(emailResult.Value);
-        }
-        else
-        {
-            client.ChangeEmail(null);
+            email = emailResult.Value;
         }
 
-        var phoneResult = PhoneNumber.Create(command.PhonePrefix, command.PhoneNumber);
-
-        if (phoneResult.IsFailure)
-            return Result.Failure(phoneResult.Error);
-
-        client.ChangePhoneNumber(phoneResult.Value);
+        client.UpdateContactInfo(resultFirstName.Value, resultLastName.Value, email, phoneResult.Value);
 
         if (command.IsActive)
             client.Activate();
