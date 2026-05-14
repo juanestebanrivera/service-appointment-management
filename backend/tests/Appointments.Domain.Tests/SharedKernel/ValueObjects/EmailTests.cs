@@ -37,6 +37,20 @@ public class EmailTests
         Assert.Equal(EmailErrors.InvalidEmailFormat, result.Error);
     }
 
+    [Fact]
+    public void Create_WhenEmailIsUpperCase_NormalizesToLowerCase()
+    {
+        // Arrange
+        var email = "USERNAME@DOMAIN.COM";
+
+        // Act
+        var result = Email.Create(email);
+
+        // Assert
+        Assert.True(result.IsSuccess);
+        Assert.Equal(email.ToLower(), result.Value.Value);
+    }
+
     [Theory]
     [InlineData("username@domain.com")]
     [InlineData("user-name@domain.com")]
