@@ -11,4 +11,5 @@ public static class AppointmentErrors
 
     public static readonly Error InvalidStatusTransition = new("Appointment.InvalidStatusTransition", "Invalid status transition", ErrorType.Conflict);
     public static readonly Error TimeSlotUnavailable = new("Appointment.TimeSlotUnavailable", "Time slot is unavailable", ErrorType.Conflict);
+    public static readonly Error ClientAlreadyHasActiveAppointment = new("Appointment.ClientAlreadyHasActiveAppointment", "Client already has a pending or confirmed appointment", ErrorType.Conflict);
 }

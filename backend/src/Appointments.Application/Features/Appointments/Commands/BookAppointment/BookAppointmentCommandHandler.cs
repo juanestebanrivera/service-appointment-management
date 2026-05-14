@@ -53,6 +53,11 @@ public sealed class BookAppointmentCommandHandler(
         if (!isAvailable)
             return Result<Guid>.Failure(AppointmentErrors.TimeSlotUnavailable);
 
+        var hasActiveAppointment = await _appointmentRepository.HasActiveAppointmentAsync(command.ClientId, cancellationToken);
+
+        if (hasActiveAppointment)
+            return Result<Guid>.Failure(AppointmentErrors.ClientAlreadyHasActiveAppointment);
+
         var appointmentResult = Appointment.Book(
             command.ClientId,
             command.ServiceId,
