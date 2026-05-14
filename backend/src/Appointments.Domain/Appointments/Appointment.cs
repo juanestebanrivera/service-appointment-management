@@ -34,9 +34,12 @@ public sealed class Appointment : Entity, IAggregateRoot
         return Result<Appointment>.Success(new(Guid.NewGuid(), clientId, serviceId, priceAtBooking, timeRange, AppointmentStatus.Pending));
     }
 
+    /// <summary>
+    /// Reschedules the appointment to a new time range and resets its status to Pending, since the new schedule requires re-confirmation.
+    /// </summary>
     public Result Reschedule(TimeRange newTimeRange)
     {
-        if (Status is not (AppointmentStatus.Pending or AppointmentStatus.Confirmed))
+        if (!CanTransitionTo([AppointmentStatus.Pending, AppointmentStatus.Confirmed]))
             return Result.Failure(AppointmentErrors.InvalidStatusTransition);
 
         TimeRange = newTimeRange;
@@ -45,43 +48,23 @@ public sealed class Appointment : Entity, IAggregateRoot
         return Result.Success();
     }
 
-    public Result Confirm()
+    public Result Confirm() => ChangeStatus(AppointmentStatus.Confirmed, [AppointmentStatus.Pending]);
+
+    public Result Cancel() => ChangeStatus(AppointmentStatus.Cancelled, [AppointmentStatus.Pending, AppointmentStatus.Confirmed]);
+
+    public Result Complete() => ChangeStatus(AppointmentStatus.Completed, [AppointmentStatus.Confirmed]);
+
+    public Result MarkAsNoShow() => ChangeStatus(AppointmentStatus.NoShow, [AppointmentStatus.Confirmed]);
+
+    private Result ChangeStatus(AppointmentStatus next, AppointmentStatus[] allowed)
     {
-        if (Status != AppointmentStatus.Pending)
+        if (!CanTransitionTo(allowed))
             return Result.Failure(AppointmentErrors.InvalidStatusTransition);
 
-        Status = AppointmentStatus.Confirmed;
+        Status = next;
 
         return Result.Success();
     }
 
-    public Result Cancel()
-    {
-        if (Status is not (AppointmentStatus.Pending or AppointmentStatus.Confirmed))
-            return Result.Failure(AppointmentErrors.InvalidStatusTransition);
-
-        Status = AppointmentStatus.Cancelled;
-
-        return Result.Success();
-    }
-
-    public Result Complete()
-    {
-        if (Status != AppointmentStatus.Confirmed)
-            return Result.Failure(AppointmentErrors.InvalidStatusTransition);
-
-        Status = AppointmentStatus.Completed;
-
-        return Result.Success();
-    }
-
-    public Result MarkAsNoShow()
-    {
-        if (Status != AppointmentStatus.Confirmed)
-            return Result.Failure(AppointmentErrors.InvalidStatusTransition);
-
-        Status = AppointmentStatus.NoShow;
-
-        return Result.Success();
-    }
+    private bool CanTransitionTo(AppointmentStatus[] allowed) => allowed.Contains(Status);
 }
