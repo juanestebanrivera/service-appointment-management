@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
+import { roleMatchGuard } from '@core/auth/guards';
 import { UserRole } from '@core/auth/models';
 import { APP_ROUTES_SEGMENTS } from '@core/constants';
-import { roleMatchGuard } from '@core/guards/role-match-guard';
 
 export const routes: Routes = [
   {
