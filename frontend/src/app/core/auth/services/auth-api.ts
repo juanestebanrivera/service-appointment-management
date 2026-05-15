@@ -5,7 +5,7 @@ import { catchError, Observable, tap, throwError } from 'rxjs';
 import { API_BASE_URL, APP_ROUTES, AUTH_ENDPOINTS } from '@core/constants';
 import { AuthRequest, AuthResponse } from '../models';
 import { AuthTokenStorage } from './auth-token-storage';
-import { getErrorMessage } from '@core/utils/error-handler';
+import { returnThrowHttpErrorResponse } from '@core/utils/error-handler';
 import { AuthState } from './auth-state';
 import { SignUpRequest } from '../models/signup.dto';
 
@@ -25,22 +25,14 @@ export class AuthApi {
         tap(res => {
           this.#authTokenStorage.saveToken(res.token);
         }),
-        catchError((errorResponse: HttpErrorResponse) => {
-          const errorMessage = getErrorMessage(errorResponse);
-
-          return throwError(() => new Error(errorMessage));
-        }),
+        catchError(returnThrowHttpErrorResponse),
       );
   }
 
   signUp(request: SignUpRequest): Observable<void> {
-    return this.#http.post<void>(`${API_BASE_URL}${AUTH_ENDPOINTS.SIGNUP}`, request).pipe(
-      catchError((errorResponse: HttpErrorResponse) => {
-        const errorMessage = getErrorMessage(errorResponse);
-
-        return throwError(() => new Error(errorMessage));
-      }),
-    );
+    return this.#http
+      .post<void>(`${API_BASE_URL}${AUTH_ENDPOINTS.SIGNUP}`, request)
+      .pipe(catchError(returnThrowHttpErrorResponse));
   }
 
   logout(): void {

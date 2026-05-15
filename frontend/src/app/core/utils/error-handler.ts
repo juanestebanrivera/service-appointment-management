@@ -1,11 +1,18 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { ProblemDetails } from '@core/models';
+import { ProblemDetails } from '@core/shared';
+import { Observable, throwError } from 'rxjs';
 
-export function getErrorMessage(error: HttpErrorResponse): string {
+export const getErrorMessage = (error: HttpErrorResponse): string => {
   const problem: ProblemDetails = error.error as ProblemDetails;
 
   if (problem?.detail) return problem.detail;
   if (problem?.title) return problem.title;
 
   return 'Ocurrió un error en el servidor';
-}
+};
+
+export const returnThrowHttpErrorResponse = (error: HttpErrorResponse): Observable<never> => {
+  const errorMessage = getErrorMessage(error);
+
+  return throwError(() => new Error(errorMessage));
+};
