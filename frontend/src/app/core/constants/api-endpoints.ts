@@ -1,4 +1,4 @@
-export const API_BASE_URL = '';
+export const API_BASE_URL = 'http://localhost:8080/api/v1';
 
 export const AUTH_ENDPOINTS = {
   LOGIN: '/auth/token',
@@ -11,4 +11,12 @@ export const SERVICE_ENDPOINTS = {
   CREATE: '/services',
   UPDATE: (id: string) => `/services/${id}`,
   DELETE: (id: string) => `/services/${id}`,
+};
+
+export const CLIENT_ENDPOINTS = {
+  GET_ALL: '/clients',
+  GET_BY_ID: (id: string) => `/clients/${id}`,
+  CREATE: '/clients',
+  UPDATE: (id: string) => `/clients/${id}`,
+  DELETE: (id: string) => `/clients/${id}`,
 };
