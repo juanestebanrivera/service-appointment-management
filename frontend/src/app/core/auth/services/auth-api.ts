@@ -7,7 +7,7 @@ import { AuthRequest, AuthResponse } from '../models';
 import { AuthTokenStorage } from './auth-token-storage';
 import { getErrorMessage } from '@core/utils/error-handler';
 import { AuthState } from './auth-state';
-import { SignUpRequest } from '../models/signup.model';
+import { SignUpRequest } from '../models/signup.dto';
 
 @Injectable({
   providedIn: 'root',
