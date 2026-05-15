@@ -38,6 +38,11 @@ public sealed class UpdateClientCommandHandler(
         if (phoneResult.IsFailure)
             return Result.Failure(phoneResult.Error);
 
+        var existsPhone = await _clientRepository.ExistsByPhoneAsync(phoneResult.Value, excludeClientId: client.Id, cancellationToken: cancellationToken);
+
+        if (existsPhone)
+            return Result.Failure(ClientApplicationErrors.PhoneAlreadyInUse);
+
         Email? email = null;
 
         if (!string.IsNullOrWhiteSpace(command.Email))
@@ -46,6 +51,11 @@ public sealed class UpdateClientCommandHandler(
 
             if (emailResult.IsFailure)
                 return Result.Failure(emailResult.Error);
+
+            var existsEmail = await _clientRepository.ExistsByEmailAsync(emailResult.Value, excludeClientId: client.Id, cancellationToken: cancellationToken);
+
+            if (existsEmail)
+                return Result.Failure(ClientApplicationErrors.EmailAlreadyInUse);
 
             email = emailResult.Value;
         }

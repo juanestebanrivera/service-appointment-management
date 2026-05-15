@@ -195,6 +195,8 @@ public class UpdateClientCommandHandlerTests
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
+        _clientRepository.ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
         _clientRepository.Update(Arg.Do<Client>(c => updatedClient = c));
 
         // Act
@@ -213,6 +215,70 @@ public class UpdateClientCommandHandlerTests
 
         _clientRepository.Received(1).Update(Arg.Any<Client>());
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenPhoneIsAlreadyInUse_ReturnsFailure()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var command = new UpdateClientCommand(
+            ClientId: client.Id,
+            FirstName: "NewFirstName",
+            LastName: "NewLastName",
+            Email: "new@domain.com",
+            PhonePrefix: "+57",
+            PhoneNumber: "0987654321",
+            IsActive: true,
+            CurrentUserId: client.UserId,
+            IsAdmin: true
+        );
+
+        _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(true);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.PhoneAlreadyInUse, result.Error);
+
+        await _clientRepository.DidNotReceive().ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+        _clientRepository.DidNotReceive().Update(Arg.Any<Client>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenEmailIsAlreadyInUse_ReturnsFailure()
+    {
+        // Arrange
+        var client = CreateValidClient();
+        var command = new UpdateClientCommand(
+            ClientId: client.Id,
+            FirstName: "NewFirstName",
+            LastName: "NewLastName",
+            Email: "new@domain.com",
+            PhonePrefix: "+57",
+            PhoneNumber: "0987654321",
+            IsActive: true,
+            CurrentUserId: client.UserId,
+            IsAdmin: true
+        );
+
+        _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
+        _clientRepository.ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(true);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.EmailAlreadyInUse, result.Error);
+
+        _clientRepository.DidNotReceive().Update(Arg.Any<Client>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -241,6 +307,8 @@ public class UpdateClientCommandHandlerTests
         Assert.True(result.IsFailure);
         Assert.Equal(ClientApplicationErrors.Forbidden, result.Error);
 
+        await _clientRepository.DidNotReceive().ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
+        await _clientRepository.DidNotReceive().ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>());
         _clientRepository.DidNotReceive().Update(Arg.Any<Client>());
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
@@ -263,6 +331,8 @@ public class UpdateClientCommandHandlerTests
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
+        _clientRepository.ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
 
         // Act
         var result = await _handler.HandleAsync(command, default);
@@ -292,6 +362,8 @@ public class UpdateClientCommandHandlerTests
         );
 
         _clientRepository.GetByIdAsync(command.ClientId, Arg.Any<CancellationToken>()).Returns(client);
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
+        _clientRepository.ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
 
         // Act
         var result = await _handler.HandleAsync(command, default);

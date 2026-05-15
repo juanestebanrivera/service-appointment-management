@@ -1,6 +1,7 @@
 using Appointments.Application.Common.Pagination;
 using Appointments.Application.Features.Clients.Queries;
 using Appointments.Domain.Clients;
+using Appointments.Domain.SharedKernel.ValueObjects;
 using Microsoft.EntityFrameworkCore;
 
 namespace Appointments.Infrastructure.Persistence.Clients;
@@ -62,5 +63,23 @@ internal sealed class ClientRepository(ApplicationDbContext dbContext) : IClient
     public void Delete(Client client)
     {
         _clients.Remove(client);
+    }
+
+    public async Task<bool> ExistsByPhoneAsync(PhoneNumber phone, Guid? excludeClientId = null, CancellationToken cancellationToken = default)
+    {
+        return await _clients.AnyAsync(c =>
+            c.Phone.Prefix == phone.Prefix &&
+            c.Phone.Number == phone.Number &&
+            (excludeClientId == null || c.Id != excludeClientId.Value),
+            cancellationToken);
+    }
+
+    public async Task<bool> ExistsByEmailAsync(Email email, Guid? excludeClientId = null, CancellationToken cancellationToken = default)
+    {
+        return await _clients.AnyAsync(c =>
+            c.Email != null &&
+            c.Email.Value == email.Value &&
+            (excludeClientId == null || c.Id != excludeClientId.Value),
+            cancellationToken);
     }
 }

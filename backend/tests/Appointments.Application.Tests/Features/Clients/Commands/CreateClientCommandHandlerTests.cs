@@ -185,10 +185,7 @@ public class CreateClientCommandHandlerTests
     public async Task HandleAsync_WhenUserIsInactive_ReturnsFailure()
     {
         // Arrange
-        var passwordHasher = Substitute.For<IPasswordHasher>();
-        passwordHasher.Hash(Arg.Any<string>()).Returns("HashedPassword");
-
-        var user = User.Register(Email.Create("username@domain.com").Value, "UserPassword", passwordHasher).Value;
+        var user = CreateActiveUser();
         user.Deactivate();
 
         var command = new CreateClientCommand(
@@ -214,32 +211,87 @@ public class CreateClientCommandHandlerTests
         await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
     }
 
+    [Fact]
+    public async Task HandleAsync_WhenPhoneIsAlreadyInUse_ReturnsFailure()
+    {
+        // Arrange
+        var user = CreateActiveUser();
+        var command = new CreateClientCommand(
+            UserId: user.Id,
+            FirstName: "FirstName",
+            LastName: "LastName",
+            PhonePrefix: "+1",
+            PhoneNumber: "1234567890",
+            CurrentUserId: user.Id,
+            Email: "username@domain.com"
+        );
+
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(true);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.PhoneAlreadyInUse, result.Error);
+
+        await _userRepository.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        _clientRepository.DidNotReceive().Add(Arg.Any<Client>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task HandleAsync_WhenEmailIsAlreadyInUse_ReturnsFailure()
+    {
+        // Arrange
+        var user = CreateActiveUser();
+        var command = new CreateClientCommand(
+            UserId: user.Id,
+            FirstName: "FirstName",
+            LastName: "LastName",
+            PhonePrefix: "+1",
+            PhoneNumber: "1234567890",
+            CurrentUserId: user.Id,
+            Email: "username@domain.com"
+        );
+
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
+        _clientRepository.ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(true);
+
+        // Act
+        var result = await _handler.HandleAsync(command, default);
+
+        // Assert
+        Assert.True(result.IsFailure);
+        Assert.Equal(ClientApplicationErrors.EmailAlreadyInUse, result.Error);
+
+        await _userRepository.DidNotReceive().GetByIdAsync(Arg.Any<Guid>(), Arg.Any<CancellationToken>());
+        _clientRepository.DidNotReceive().Add(Arg.Any<Client>());
+        await _unitOfWork.DidNotReceive().SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
     [Theory]
     [InlineData(null)]
     [InlineData("username@domain.com")]
     public async Task HandleAsync_WhenCommandIsValid_ReturnsSuccessAndCreatesClient(string? email)
     {
         // Arrange
-        var passwordHasher = Substitute.For<IPasswordHasher>();
-        string userPassword = "UserPassword";
         Client? createdClient = null;
-
-        var user = User.Register(Email.Create("username@domain.com").Value, userPassword, passwordHasher).Value;
-
-        var userId = Guid.NewGuid();
+        var user = CreateActiveUser();
         var command = new CreateClientCommand(
-            UserId: userId,
+            UserId: user.Id,
             FirstName: "FirstName",
             LastName: "LastName",
             PhonePrefix: "+1",
             PhoneNumber: "1234567890",
-            CurrentUserId: userId,
+            CurrentUserId: user.Id,
             Email: email
         );
 
-        passwordHasher.Hash(userPassword).Returns("HashedPassword");
         _clientRepository.Add(Arg.Do<Client>(c => createdClient = c));
         _userRepository.GetByIdAsync(command.UserId, Arg.Any<CancellationToken>()).Returns(user);
+        _clientRepository.ExistsByPhoneAsync(Arg.Any<PhoneNumber>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
+        _clientRepository.ExistsByEmailAsync(Arg.Any<Email>(), Arg.Any<Guid?>(), Arg.Any<CancellationToken>()).Returns(false);
 
         // Act
         var result = await _handler.HandleAsync(command, default);
@@ -258,5 +310,15 @@ public class CreateClientCommandHandlerTests
 
         _clientRepository.Received(1).Add(Arg.Any<Client>());
         await _unitOfWork.Received(1).SaveChangesAsync(Arg.Any<CancellationToken>());
+    }
+
+    private static User CreateActiveUser()
+    {
+        var passwordHasher = Substitute.For<IPasswordHasher>();
+        passwordHasher.Hash(Arg.Any<string>()).Returns("HashedPassword");
+
+        var user = User.Register(Email.Create("username@domain.com").Value, "UserPassword", passwordHasher).Value;
+
+        return user;
     }
 }
