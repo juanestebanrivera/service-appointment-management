@@ -88,6 +88,11 @@ internal sealed class AppointmentRepository(ApplicationDbContext dbContext) : IA
             cancellationToken);
     }
 
+    public async Task<bool> ExistsByClientAsync(Guid clientId, CancellationToken cancellationToken = default)
+    {
+        return await _appointments.AnyAsync(a => a.ClientId == clientId, cancellationToken);
+    }
+
     public void Add(Appointment appointment)
     {
         _appointments.Add(appointment);
