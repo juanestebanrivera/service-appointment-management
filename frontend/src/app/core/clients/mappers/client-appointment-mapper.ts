@@ -1,3 +1,4 @@
+import { mapToAppointmentStatus } from '@core/shared';
 import { ClientAppointmentResponse } from '../dtos';
 import { ClientAppointment } from '../models';
 
@@ -8,7 +9,7 @@ export const mapClientAppointmentResponseToModel = (
     id: response.id,
     startAt: response.startAt,
     endAt: response.endAt,
-    status: response.status,
+    status: mapToAppointmentStatus(response.status),
     price: response.price,
     service: {
       id: response.service.serviceId,

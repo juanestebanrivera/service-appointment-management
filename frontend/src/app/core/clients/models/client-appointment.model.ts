@@ -1,8 +1,10 @@
+import { AppointmentStatus } from '@core/shared';
+
 export interface ClientAppointment {
   id: string;
   startAt: string;
   endAt: string;
-  status: string;
+  status: AppointmentStatus;
   price: number;
   service: {
     id: string;
