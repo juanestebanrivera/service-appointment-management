@@ -17,9 +17,11 @@ public static class AppointmentApiMappings
                 appointment.PriceAtBooking,
                 new AppointmentClientResponse(
                     appointment.ClientId,
-                    FullName: $"{appointment.ClientFirstName} {appointment.ClientLastName}",
-                    Email: appointment.ClientEmail,
-                    Phone: $"{appointment.ClientPhonePrefix}{appointment.ClientPhoneNumber}"
+                    appointment.ClientFirstName,
+                    appointment.ClientLastName,
+                    appointment.ClientEmail,
+                    appointment.ClientPhoneNumber,
+                    appointment.ClientPhonePrefix
                 ),
                 new AppointmentServiceResponse(
                     appointment.ServiceId,

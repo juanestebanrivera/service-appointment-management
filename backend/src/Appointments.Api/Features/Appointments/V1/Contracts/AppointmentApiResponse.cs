@@ -2,9 +2,11 @@ namespace Appointments.Api.Features.Appointments.V1.Contracts;
 
 public record AppointmentClientResponse(
     Guid Id,
-    string FullName,
+    string FirstName,
+    string LastName,
     string? Email,
-    string Phone
+    string Phone,
+    string PhonePrefix
 );
 
 public record AppointmentServiceResponse(
