@@ -19,4 +19,8 @@ export const CLIENT_ENDPOINTS = {
   CREATE: '/clients',
   UPDATE: (id: string) => `/clients/${id}`,
   DELETE: (id: string) => `/clients/${id}`,
+  APPOINTMENTS: {
+    GET_ALL: (clientId: string) => `/clients/${clientId}/appointments`,
+    UPCOMING: (clientId: string) => `/clients/${clientId}/appointments/upcoming`,
+  },
 };
