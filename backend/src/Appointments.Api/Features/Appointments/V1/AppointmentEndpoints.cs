@@ -57,7 +57,7 @@ internal class AppointmentEndpoints : IEndpoint
              .ProducesProblem(StatusCodes.Status404NotFound)
              .ProducesProblem(StatusCodes.Status409Conflict);
 
-        group.MapPatch("/{id:guid}/mark-as-no-show", MarkAsNoShow)
+        group.MapPatch("/{id:guid}/no-show", MarkAsNoShow)
              .RequireAuthorization(AuthenticationPolicies.OnlyAdmin)
              .Produces(StatusCodes.Status204NoContent)
              .ProducesProblem(StatusCodes.Status404NotFound)
