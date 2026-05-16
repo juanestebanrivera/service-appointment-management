@@ -24,3 +24,14 @@ export const CLIENT_ENDPOINTS = {
     UPCOMING: (clientId: string) => `/clients/${clientId}/appointments/upcoming`,
   },
 };
+
+export const APPOINTMENT_ENDPOINTS = {
+  GET_ALL: `/appointments`,
+  GET_BY_ID: (id: string) => `/appointments/${id}`,
+  CREATE: '/appointments',
+  RESCHEDULE: (id: string) => `/appointments/${id}/reschedule`,
+  CANCEL: (id: string) => `/appointments/${id}/cancel`,
+  COMPLETE: (id: string) => `/appointments/${id}/complete`,
+  CONFIRM: (id: string) => `/appointments/${id}/confirm`,
+  NO_SHOW: (id: string) => `/appointments/${id}/no-show`,
+};
