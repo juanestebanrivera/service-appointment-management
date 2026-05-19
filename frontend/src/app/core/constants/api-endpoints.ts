@@ -5,6 +5,10 @@ export const AUTH_ENDPOINTS = {
   SIGNUP: '/auth/signup',
 };
 
+export const USER_ENDPOINTS = {
+  GET_BY_ID: (id: string) => `/users/${id}`,
+};
+
 export const SERVICE_ENDPOINTS = {
   GET_ALL: '/services',
   GET_BY_ID: (id: string) => `/services/${id}`,

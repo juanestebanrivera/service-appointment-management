@@ -12,7 +12,5 @@ export const getErrorMessage = (error: HttpErrorResponse): string => {
 };
 
 export const returnThrowHttpErrorResponse = (error: HttpErrorResponse): Observable<never> => {
-  const errorMessage = getErrorMessage(error);
-
-  return throwError(() => new Error(errorMessage));
+  return throwError(() => error);
 };

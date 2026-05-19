@@ -4,17 +4,17 @@ import { Injectable } from '@angular/core';
   providedIn: 'root',
 })
 export class AuthTokenStorage {
-  private readonly TOKEN_KEY = 'token';
+  readonly #TOKEN_KEY = 'token';
 
   getToken(): string | null {
-    return localStorage.getItem(this.TOKEN_KEY);
+    return localStorage.getItem(this.#TOKEN_KEY);
   }
 
   saveToken(token: string): void {
-    localStorage.setItem(this.TOKEN_KEY, token);
+    localStorage.setItem(this.#TOKEN_KEY, token);
   }
 
   destroyToken(): void {
-    localStorage.removeItem(this.TOKEN_KEY);
+    localStorage.removeItem(this.#TOKEN_KEY);
   }
 }

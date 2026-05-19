@@ -1,10 +1,8 @@
-import { UserRole } from "@core/shared";
-
-export interface User {
+export interface UserResponse {
   id: string;
   clientId: string;
   name: string;
   email: string;
-  role: UserRole;
+  role: string;
   isActive: boolean;
 }
