@@ -1,4 +1,3 @@
-using Appointments.Api.Features.Appointments.V1.Contracts;
 using Appointments.Api.Features.Clients.V1.Contracts;
 using Appointments.Application.Features.Appointments;
 using Appointments.Application.Features.Clients;

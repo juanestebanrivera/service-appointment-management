@@ -25,6 +25,8 @@ using Appointments.Application.Features.Services.Queries.GetServiceById;
 using Appointments.Application.Features.Users.Commands.ChangeUserStatus;
 using Appointments.Application.Features.Users.Commands.UserLogin;
 using Appointments.Application.Features.Users.Commands.UserRegister;
+using Appointments.Application.Features.Users.Queries.GetUserById;
+using Appointments.Application.Features.Users;
 using Microsoft.Extensions.DependencyInjection;
 using Appointments.Application.Features.Appointments.Queries.GetClientAppointmentHistory;
 using Appointments.Application.Features.Appointments.Queries.GetClientUpcomingAppointment;
@@ -90,6 +92,7 @@ public static class DependencyInjection
             services.AddScoped<ICommandHandler<UserLoginCommand, AuthenticationResult>, UserLoginCommandHandler>();
             services.AddScoped<ICommandHandler<UserRegisterCommand>, UserRegisterCommandHandler>();
             services.AddScoped<ICommandHandler<ChangeUserStatusCommand>, ChangeUserStatusCommandHandler>();
+            services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResult>, GetUserByIdQueryHandler>();
 
             return services;
         }

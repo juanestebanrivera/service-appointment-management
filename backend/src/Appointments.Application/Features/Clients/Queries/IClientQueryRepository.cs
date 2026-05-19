@@ -11,4 +11,6 @@ public interface IClientQueryRepository : IRepository<Client>
         string? searchQuery = null,
         bool status = true,
         CancellationToken cancellationToken = default);
+
+    Task<Client?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default);
 }

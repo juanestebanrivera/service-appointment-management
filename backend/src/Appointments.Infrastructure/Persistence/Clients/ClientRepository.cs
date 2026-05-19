@@ -45,6 +45,11 @@ internal sealed class ClientRepository(ApplicationDbContext dbContext) : IClient
         return (items, totalCount);
     }
 
+    public async Task<Client?> GetByUserIdAsync(Guid userId, CancellationToken cancellationToken = default)
+    {
+        return await _clients.FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
+    }
+
     public async Task<Client?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _clients.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);

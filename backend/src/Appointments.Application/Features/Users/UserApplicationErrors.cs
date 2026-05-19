@@ -8,4 +8,5 @@ public static class UserApplicationErrors
     public static readonly Error InvalidEmail = new(ErrorType.Validation, "The provided email is not valid. Please provide another email.");
 
     public static readonly Error UserNotFound = new(ErrorType.NotFound, "The user was not found.");
+    public static readonly Error Forbidden = new(ErrorType.Forbidden, "You don't have permission to access this resource.");
 }
