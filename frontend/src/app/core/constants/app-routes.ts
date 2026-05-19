@@ -5,7 +5,7 @@ export const APP_ROUTES_SEGMENTS = {
     SIGNUP: 'signup',
   },
   ADMIN: {
-    HOME: 'home',
+    AGENDA: 'agenda',
     CLIENTS: 'clients',
     SERVICES: 'services',
     SETTINGS: 'settings',
@@ -13,12 +13,13 @@ export const APP_ROUTES_SEGMENTS = {
 } as const;
 
 export const APP_ROUTES = {
+  HOME: `/${APP_ROUTES_SEGMENTS.EMPTY}`,
   AUTH: {
     LOGIN: `/${APP_ROUTES_SEGMENTS.AUTH.LOGIN}`,
     SIGNUP: `/${APP_ROUTES_SEGMENTS.AUTH.SIGNUP}`,
   },
   ADMIN: {
-    HOME: `/${APP_ROUTES_SEGMENTS.ADMIN.HOME}`,
+    AGENDA: `/${APP_ROUTES_SEGMENTS.ADMIN.AGENDA}`,
     CLIENTS: `/${APP_ROUTES_SEGMENTS.ADMIN.CLIENTS}`,
     SERVICES: `/${APP_ROUTES_SEGMENTS.ADMIN.SERVICES}`,
     SETTINGS: `/${APP_ROUTES_SEGMENTS.ADMIN.SETTINGS}`,

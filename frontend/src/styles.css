@@ -1,3 +1,13 @@
-/* You can add global styles to this file, and also import other style files */
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
 
 @import 'tailwindcss';
+
+@theme {
+  --color-primary: #0d2a40;
+  --color-secondary: #daa520;
+  --color-neutral: #64748b;
+  --color-tertiary: #101416;
+
+  --font-headline: 'Montserrat', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}

@@ -1,0 +1,43 @@
+<nav class="relative flex items-center justify-between px-8 h-18 bg-white shadow">
+  <div class="flex items-center gap-3">
+    <app-icon name="logo" class="text-4xl" />
+    <span class="font-headline font-bold text-xl text-tertiary">S.A.M.</span>
+  </div>
+
+  <div class="flex gap-3">
+    <a
+      [routerLink]="ROUTES.AUTH.LOGIN"
+      class="font-body font-semibold text-sm text-primary no-underline px-5 py-2 rounded-lg border-2 border-primary"
+    >
+      Iniciar sesión
+    </a>
+    <a
+      [routerLink]="ROUTES.AUTH.SIGNUP"
+      class="font-body font-semibold text-sm text-white no-underline px-5 py-2 rounded-lg bg-primary border-2 border-primary"
+    >
+      Registrarse
+    </a>
+  </div>
+</nav>
+
+<section
+  class="flex flex-col items-center justify-center text-center px-8 py-16 bg-neutral/15 h-[calc(100dvh-4.5rem)]"
+>
+  <h1 class="font-headline font-extrabold text-5xl/tight text-tertiary max-w-3xl mb-6">
+    Administra tus citas de servicio
+    <span class="text-secondary">sin complicaciones</span>
+  </h1>
+
+  <p class="font-body text-neutral text-xl/relaxed max-w-2xl mb-10">
+    Organiza, agenda y gestiona los servicios de tu negocio desde un solo lugar. Ahorra tiempo y
+    mejora la experiencia de tus clientes.
+  </p>
+
+  <a
+    [routerLink]="ROUTES.AUTH.LOGIN"
+    class="flex gap-2 items-center font-body font-bold text-base text-white no-underline px-8 py-3.5 bg-primary rounded-xl shadow-2xl transition-transform hover:-translate-y-1"
+  >
+    Empezar ahora
+    <app-icon name="arrow-right" />
+  </a>
+</section>

@@ -18,7 +18,7 @@ export const routes: Routes = [
   },
   {
     path: APP_ROUTES_SEGMENTS.EMPTY,
-    loadChildren: () => import('./features/auth/auth.routes').then(f => f.AUTH_ROUTES),
+    loadComponent: () => import('./features/home/home').then(f => f.Home),
   },
-  { path: '**', redirectTo: APP_ROUTES_SEGMENTS.EMPTY },
+  { path: '**', redirectTo: APP_ROUTES_SEGMENTS.EMPTY, pathMatch: 'full' },
 ];
