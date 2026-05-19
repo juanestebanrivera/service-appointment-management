@@ -19,6 +19,7 @@ public class UserEndpoints : IEndpoint
                                 .WithTags("Users");
 
         group.MapGet("/{id:guid}", GetById)
+             .WithName("GetUserById")
              .Produces<UserApiResponse>()
              .ProducesProblem(StatusCodes.Status403Forbidden)
              .ProducesProblem(StatusCodes.Status404NotFound);

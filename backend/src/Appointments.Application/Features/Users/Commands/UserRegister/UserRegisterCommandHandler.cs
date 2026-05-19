@@ -10,32 +10,32 @@ public class UserRegisterCommandHandler(
     IPasswordHasher passwordHasher,
     IUnitOfWork unitOfWork
 )
-: ICommandHandler<UserRegisterCommand>
+: ICommandHandler<UserRegisterCommand, Guid>
 {
     private readonly IUserRepository _userRepository = userRepository;
     private readonly IPasswordHasher _passwordHasher = passwordHasher;
     private readonly IUnitOfWork _unitOfWork = unitOfWork;
 
-    public async Task<Result> HandleAsync(UserRegisterCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<Guid>> HandleAsync(UserRegisterCommand command, CancellationToken cancellationToken = default)
     {
         var emailResult = Email.Create(command.Email);
 
         if (emailResult.IsFailure)
-            return Result.Failure(emailResult.Error);
+            return Result<Guid>.Failure(emailResult.Error);
 
         var existUserWithEmail = await _userRepository.VerifyIfEmailExistsAsync(emailResult.Value.Value, cancellationToken);
 
         if (existUserWithEmail)
-            return Result.Failure(UserApplicationErrors.InvalidEmail);
+            return Result<Guid>.Failure(UserApplicationErrors.InvalidEmail);
 
         var userResult = User.Register(emailResult.Value, command.Password, _passwordHasher);
 
         if (userResult.IsFailure)
-            return Result.Failure(userResult.Error);
+            return Result<Guid>.Failure(userResult.Error);
 
         _userRepository.Add(userResult.Value);
         await _unitOfWork.SaveChangesAsync(cancellationToken);
 
-        return Result.Success();
+        return Result<Guid>.Success(userResult.Value.Id);
     }
 }

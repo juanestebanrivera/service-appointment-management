@@ -90,7 +90,7 @@ public static class DependencyInjection
         private IServiceCollection AddUserInjections()
         {
             services.AddScoped<ICommandHandler<UserLoginCommand, AuthenticationResult>, UserLoginCommandHandler>();
-            services.AddScoped<ICommandHandler<UserRegisterCommand>, UserRegisterCommandHandler>();
+            services.AddScoped<ICommandHandler<UserRegisterCommand, Guid>, UserRegisterCommandHandler>();
             services.AddScoped<ICommandHandler<ChangeUserStatusCommand>, ChangeUserStatusCommandHandler>();
             services.AddScoped<IQueryHandler<GetUserByIdQuery, UserResult>, GetUserByIdQueryHandler>();
 

@@ -32,12 +32,12 @@ public class AuthEndpoints : IEndpoint
 
     private static async Task<IResult> Register(
         [FromBody] UserRegisterApiRequest request,
-        [FromServices] ICommandHandler<UserRegisterCommand> handler,
+        [FromServices] ICommandHandler<UserRegisterCommand, Guid> handler,
         CancellationToken cancellationToken)
     {
         var command = new UserRegisterCommand(request.Email, request.Password);
         var result = await handler.HandleAsync(command, cancellationToken);
 
-        return result.ToApiResult(() => Results.Created());
+        return result.ToApiResult(() => Results.CreatedAtRoute("GetUserById", new { id = result.Value }, null));
     }
 }
