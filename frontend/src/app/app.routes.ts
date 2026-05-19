@@ -1,7 +1,7 @@
 import { Routes } from '@angular/router';
 import { roleMatchGuard } from '@core/auth/guards';
-import { UserRole } from '@core/auth/models';
 import { APP_ROUTES_SEGMENTS } from '@core/constants';
+import { UserRole } from '@core/shared';
 
 export const routes: Routes = [
   {
@@ -15,6 +15,10 @@ export const routes: Routes = [
     loadChildren: () => import('./features/admin/admin.routes').then(f => f.ADMIN_ROUTES),
     canMatch: [roleMatchGuard],
     data: { roles: [UserRole.Admin] },
+  },
+  {
+    path: APP_ROUTES_SEGMENTS.AUTH.LOGIN,
+    loadComponent: () => import('./features/auth/login/login').then(f => f.Login),
   },
   {
     path: APP_ROUTES_SEGMENTS.EMPTY,
