@@ -29,6 +29,6 @@ public class UserLoginCommandHandler(
 
         var accessToken = _tokenGenerator.GenerateToken(user);
 
-        return Result<AuthenticationResult>.Success(new AuthenticationResult(accessToken));
+        return Result<AuthenticationResult>.Success(new AuthenticationResult(user.Id, accessToken));
     }
 }
