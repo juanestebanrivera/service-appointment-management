@@ -4,8 +4,10 @@ namespace Appointments.Application.Features.Users;
 
 public record UserResult(
     Guid Id,
-    Guid? ClientId,
     string Email,
     UserRole Role,
-    bool IsActive
+    bool IsActive,
+    Guid? ClientId,
+    string? ClientFirstName,
+    string? ClientLastName
 );

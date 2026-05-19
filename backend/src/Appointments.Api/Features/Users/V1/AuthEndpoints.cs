@@ -15,8 +15,13 @@ public class AuthEndpoints : IEndpoint
                                 .WithTags("Authentication")
                                 .AllowAnonymous();
 
-        group.MapPost("token", GetToken);
-        group.MapPost("signup", Register);
+        group.MapPost("token", GetToken)
+             .Produces<AuthenticationResult>()
+             .ProducesProblem(StatusCodes.Status401Unauthorized);
+
+        group.MapPost("signup", Register)
+             .Produces(StatusCodes.Status201Created)
+             .ProducesProblem(StatusCodes.Status400BadRequest);
     }
 
     private static async Task<IResult> GetToken(

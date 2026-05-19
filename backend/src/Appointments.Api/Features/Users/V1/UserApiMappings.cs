@@ -10,6 +10,7 @@ public static class UserApiMappings
         return new UserApiResponse(
             result.Id,
             result.ClientId,
+            $"{result.ClientFirstName} {result.ClientLastName}".Trim(),
             result.Email,
             result.Role.ToString(),
             result.IsActive

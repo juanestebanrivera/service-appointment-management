@@ -27,10 +27,12 @@ public sealed class GetUserByIdQueryHandler(
 
         return Result<UserResult>.Success(new UserResult(
             user.Id,
-            client?.Id,
             user.Email.Value,
             user.Role,
-            user.IsActive
+            user.IsActive,
+            client?.Id,
+            client?.FirstName?.Value,
+            client?.LastName?.Value
         ));
     }
 }
