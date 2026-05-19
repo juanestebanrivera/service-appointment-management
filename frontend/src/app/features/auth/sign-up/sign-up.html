@@ -1,0 +1,97 @@
+<div class="min-h-screen bg-primary flex items-center justify-center px-4 py-10">
+  <div class="w-full max-w-md bg-white rounded-2xl shadow-2xl px-8 py-8">
+    <a [routerLink]="ROUTES.HOME" class="flex items-center gap-2 no-underline mb-2 justify-center">
+      <app-icon name="logo" class="text-6xl" />
+    </a>
+
+    <h1 class="font-headline font-extrabold text-tertiary text-3xl mb-5 text-center">
+      Crear cuenta
+    </h1>
+
+    <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="flex flex-col gap-5">
+      <div class="flex flex-col gap-1.5">
+        <label class="font-body font-semibold text-sm text-tertiary" for="first-name">
+          Nombres
+        </label>
+        <input
+          id="first-name"
+          type="text"
+          formControlName="firstName"
+          class="font-body text-sm text-tertiary bg-white border-2 border-neutral/20 rounded-xl px-4 py-3 outline-none w-full transition-colors focus:border-secondary"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="font-body font-semibold text-sm text-tertiary" for="last-name">
+          Apellidos
+        </label>
+        <input
+          id="last-name"
+          type="text"
+          formControlName="lastName"
+          class="font-body text-sm text-tertiary bg-white border-2 border-neutral/20 rounded-xl px-4 py-3 outline-none w-full transition-colors focus:border-secondary"
+        />
+      </div>
+      <div class="flex flex-col gap-1.5">
+        <label class="font-body font-semibold text-sm text-tertiary" for="phone">Teléfono</label>
+        <input
+          id="phone"
+          type="text"
+          formControlName="phone"
+          class="font-body text-sm text-tertiary bg-white border-2 border-neutral/20 rounded-xl px-4 py-3 outline-none w-full transition-colors focus:border-secondary"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="font-body font-semibold text-sm text-tertiary" for="email">
+          Correo electrónico
+        </label>
+        <input
+          id="email"
+          type="email"
+          formControlName="email"
+          class="font-body text-sm text-tertiary bg-white border-2 border-neutral/20 rounded-xl px-4 py-3 outline-none w-full transition-colors focus:border-secondary"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="font-body font-semibold text-sm text-tertiary" for="password">
+          Contraseña
+        </label>
+        <input
+          id="password"
+          type="password"
+          formControlName="password"
+          class="font-body text-sm text-tertiary bg-white border-2 border-neutral/20 rounded-xl px-4 py-3 outline-none w-full transition-colors focus:border-secondary"
+        />
+      </div>
+
+      <div class="flex flex-col gap-1.5">
+        <label class="font-body font-semibold text-sm text-tertiary" for="confirm-password">
+          Confirmar contraseña
+        </label>
+        <input
+          id="confirm-password"
+          type="password"
+          formControlName="confirmPassword"
+          class="font-body text-sm text-tertiary bg-white border-2 border-neutral/20 rounded-xl px-4 py-3 outline-none w-full transition-colors focus:border-secondary"
+        />
+      </div>
+
+      <button
+        type="submit"
+        [disabled]="!signUpForm.valid"
+        class="font-body font-bold text-base text-white bg-primary rounded-xl py-3.5 w-full mt-2 border-0 cursor-pointer disabled:cursor-not-allowed disabled:bg-primary/70"
+      >
+        Registrarse
+      </button>
+    </form>
+
+    <p class="font-body text-sm text-neutral text-center mt-10">
+      ¿Ya tienes cuenta?
+      <a [routerLink]="ROUTES.AUTH.LOGIN" class="font-semibold text-secondary no-underline">
+        Inicia sesión
+      </a>
+    </p>
+  </div>
+</div>

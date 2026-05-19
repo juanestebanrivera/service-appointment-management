@@ -21,6 +21,10 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login').then(f => f.Login),
   },
   {
+    path: APP_ROUTES_SEGMENTS.AUTH.SIGNUP,
+    loadComponent: () => import('./features/auth/sign-up/sign-up').then(f => f.SignUp),
+  },
+  {
     path: APP_ROUTES_SEGMENTS.EMPTY,
     loadComponent: () => import('./features/home/home').then(f => f.Home),
   },

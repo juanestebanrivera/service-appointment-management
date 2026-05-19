@@ -44,7 +44,6 @@ export class Login {
 
     this.#authApi.login({ email: email, password: password } as AuthRequest).subscribe({
       next: () => {
-        
         this.#router.navigate([this.ROUTES.HOME]);
       },
       error: (err: HttpErrorResponse) => {
