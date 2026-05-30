@@ -4,7 +4,14 @@ using Catalog.Domain.SharedKernel;
 
 namespace Catalog.Application.Services.Commands;
 
-public record UpdateServiceCommand(Guid Id, string Name, string? Description, decimal Price, string Currency, int Duration);
+public record UpdateServiceCommand(
+    Guid Id,
+    string Name,
+    string? Description,
+    decimal Price,
+    string Currency,
+    int Duration
+);
 
 public class UpdateServiceCommandHandler(
     IUnitOfWork unitOfWork,

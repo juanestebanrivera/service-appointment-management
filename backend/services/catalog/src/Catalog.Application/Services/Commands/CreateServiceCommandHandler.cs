@@ -4,7 +4,13 @@ using Catalog.Domain.SharedKernel;
 
 namespace Catalog.Application.Services.Commands;
 
-public record CreateServiceCommand(string Name, string Description, decimal Price, string Currency, int DurationMinutes);
+public record CreateServiceCommand(
+    string Name,
+    string Description,
+    decimal Price,
+    string Currency,
+    int DurationMinutes
+);
 
 public class CreateServiceCommandHandler(
     IUnitOfWork unitOfWork,

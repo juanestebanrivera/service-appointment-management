@@ -47,7 +47,7 @@ public class Establishment
         if (groupedByDay.Any(g => g.Count() > 1))
             return Result.Failure(EstablishmentErrors.WeeklyScheduleOnlyOnePerDay);
 
-        _weeklySchedules = weeklySchedules.ToList();
+        _weeklySchedules = weeklySchedules;
         return Result.Success();
-    }   
+    }
 }
