@@ -21,7 +21,7 @@ public class GetAllServicesQueryHandler(
             s.Description,
             s.Price.Amount,
             s.Price.Currency,
-            s.Duration.Value
+            s.Duration.Minutes
         ));
 
         return Result<PagedList<ServiceResult>>.Success(new PagedList<ServiceResult>(

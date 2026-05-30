@@ -4,24 +4,24 @@ namespace Catalog.Domain.Services;
 
 public record DurationMinutes
 {
-    public int Value { get; init; }
+    public int Minutes { get; init; }
 
-    private DurationMinutes(int value)
+    private DurationMinutes(int minutes)
     {
-        Value = value;
+        Minutes = minutes;
     }
 
-    public static Result<DurationMinutes> Create(int value)
+    public static Result<DurationMinutes> Create(int minutes)
     {
-        const int MinimumDuration = 15;
-        const int MaximumDuration = 480; // 8 hours
+        const int MinimumMinutes = 15;
+        const int MaximumMinutes = 480; // 8 hours
 
-        if (value <= MinimumDuration)
+        if (minutes <= MinimumMinutes)
             return Result<DurationMinutes>.Failure(DurationMinutesErrors.DurationMustBeGreaterThanFifteenMinutes);
 
-        if (value > MaximumDuration)
+        if (minutes > MaximumMinutes)
             return Result<DurationMinutes>.Failure(DurationMinutesErrors.DurationMustBeLessThanEightHours);
 
-        return Result<DurationMinutes>.Success(new DurationMinutes(value));
+        return Result<DurationMinutes>.Success(new DurationMinutes(minutes));
     }
 }

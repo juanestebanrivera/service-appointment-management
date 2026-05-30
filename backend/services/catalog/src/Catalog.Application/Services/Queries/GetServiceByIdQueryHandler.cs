@@ -22,7 +22,7 @@ public class GetServiceByIdQueryHandler(
             service.Description,
             service.Price.Amount,
             service.Price.Currency,
-            service.Duration.Value
+            service.Duration.Minutes
         ));
     }
 }
