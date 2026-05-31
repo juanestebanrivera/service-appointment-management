@@ -6,7 +6,7 @@ namespace Catalog.Application.Services.Commands;
 
 public record CreateServiceCommand(
     string Name,
-    string Description,
+    string? Description,
     decimal Price,
     string Currency,
     int DurationMinutes
