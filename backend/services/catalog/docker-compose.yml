@@ -1,0 +1,49 @@
+services:
+  catalog-db:
+    image: postgres:17.9-alpine
+    container_name: catalog-db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      - POSTGRES_USER=${CATALOG_DB_USER:-catalog-user}
+      - POSTGRES_DB=${CATALOG_DB_NAME:-catalog}
+      - POSTGRES_PASSWORD=${CATALOG_DB_PASSWORD:-catalog-pass}
+    volumes:
+      - catalog-db-data:/var/lib/postgresql/data
+    networks:
+      - catalog-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready"]
+      interval: 10s
+      start_period: 5s
+      start_interval: 2s
+      timeout: 5s
+      retries: 3
+
+  catalog-service:
+    image: catalog-api:${CATALOG_APP_VERSION:-latest}
+    container_name: catalog-api
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5195:8080"
+    build:
+      context: .
+      dockerfile: src/Catalog.Api/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=${ENVIRONMENT:-Production}
+      - ConnectionStrings__DefaultConnection=Host=catalog-db;Port=5432;Database=${CATALOG_DB_NAME:-catalog};User ID=${CATALOG_DB_USER:-catalog-user};Password=${CATALOG_DB_PASSWORD:-catalog-pass}
+    depends_on:
+      catalog-db:
+        condition: service_healthy
+    networks:
+      - catalog-network
+    read_only: true
+
+volumes:
+  catalog-db-data:
+    driver: local
+
+networks:
+  catalog-network:
+    driver: bridge

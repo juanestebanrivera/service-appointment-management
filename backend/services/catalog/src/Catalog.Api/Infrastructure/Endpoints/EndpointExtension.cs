@@ -13,7 +13,7 @@ public static class EndpointExtension
                            && type is { IsClass: true, IsAbstract: false, IsInterface: false });
 
         var serviceDescriptors = endpointTypes
-            .Select(type => ServiceDescriptor.Scoped(typeof(IEndpoint), type));
+            .Select(type => ServiceDescriptor.Transient(typeof(IEndpoint), type));
 
         services.TryAddEnumerable(serviceDescriptors);
         return services;
